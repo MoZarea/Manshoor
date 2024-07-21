@@ -1,4 +1,4 @@
-package com.gp.socialapp.presentation.post.postDetails.components
+package com.example.gemipost.ui.post.postDetails.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,9 +8,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Comment
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Comment
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.ThumbDown
-import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.filled.ThumbDownAlt
+import androidx.compose.material.icons.filled.ThumbUpAlt
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -24,19 +29,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.gemipost.R
 import com.example.gemipost.data.post.source.remote.model.NestedReply
 import com.example.gemipost.data.post.source.remote.model.Reply
 import com.gp.socialapp.presentation.post.feed.ReplyEvent
-import com.gp.socialapp.presentation.post.feed.components.icons.FeedIcons
-import com.gp.socialapp.presentation.post.feed.components.icons.feedicons.Comment
 import com.gp.socialapp.util.ModerationSafety
-import org.jetbrains.compose.resources.stringResource
-import socialmultiplatform.composeapp.generated.resources.Res
-import socialmultiplatform.composeapp.generated.resources.delete
-import socialmultiplatform.composeapp.generated.resources.edit
-import socialmultiplatform.composeapp.generated.resources.report
-import socialmultiplatform.composeapp.generated.resources.share
 
 @Composable
 fun ReplyOptions(
@@ -67,25 +66,25 @@ fun ReplyOptions(
                         )
                 }
                 val dropDownItems = if (nestedReply.reply?.authorID == currentUserId) {
-                    listOf(ReplyDropDownItem(stringResource(Res.string.edit)) {
+                    listOf(ReplyDropDownItem(stringResource(R.string.edit)) {
                         replyEvent(
                             ReplyEvent.OnEditReply(
                                 reply = nestedReply.reply ?: Reply()
                             )
                         )
-                    }, ReplyDropDownItem(stringResource(Res.string.delete)) {
+                    }, ReplyDropDownItem(stringResource(R.string.delete)) {
                         replyEvent(
                             ReplyEvent.OnReplyDeleted(
                                 reply = nestedReply.reply ?: Reply()
                             )
                         )
-                    }, ReplyDropDownItem(stringResource(Res.string.share)) {
+                    }, ReplyDropDownItem(stringResource(R.string.share)) {
                         replyEvent(
                             ReplyEvent.OnShareReply(
                                 reply = nestedReply.reply ?: Reply()
                             )
                         )
-                    }, ReplyDropDownItem(stringResource(Res.string.report)) {
+                    }, ReplyDropDownItem(stringResource(R.string.report)) {
                         replyEvent(
                             ReplyEvent.OnReportReply(
                                 reply = nestedReply.reply ?: Reply()
@@ -93,13 +92,13 @@ fun ReplyOptions(
                         )
                     })
                 } else {
-                    listOf(ReplyDropDownItem(stringResource(Res.string.share)) {
+                    listOf(ReplyDropDownItem(stringResource(R.string.share)) {
                         replyEvent(
                             ReplyEvent.OnShareReply(
                                 reply = nestedReply.reply ?: Reply()
                             )
                         )
-                    }, ReplyDropDownItem(stringResource(Res.string.report)) {
+                    }, ReplyDropDownItem(stringResource(R.string.report)) {
                         replyEvent(
                             ReplyEvent.OnReportReply(
                                 reply = nestedReply.reply ?: Reply()
@@ -123,7 +122,7 @@ fun ReplyOptions(
                 replyEvent(ReplyEvent.OnAddReply(reply = nestedReply.reply ?: Reply()))
             }) {
                 Icon(
-                    imageVector = FeedIcons.Comment,
+                    imageVector = Icons.AutoMirrored.Filled.Comment,
                     contentDescription = "Comment",
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.padding(horizontal = 8.dp).size(20.dp)
@@ -137,7 +136,7 @@ fun ReplyOptions(
                 )
             }) {
                 Icon(
-                    imageVector = Icons.Filled.ThumbUp, contentDescription = "Like",
+                    imageVector = Icons.Filled.ThumbUpAlt, contentDescription = "Like",
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
 
                     )
@@ -151,7 +150,7 @@ fun ReplyOptions(
                 )
             }) {
                 Icon(
-                    imageVector = Icons.Filled.ThumbDown, contentDescription = "Share",
+                    imageVector = Icons.Filled.ThumbDownAlt, contentDescription = "Share",
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
 
                     )

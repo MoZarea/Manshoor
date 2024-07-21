@@ -1,4 +1,4 @@
-package com.gp.socialapp.presentation.post.postDetails.components
+package com.example.gemipost.ui.post.postDetails.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +13,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.example.gemipost.data.post.source.remote.model.NestedReply
+import com.example.gemipost.ui.post.postDetails.components.ReplyContent
 import com.gp.socialapp.presentation.post.feed.ReplyEvent
 
 

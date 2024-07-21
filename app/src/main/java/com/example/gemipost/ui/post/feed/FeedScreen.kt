@@ -47,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
@@ -57,15 +58,15 @@ import com.gp.socialapp.data.community.source.remote.model.UserId
 import com.gp.socialapp.data.community.source.remote.model.isAdmin
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.PostAttachment
-import com.gp.socialapp.presentation.auth.login.LoginScreen
+import com.example.gemipost.ui.auth.login.LoginScreen
 import com.gp.socialapp.presentation.material.utils.MimeType
 import com.gp.socialapp.presentation.post.create.CreatePostScreen
 import com.gp.socialapp.presentation.post.feed.components.FeedPostItem
 import com.gp.socialapp.presentation.post.feed.components.FilesBottomSheet
 import com.gp.socialapp.presentation.post.feed.components.isUnsafe
-import com.gp.socialapp.presentation.post.postDetails.PostDetailsScreen
-import com.gp.socialapp.presentation.post.search.SearchScreen
-import com.gp.socialapp.presentation.post.searchResult.SearchResultScreen
+import com.example.gemipost.ui.post.postDetails.PostDetailsScreen
+import com.example.gemipost.ui.post.search.SearchScreen
+import com.example.gemipost.ui.post.searchResult.SearchResultScreen
 import com.gp.socialapp.presentation.userprofile.UserProfileScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay

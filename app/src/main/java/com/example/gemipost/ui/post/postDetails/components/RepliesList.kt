@@ -1,4 +1,4 @@
-package com.gp.socialapp.presentation.post.postDetails.components
+package com.example.gemipost.ui.post.postDetails.components
 
 import androidx.compose.foundation.lazy.LazyListScope
 import com.example.gemipost.data.post.source.remote.model.NestedReply
