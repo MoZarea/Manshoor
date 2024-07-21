@@ -39,7 +39,6 @@ fun ReplyItem(
                 }
             }.padding(start = (16.dp * level) + 8.dp, end = 8.dp),
             shape = ShapeDefaults.Medium,
-//            border = BorderStroke(1.dp, Color.Gray),
             colors = CardDefaults.cardColors(
                 containerColor = androidx.compose.material3.MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.03f),
                 )

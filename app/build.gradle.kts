@@ -66,6 +66,9 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.multiplatformSettings)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.constraintlayout)
     //
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -76,5 +79,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.landscapist.glide)
 
 }

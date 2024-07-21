@@ -35,6 +35,7 @@ fun AddReplySheet(
     bottomSheetState: SheetState = rememberModalBottomSheetState()
 ) {
     ModalBottomSheet(
+        modifier = modifier,
         sheetState = bottomSheetState,
         onDismissRequest = { onDismiss()},
         shape = RoundedCornerShape(16.dp),

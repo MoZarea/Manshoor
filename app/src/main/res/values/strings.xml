@@ -55,7 +55,7 @@
     <string name="confirm_member_removal">Are you sure you want to remove this user from the group?</string>
     <string name="add_selected_members">Add selected members</string>
     <string name="sign_in_with_microsoft">Sign in with Microsoft</string>
-    <string name = "old_password">Old Password</string>
-    <string name = "new_password">New Password</string>
-    <string name = "change_password">Change Password</string>
+    <string name="old_password">Old Password</string>
+    <string name="new_password">New Password</string>
+    <string name="change_password">Change Password</string>
 </resources>
