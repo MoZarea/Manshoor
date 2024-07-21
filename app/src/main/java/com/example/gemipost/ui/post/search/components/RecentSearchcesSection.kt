@@ -1,4 +1,4 @@
-package com.gp.socialapp.presentation.post.search.components
+package com.example.gemipost.ui.post.search.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.HorizontalDivider

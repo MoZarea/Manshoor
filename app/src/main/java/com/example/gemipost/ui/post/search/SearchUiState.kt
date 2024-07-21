@@ -1,4 +1,4 @@
-package com.gp.socialapp.presentation.post.search
+package com.example.gemipost.ui.post.search
 
 data class SearchUiState(
     val recentSearches: List<String> = emptyList(),

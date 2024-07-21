@@ -1,4 +1,4 @@
-package com.gp.socialapp.presentation.post.searchResult
+package com.example.gemipost.ui.post.searchResult
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,36 +19,34 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.kodein.rememberNavigatorScreenModel
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.Tag
-import com.gp.socialapp.presentation.post.postDetails.PostDetailsScreen
-import com.gp.socialapp.presentation.post.searchResult.components.SearchResultHeader
-import com.gp.socialapp.presentation.post.searchResult.components.SearchResultList
-import com.gp.socialapp.presentation.userprofile.UserProfileScreen
+import com.example.gemipost.ui.post.searchResult.components.SearchResultHeader
+import com.example.gemipost.ui.post.searchResult.components.SearchResultList
 
-data class SearchResultScreen(
-    val searchTerm: String = "",
-    val searchTag: Tag = Tag(),
-    val isTag: Boolean = false
-) : Screen {
-    @Composable
-    override fun Content() {
-        val navigator = LocalNavigator.currentOrThrow
-        val screenModel = navigator.rememberNavigatorScreenModel<SearchResultScreenModel>()
-        val state by screenModel.uiState.collectAsState()
+@Composable
+    fun SearchResultScreen(
+    searchTerm: String = "",
+    searchTag: Tag = Tag(),
+    isTag: Boolean = false,
+    viewModel: SearchResultViewModel = viewModel(),
+    onPostClicked: (Post) -> Unit,
+    onBackPressed: () -> Unit
+    ) {
+        val state by viewModel.uiState.collectAsState()
         val isScreenModelInitialized by remember { mutableStateOf(false) }
         if (!isScreenModelInitialized) {
-            screenModel.initScreenModel(searchTerm, searchTag, isTag)
+            viewModel.init(searchTerm, searchTag, isTag)
         }
         SearchResultContent(
             posts = state.posts,
-            onPostClicked = { navigator.push(PostDetailsScreen(it)) },
-            onBackPressed = { navigator.pop() },
-            onPostAuthorClicked = { navigator.push(UserProfileScreen(it)) }
+            onPostClicked = { onPostClicked(it) },
+            onBackPressed = { onBackPressed() },
+            onPostAuthorClicked = {},
+            searchTerm = searchTerm,
+            searchTag = searchTag,
+            isTag = isTag
         )
     }
 
@@ -60,6 +58,9 @@ data class SearchResultScreen(
         onPostClicked: (Post) -> Unit,
         onBackPressed: () -> Unit,
         onPostAuthorClicked: (String) -> Unit,
+        searchTerm: String = "",
+        searchTag: Tag = Tag(),
+        isTag: Boolean = false,
     ) {
         Scaffold(
             modifier = modifier.fillMaxSize(),
@@ -105,4 +106,3 @@ data class SearchResultScreen(
             }
         }
     }
-}

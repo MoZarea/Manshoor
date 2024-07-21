@@ -1,27 +1,27 @@
-package com.gp.socialapp.presentation.post.search
+package com.example.gemipost.ui.post.search
 
-import cafe.adriel.voyager.core.model.ScreenModel
-import cafe.adriel.voyager.core.model.screenModelScope
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.gemipost.data.post.repository.PostRepository
 import com.gp.socialapp.util.DispatcherIO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class SearchScreenModel(
+class SearchViewModel(
     private val postRepo: PostRepository
-): ScreenModel {
+): ViewModel() {
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState = _uiState.asStateFlow()
-    fun initScreenModel() {
-        screenModelScope.launch(DispatcherIO) {
+    fun init() {
+        viewModelScope.launch(DispatcherIO) {
             val result = postRepo.getRecentSearches()
             _uiState.value = _uiState.value.copy(recentSearches = result)
         }
     }
 
     fun deleteRecentSearchItem(recentSearch: String) {
-        screenModelScope.launch(DispatcherIO) {
+        viewModelScope.launch(DispatcherIO) {
             postRepo.deleteRecentSearch(recentSearch)
             val result = postRepo.getRecentSearches()
             _uiState.value = _uiState.value.copy(recentSearches = result)
@@ -33,7 +33,7 @@ class SearchScreenModel(
     }
 
     fun addRecentSearchItem(item: String) {
-        screenModelScope.launch (DispatcherIO){
+        viewModelScope.launch (DispatcherIO){
             if(_uiState.value.recentSearches.contains(item)){
                 return@launch
             }
