@@ -1,6 +1,6 @@
 package com.gp.socialapp.presentation.post.feed
 
-import com.gp.socialapp.data.auth.source.remote.model.User
+import com.example.gemipost.data.auth.source.remote.model.User
 import com.gp.socialapp.data.community.source.remote.model.Community
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.Tag

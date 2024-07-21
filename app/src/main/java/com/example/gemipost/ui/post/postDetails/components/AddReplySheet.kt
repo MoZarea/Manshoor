@@ -1,4 +1,4 @@
-package com.gp.socialapp.presentation.post.postDetails.components
+package com.example.gemipost.ui.post.postDetails.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,6 +35,7 @@ fun AddReplySheet(
     bottomSheetState: SheetState = rememberModalBottomSheetState()
 ) {
     ModalBottomSheet(
+        modifier = modifier,
         sheetState = bottomSheetState,
         onDismissRequest = { onDismiss()},
         shape = RoundedCornerShape(16.dp),
