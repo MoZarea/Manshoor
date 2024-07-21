@@ -2,8 +2,8 @@ package com.gp.socialapp.presentation.post.create
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import com.gp.socialapp.data.auth.repository.AuthenticationRepository
-import com.gp.socialapp.data.auth.source.remote.model.User
+import com.example.gemipost.data.auth.repository.AuthenticationRepository
+import com.example.gemipost.data.auth.source.remote.model.User
 import com.example.gemipost.data.post.repository.PostRepository
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.PostAttachment

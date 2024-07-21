@@ -1,4 +1,4 @@
-package com.gp.socialapp.presentation.post.postDetails.components
+package com.example.gemipost.ui.post.postDetails.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
