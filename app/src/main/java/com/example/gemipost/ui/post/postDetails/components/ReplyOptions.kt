@@ -9,10 +9,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Comment
-import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.Comment
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.ThumbDownAlt
 import androidx.compose.material.icons.filled.ThumbUpAlt
@@ -34,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.example.gemipost.R
 import com.example.gemipost.data.post.source.remote.model.NestedReply
 import com.example.gemipost.data.post.source.remote.model.Reply
-import com.gp.socialapp.presentation.post.feed.ReplyEvent
+import com.example.gemipost.ui.post.feed.ReplyEvent
 import com.gp.socialapp.util.ModerationSafety
 
 @Composable

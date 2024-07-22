@@ -1,4 +1,4 @@
-package com.gp.socialapp.presentation.post.edit
+package com.example.gemipost.ui.post.edit
 
 import com.example.gemipost.data.post.source.remote.model.PostAttachment
 import com.example.gemipost.data.post.source.remote.model.Tag

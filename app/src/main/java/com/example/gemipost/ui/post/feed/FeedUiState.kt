@@ -1,7 +1,6 @@
-package com.gp.socialapp.presentation.post.feed
+package com.example.gemipost.ui.post.feed
 
 import com.example.gemipost.data.auth.source.remote.model.User
-import com.gp.socialapp.data.community.source.remote.model.Community
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.Tag
 import com.gp.socialapp.util.PostError
@@ -17,7 +16,6 @@ data class FeedUiState(
     val openedTabItem: FeedTab = FeedTab.GENERAL,
     val currentUserID: String = "",
     val currentUser: User = User(),
-    val currentCommunity: Community = Community(),
     val isLoggedOut: Boolean = false
 )
 

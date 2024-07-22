@@ -1,10 +1,10 @@
-package com.gp.socialapp.presentation.post.feed.components
+package com.example.gemipost.ui.post.feed.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
 import com.example.gemipost.data.post.source.remote.model.PostAttachment
-import com.gp.socialapp.presentation.material.utils.MimeType
-import com.gp.socialapp.presentation.post.feed.PostEvent
+import com.example.gemipost.ui.post.feed.PostEvent
+import com.example.gemipost.utils.MimeType
 
 @Composable
 fun Attachments(

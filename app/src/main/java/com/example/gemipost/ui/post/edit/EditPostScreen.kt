@@ -14,7 +14,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,58 +21,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.core.lifecycle.LifecycleEffect
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.kodein.rememberNavigatorScreenModel
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
-import com.example.gemipost.data.post.source.remote.model.Post
+import com.example.gemipost.R
 import com.example.gemipost.ui.post.create.component.CreatePostTopBar
 import com.example.gemipost.ui.post.create.component.FilesRow
-import com.gp.socialapp.presentation.post.create.component.MyTextFieldBody
-import com.gp.socialapp.presentation.post.create.component.MyTextFieldTitle
-import com.gp.socialapp.presentation.post.create.component.NewTagAlertDialog
-import com.gp.socialapp.presentation.post.create.component.TagsRow
-import com.gp.socialapp.presentation.post.create.component.uploadPostFiles
-import com.gp.socialapp.presentation.post.edit.EditPostAction
-import com.gp.socialapp.presentation.post.edit.EditPostScreenModel
-import com.gp.socialapp.presentation.post.edit.EditPostUIState
-import com.mohamedrejeb.calf.core.LocalPlatformContext
-import com.mohamedrejeb.calf.picker.FilePickerFileType
-import com.mohamedrejeb.calf.picker.FilePickerSelectionMode
-import com.mohamedrejeb.calf.picker.rememberFilePickerLauncher
-import org.jetbrains.compose.resources.stringResource
-import socialmultiplatform.composeapp.generated.resources.Res
-import socialmultiplatform.composeapp.generated.resources.edit_post
-
-class EditPostScreen(val post: Post) : Screen {
-    @Composable
-    override fun Content() {
-        val navigator = LocalNavigator.currentOrThrow
-        val screenModel = navigator.rememberNavigatorScreenModel<EditPostScreenModel>()
-        LifecycleEffect(
-            onStarted = { screenModel.init(post) },
-            onDisposed = { screenModel.dispose() }
-        )
-        val state by screenModel.uiState.collectAsState()
-        if (state.editSuccess) {
-            navigator.pop()
-        }
-        MaterialTheme {
-            EditPostContent(
-                state = state,
-                action = {
-                    when (it) {
-                        EditPostAction.NavigateBack -> navigator.pop()
-                        else -> screenModel.handleAction(it)
-                    }
-                }
-
-            )
-        }
-    }
-}
+import com.example.gemipost.ui.post.create.component.MyTextFieldBody
+import com.example.gemipost.ui.post.create.component.MyTextFieldTitle
+import com.example.gemipost.ui.post.create.component.NewTagAlertDialog
+import com.example.gemipost.ui.post.create.component.TagsRow
+import com.example.gemipost.ui.post.edit.EditPostAction
+import com.example.gemipost.ui.post.edit.EditPostUIState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,24 +47,11 @@ private fun EditPostContent(
         skipPartiallyExpanded = skipPartiallyExpanded
     )
     var newTagDialogState by remember { mutableStateOf(false) }
-    val context = LocalPlatformContext.current
-    var pickedFileType: FilePickerFileType by remember { mutableStateOf(FilePickerFileType.All) }
-    val filePicker = rememberFilePickerLauncher(
-        type = pickedFileType,
-        selectionMode = FilePickerSelectionMode.Multiple
-    ) { files ->
-        uploadPostFiles(
-            scope,
-            files,
-            context,
-        ) { action(EditPostAction.OnFileAdded(it)) }
-        pickedFileType = FilePickerFileType.All
-    }
     Scaffold(
         topBar = {
             CreatePostTopBar(
                 onBackClick = { action(EditPostAction.NavigateBack) },
-                stringResource(Res.string.edit_post)
+                stringResource(R.string.edit_post)
             )
         }
     ) { it ->
@@ -125,7 +70,6 @@ private fun EditPostContent(
                     action(EditPostAction.OnFileRemoved(file))
                 },
                 onAddFile = {
-                    filePicker.launch()
                 }
             )
             Spacer(modifier = Modifier.height(16.dp))

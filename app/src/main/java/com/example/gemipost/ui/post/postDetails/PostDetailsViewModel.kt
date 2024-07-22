@@ -10,8 +10,8 @@ import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.PostAttachment
 import com.example.gemipost.data.post.source.remote.model.Reply
 import com.example.gemipost.data.post.util.ToNestedReplies.toNestedReplies
-import com.gp.socialapp.presentation.post.feed.PostEvent
-import com.gp.socialapp.presentation.post.feed.ReplyEvent
+import com.example.gemipost.ui.post.feed.PostEvent
+import com.example.gemipost.ui.post.feed.ReplyEvent
 import com.gp.socialapp.util.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

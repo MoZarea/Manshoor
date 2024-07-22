@@ -1,4 +1,4 @@
-package com.gp.socialapp.presentation.post.feed.components
+package com.example.gemipost.ui.post.feed.components
 
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.RoundedCornerShape

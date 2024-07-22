@@ -13,8 +13,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.example.gemipost.data.post.source.remote.model.NestedReply
-import com.example.gemipost.ui.post.postDetails.components.ReplyContent
-import com.gp.socialapp.presentation.post.feed.ReplyEvent
+import com.example.gemipost.ui.post.feed.ReplyEvent
 
 
 @Composable

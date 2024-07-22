@@ -1,4 +1,4 @@
-package com.gp.socialapp.presentation.post.create.component
+package com.example.gemipost.ui.post.create.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -33,7 +33,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.gemipost.data.post.source.remote.model.Tag
-import com.gp.socialapp.theme.TagsColorPalette.fixedColor
+import com.example.gemipost.ui.theme.TagsColorPalette.fixedColor
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable

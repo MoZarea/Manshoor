@@ -2,7 +2,7 @@ package com.example.gemipost.ui.post.postDetails.components
 
 import androidx.compose.foundation.lazy.LazyListScope
 import com.example.gemipost.data.post.source.remote.model.NestedReply
-import com.gp.socialapp.presentation.post.feed.ReplyEvent
+import com.example.gemipost.ui.post.feed.ReplyEvent
 
 
 fun LazyListScope.RepliesList(replies: List<NestedReply>, level: Int = 0, onReplyEvent: (ReplyEvent)->Unit, currentUserId: String) {

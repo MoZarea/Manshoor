@@ -1,17 +1,16 @@
-package com.gp.socialapp.presentation.post.feed.components
+package com.example.gemipost.ui.post.feed.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Circle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.gemipost.ui.post.postDetails.components.CircularAvatar
-import compose.icons.FontAwesomeIcons
-import compose.icons.fontawesomeicons.Solid
-import compose.icons.fontawesomeicons.solid.UserCircle
 
 @Composable
 fun PostTopRow(
@@ -31,7 +30,7 @@ fun PostTopRow(
         CircularAvatar(
             imageURL = imageUrl,
             size = 24.dp,
-            placeHolderImageVector = FontAwesomeIcons.Solid.UserCircle,
+            placeHolderImageVector = Icons.Default.Circle,
             onClick = onUserClick
         )
         Row(

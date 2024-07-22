@@ -1,4 +1,4 @@
-package com.gp.socialapp.presentation.post.feed.components
+package com.example.gemipost.ui.post.feed.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding

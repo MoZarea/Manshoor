@@ -6,7 +6,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import com.example.gemipost.data.post.source.remote.model.NestedReply
-import com.gp.socialapp.presentation.post.feed.ReplyEvent
+import com.example.gemipost.ui.post.feed.ReplyEvent
 
 
 fun LazyListScope.NestedReplyItem(comment: NestedReply, level: Int, onReplyEvent: (ReplyEvent)->Unit, currentUserId: String) {

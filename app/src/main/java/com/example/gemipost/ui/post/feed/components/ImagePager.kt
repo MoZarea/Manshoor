@@ -1,8 +1,7 @@
-package com.gp.socialapp.presentation.post.feed.components
+package com.example.gemipost.ui.post.feed.components
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,8 +18,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,18 +28,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.gemipost.data.post.source.remote.model.PostAttachment
 import com.gp.socialapp.util.AppConstants.BASE_URL
-import com.seiko.imageloader.model.ImageAction
-import com.seiko.imageloader.rememberImageSuccessPainter
-import com.seiko.imageloader.ui.AutoSizeBox
-import compose.icons.FontAwesomeIcons
-import compose.icons.fontawesomeicons.Solid
-import compose.icons.fontawesomeicons.solid.ExclamationTriangle
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -88,35 +77,6 @@ fun ImagePager(
                 contentAlignment = Alignment.Center
             ) {
                 val imageURL = BASE_URL + images[pagerState.currentPage].url
-                AutoSizeBox(imageURL) { action ->
-                    when (action) {
-                        is ImageAction.Success -> {
-                            Image(
-                                rememberImageSuccessPainter(
-                                    action = action,
-                                    filterQuality = FilterQuality.High
-                                ),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .align(Alignment.Center).fillMaxSize(),
-                                contentScale = ContentScale.FillWidth                            )
-                        }
-
-                        is ImageAction.Loading -> {
-                            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                        }
-
-                        is ImageAction.Failure -> {
-                            Icon(
-                                imageVector = FontAwesomeIcons.Solid.ExclamationTriangle,
-                                contentDescription = null,
-                                modifier = Modifier.size(36.dp).align(Alignment.Center),
-                            )
-                        }
-
-                        else -> Unit
-                    }
-                }
             }
         }
         if(images.size > 1){

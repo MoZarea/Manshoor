@@ -12,9 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.gemipost.data.post.source.remote.model.Post
-import com.example.gemipost.ui.post.searchResult.components.ResultItemBottomRow
-import com.example.gemipost.ui.post.searchResult.components.ResultItemContent
-import com.gp.socialapp.presentation.post.feed.components.PostTopRow
+import com.example.gemipost.ui.post.feed.components.PostTopRow
 import com.gp.socialapp.util.LocalDateTimeUtil.getPostDate
 
 @Composable

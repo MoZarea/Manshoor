@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.gemipost.data.post.source.remote.model.Tag
-import com.gp.socialapp.presentation.post.feed.components.TagItem
+import com.example.gemipost.ui.post.feed.components.TagItem
 
 @Composable
 fun SearchResultHeader(

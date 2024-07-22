@@ -37,9 +37,9 @@ import com.example.gemipost.data.post.source.remote.model.NestedReply
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.Reply
 import com.example.gemipost.data.post.source.remote.model.Tag
-import com.gp.socialapp.presentation.post.feed.PostEvent
-import com.gp.socialapp.presentation.post.feed.ReplyEvent
-import com.gp.socialapp.presentation.post.feed.components.FeedPostItem
+import com.example.gemipost.ui.post.feed.PostEvent
+import com.example.gemipost.ui.post.feed.ReplyEvent
+import com.example.gemipost.ui.post.feed.components.FeedPostItem
 import com.example.gemipost.ui.post.postDetails.components.AddReplySheet
 import com.example.gemipost.ui.post.postDetails.components.RepliesList
 import kotlinx.coroutines.CoroutineScope

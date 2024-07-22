@@ -1,4 +1,4 @@
-package com.gp.socialapp.presentation.post.create.component
+package com.example.gemipost.ui.post.create.component
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Spacer

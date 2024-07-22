@@ -1,4 +1,4 @@
-package com.gp.socialapp.presentation.post.feed.components
+package com.example.gemipost.ui.post.feed.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,10 +22,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.gemipost.data.post.source.remote.model.PostAttachment
-import com.gp.socialapp.presentation.chat.chatroom.components.toReadableSize
-import com.gp.socialapp.presentation.material.utils.MimeType
-import com.gp.socialapp.presentation.material.utils.getFileImageVector
-import com.gp.socialapp.presentation.post.feed.PostEvent
+import com.example.gemipost.ui.post.feed.PostEvent
+import com.example.gemipost.utils.MimeType
+import com.example.gemipost.utils.getFileImageVector
+import com.example.gemipost.utils.toReadableSize
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,7 +52,8 @@ fun FilesBottomSheet(
                 val mimeType = MimeType.getMimeTypeFromFileName(it.name)
                 ListItem(
                     tonalElevation = 4.dp,
-                    modifier = Modifier.padding(4.dp).clip(RoundedCornerShape(8.dp)).clickable { onPostEvent(PostEvent.OnAttachmentClicked(it)) },
+                    modifier = Modifier.padding(4.dp).clip(RoundedCornerShape(8.dp)).clickable { onPostEvent(
+                        PostEvent.OnAttachmentClicked(it)) },
                     headlineContent = {
                         Text(
                             text =  it.name,

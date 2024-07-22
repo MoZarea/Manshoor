@@ -1,4 +1,4 @@
-package com.gp.socialapp.presentation.post.feed.components
+package com.example.gemipost.ui.post.feed.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
@@ -17,7 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.gp.socialapp.presentation.post.feed.NavigationAction
+import com.example.gemipost.ui.post.feed.NavigationAction
 
 @Composable
 fun FeedTopBar(navigationAction: (NavigationAction) -> Unit) {

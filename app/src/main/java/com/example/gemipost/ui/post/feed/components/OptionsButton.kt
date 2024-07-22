@@ -1,4 +1,4 @@
-package com.gp.socialapp.presentation.post.feed.components
+package com.example.gemipost.ui.post.feed.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -15,12 +15,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
-import org.jetbrains.compose.resources.stringResource
-import socialmultiplatform.composeapp.generated.resources.Res
-import socialmultiplatform.composeapp.generated.resources.delete
-import socialmultiplatform.composeapp.generated.resources.edit
+import com.example.gemipost.R
 
 @Composable
 fun OptionButton(
@@ -61,7 +59,7 @@ fun OptionButton(
                         expanded = false
                     },
                     text = {
-                        Text(text = stringResource(Res.string.edit))
+                        Text(text = stringResource(R.string.edit))
                     }
                 )
                 DropdownMenuItem(
@@ -70,7 +68,7 @@ fun OptionButton(
                         expanded = false
                     },
                     text = {
-                        Text(text = stringResource(Res.string.delete))
+                        Text(text = stringResource(R.string.delete))
                     }
                 )
                 DropdownMenuItem(

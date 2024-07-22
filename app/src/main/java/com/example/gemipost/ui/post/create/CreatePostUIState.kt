@@ -1,8 +1,8 @@
-package com.gp.socialapp.presentation.post.create
+package com.example.gemipost.ui.post.create
 
 import com.example.gemipost.data.post.source.remote.model.PostAttachment
 import com.example.gemipost.data.post.source.remote.model.Tag
-import com.gp.socialapp.presentation.post.feed.FeedTab
+import com.example.gemipost.ui.post.feed.FeedTab
 
 
 data class CreatePostUIState(

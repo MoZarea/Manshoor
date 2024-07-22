@@ -1,4 +1,4 @@
-package com.gp.socialapp.presentation.post.feed.components
+package com.example.gemipost.ui.post.feed.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -16,8 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gemipost.data.post.source.remote.model.Post
-import com.gp.socialapp.presentation.material.utils.MimeType
-import com.gp.socialapp.presentation.post.feed.PostEvent
+import com.example.gemipost.ui.post.feed.PostEvent
+import com.example.gemipost.utils.MimeType
 import com.gp.socialapp.util.LocalDateTimeUtil.getPostDate
 import com.gp.socialapp.util.ModerationSafety
 
