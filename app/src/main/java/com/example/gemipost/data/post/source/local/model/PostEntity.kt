@@ -3,7 +3,7 @@ package com.example.gemipost.data.post.source.local.model
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.PostAttachment.Companion.toPostFile
 import com.example.gemipost.data.post.source.remote.model.Tag.Companion.toTag
-import com.gp.socialapp.util.LocalDateTimeUtil.now
+import com.example.gemipost.utils.LocalDateTimeUtil.now
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant

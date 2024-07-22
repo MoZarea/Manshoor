@@ -1,6 +1,6 @@
 package com.example.gemipost.data.post.source.remote.model
 
-import com.gp.socialapp.util.LocalDateTimeUtil.now
+import com.example.gemipost.utils.LocalDateTimeUtil.now
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant

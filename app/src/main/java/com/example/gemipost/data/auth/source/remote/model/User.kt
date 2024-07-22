@@ -1,8 +1,5 @@
 package com.example.gemipost.data.auth.source.remote.model
 
-import com.gp.socialapp.util.LocalDateTimeUtil.now
-import com.gp.socialapp.util.LocalDateTimeUtil.toMillis
-import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 
 @Serializable

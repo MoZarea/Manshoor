@@ -1,6 +1,6 @@
 package com.example.gemipost.ui.auth.util
 
-import com.gp.socialapp.util.LocalDateTimeUtil.now
+import com.example.gemipost.utils.LocalDateTimeUtil.now
 import kotlinx.datetime.LocalDateTime
 
 object Validator {

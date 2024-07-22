@@ -2,7 +2,7 @@ package com.example.gemipost.ui.auth.userinfo
 
 import com.example.gemipost.data.auth.source.remote.model.User
 import com.example.gemipost.ui.auth.util.AuthError
-import com.gp.socialapp.util.LocalDateTimeUtil.now
+import com.example.gemipost.utils.LocalDateTimeUtil.now
 import com.gp.socialapp.util.Result
 import com.gp.socialapp.util.UserError
 import kotlinx.datetime.LocalDateTime

@@ -1,10 +1,6 @@
-package com.gp.socialapp.util
+package com.example.gemipost.utils
 
-import com.gp.socialapp.util.LocalDateTimeUtil.getDateHeader
-import korlibs.time.DateTime
 import korlibs.time.DateTimeTz
-import korlibs.time.Month
-import korlibs.time.TimezoneOffset
 import korlibs.time.YearMonth
 import korlibs.time.days
 import korlibs.time.minus
@@ -19,7 +15,6 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import java.time.format.TextStyle
-import kotlin.time.Duration
 
 object LocalDateTimeUtil {
     fun LocalDateTime.Companion.now() = Clock.System.now().toLocalDateTime(TimeZone.UTC)

@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.ui.post.feed.components.PostTopRow
-import com.gp.socialapp.util.LocalDateTimeUtil.getPostDate
+import com.example.gemipost.utils.LocalDateTimeUtil.getPostDate
 
 @Composable
 fun SearchResultItem(

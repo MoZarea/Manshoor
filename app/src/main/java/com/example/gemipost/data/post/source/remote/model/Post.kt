@@ -4,7 +4,7 @@ import com.example.gemipost.data.post.source.local.model.PostEntity
 import com.example.gemipost.data.post.source.remote.model.PostAttachment.Companion.toDbString
 import com.example.gemipost.data.post.source.remote.model.Tag.Companion.toDbString
 import com.example.gemipost.data.post.util.PostPopularityUtils
-import com.gp.socialapp.util.LocalDateTimeUtil.now
+import com.example.gemipost.utils.LocalDateTimeUtil.now
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant

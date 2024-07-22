@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gemipost.data.post.source.remote.model.NestedReply
-import com.gp.socialapp.util.LocalDateTimeUtil.getPostDate
+import com.example.gemipost.utils.LocalDateTimeUtil.getPostDate
 
 @Composable
  fun ReplyDate(nestedReply: NestedReply) {
