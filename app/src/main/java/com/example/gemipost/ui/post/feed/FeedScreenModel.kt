@@ -2,7 +2,7 @@ package com.gp.socialapp.presentation.post.feed
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import com.gp.socialapp.data.auth.repository.AuthenticationRepository
+import com.example.gemipost.data.auth.repository.AuthenticationRepository
 import com.gp.socialapp.data.community.repository.CommunityRepository
 import com.example.gemipost.data.post.repository.PostRepository
 import com.example.gemipost.data.post.source.remote.model.Post

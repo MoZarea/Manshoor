@@ -3,9 +3,9 @@ package com.example.gemipost.app.di
 import com.gp.socialapp.presentation.post.create.CreatePostScreenModel
 import com.gp.socialapp.presentation.post.edit.EditPostScreenModel
 import com.gp.socialapp.presentation.post.feed.FeedScreenModel
-import com.gp.socialapp.presentation.post.postDetails.PostDetailsScreenModel
-import com.gp.socialapp.presentation.post.search.SearchScreenModel
-import com.gp.socialapp.presentation.post.searchResult.SearchResultScreenModel
+import com.example.gemipost.ui.post.postDetails.PostDetailsViewModel
+import com.example.gemipost.ui.post.search.SearchViewModel
+import com.example.gemipost.ui.post.searchResult.SearchResultViewModel
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.instance
@@ -16,15 +16,15 @@ val screenModelModuleK = DI.Module("screenModelModule") {
     bind<CreatePostScreenModel>() with singleton { CreatePostScreenModel(instance(), instance()) }
     bind<FeedScreenModel>() with singleton { FeedScreenModel(instance(), instance(), instance()) }
     bind<EditPostScreenModel>() with singleton { EditPostScreenModel(instance()) }
-    bind<PostDetailsScreenModel>() with singleton {
-        PostDetailsScreenModel(
+    bind<PostDetailsViewModel>() with singleton {
+        PostDetailsViewModel(
             instance(),
             instance(),
             instance()
         )
     }
-    bind<SearchResultScreenModel>() with singleton { SearchResultScreenModel(instance()) }
-    bind<SearchScreenModel>() with singleton { SearchScreenModel(instance()) }
+    bind<SearchResultViewModel>() with singleton { SearchResultViewModel(instance()) }
+    bind<SearchViewModel>() with singleton { SearchViewModel(instance()) }
 
 }
 

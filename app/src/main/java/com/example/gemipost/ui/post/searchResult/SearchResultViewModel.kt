@@ -1,9 +1,10 @@
-package com.gp.socialapp.presentation.post.searchResult
+package com.example.gemipost.ui.post.searchResult
 
-import cafe.adriel.voyager.core.model.ScreenModel
-import cafe.adriel.voyager.core.model.screenModelScope
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.gemipost.data.post.repository.PostRepository
 import com.example.gemipost.data.post.source.remote.model.Tag
+import com.example.gemipost.ui.post.searchResult.SearchResultUiState
 import com.gp.socialapp.util.DispatcherIO
 import com.gp.socialapp.util.Result
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,13 +13,13 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class SearchResultScreenModel(
+class SearchResultViewModel(
     private val postRepo: PostRepository
-) : ScreenModel {
+) : ViewModel() {
     private val _uiState = MutableStateFlow(SearchResultUiState())
     val uiState = _uiState.asStateFlow()
-    fun initScreenModel(searchTerm: String, searchTag: Tag, isTag: Boolean) {
-        screenModelScope.launch(DispatcherIO) {
+    fun init(searchTerm: String, searchTag: Tag, isTag: Boolean) {
+        viewModelScope.launch(DispatcherIO) {
             if (isTag) {
                 postRepo.searchByTag(searchTag).collect {
                     when (it) {

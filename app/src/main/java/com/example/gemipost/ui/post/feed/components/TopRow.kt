@@ -8,7 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.gp.socialapp.presentation.chat.creategroup.components.CircularAvatar
+import com.example.gemipost.ui.post.postDetails.components.CircularAvatar
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.UserCircle

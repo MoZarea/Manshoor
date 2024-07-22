@@ -1,4 +1,4 @@
-package com.gp.socialapp.presentation.post.searchResult.components
+package com.example.gemipost.ui.post.searchResult.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth

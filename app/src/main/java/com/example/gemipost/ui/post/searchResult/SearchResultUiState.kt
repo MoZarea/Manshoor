@@ -1,4 +1,4 @@
-package com.gp.socialapp.presentation.post.searchResult
+package com.example.gemipost.ui.post.searchResult
 
 import com.example.gemipost.data.post.source.remote.model.Post
 
