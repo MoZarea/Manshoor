@@ -27,10 +27,10 @@ import com.example.gemipost.ui.post.searchResult.components.SearchResultList
 
 @Composable
     fun SearchResultScreen(
+    viewModel: SearchResultViewModel = viewModel(),
     searchTerm: String = "",
     searchTag: Tag = Tag(),
     isTag: Boolean = false,
-    viewModel: SearchResultViewModel = viewModel(),
     onPostClicked: (Post) -> Unit,
     onBackPressed: () -> Unit
     ) {
