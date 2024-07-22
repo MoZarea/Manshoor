@@ -6,10 +6,8 @@ import com.example.gemipost.data.post.source.remote.PostRemoteDataSource
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.PostRequest
 import com.example.gemipost.data.post.source.remote.model.Tag
-import com.gp.socialapp.util.Platform
 import com.gp.socialapp.util.PostError
 import com.gp.socialapp.util.Result
-import com.gp.socialapp.util.getPlatform
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -34,15 +32,9 @@ class PostRepositoryImpl(
 
     override fun searchByTitle(title: String): Flow<Result<List<Post>, PostError>> = flow {
         emit(Result.Loading)
-        val platform = getPlatform()
         try {
             if (title.isEmpty()) {
                 emit(Result.Success(emptyList()))
-                return@flow
-            } else if (platform == Platform.JS) {
-                postRemoteSource.searchByTitle(title).collect {
-                    emit(it)
-                }
                 return@flow
             } else {
                 postLocalSource.searchByTitle(title).collect {
@@ -60,13 +52,7 @@ class PostRepositoryImpl(
 
     override fun getPosts(): Flow<Result<List<Post>, PostError>> = flow {
         emit(Result.Loading)
-        val platform = getPlatform()
         try {
-            if (platform == Platform.JS) {
-                postRemoteSource.fetchAllPosts().collect {
-                    emit(it)
-                }
-            } else {
 
                 getRemotePosts().collect {
                     println(it)
@@ -75,7 +61,7 @@ class PostRepositoryImpl(
                     emit(Result.Success(it))
                 }
 
-            }
+
         } catch (e: Exception) {
             e.printStackTrace()
             emit(Result.Error(PostError.SERVER_ERROR))
@@ -150,17 +136,11 @@ class PostRepositoryImpl(
 
     override fun searchByTag(tag: Tag): Flow<Result<List<Post>, PostError>> = flow {
         emit(Result.Loading)
-        val platform = getPlatform()
         try {
             if (tag.label.isEmpty()) {
                 emit(Result.Success(emptyList()))
                 return@flow
-            } else if (platform == Platform.JS) {
-                postRemoteSource.searchByTag(tag.label).collect {
-                    emit(it)
-                }
-                return@flow
-            } else {
+            }  else {
                 postLocalSource.searchByTag(tag.label).collect {
                     emit(Result.Success(it))
                 }

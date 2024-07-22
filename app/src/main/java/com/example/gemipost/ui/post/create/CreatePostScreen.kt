@@ -35,6 +35,7 @@ import com.example.gemipost.ui.post.create.component.MyTextFieldBody
 import com.example.gemipost.ui.post.create.component.MyTextFieldTitle
 import com.example.gemipost.ui.post.create.component.NewTagAlertDialog
 import com.example.gemipost.ui.post.create.component.TagsRow
+import com.example.gemipost.ui.theme.GemiPostTheme
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -154,16 +155,18 @@ import com.example.gemipost.ui.post.create.component.TagsRow
 @Composable
 @Preview
 fun CreatePostContentPreview() {
-    CreatePostContent(
-        state = CreatePostUIState(),
-        channelTags = emptyList(),
-        onBackClick = {},
-        onPostClick = { _, _, _ -> },
-        onAddTag = {},
-        confirmNewTags = {},
-        onAddFile = {},
-        onRemoveFile = {}
-    )
+    GemiPostTheme {
+        CreatePostContent(
+            state = CreatePostUIState(),
+            channelTags = emptyList(),
+            onBackClick = {},
+            onPostClick = { _, _, _ -> },
+            onAddTag = {},
+            confirmNewTags = {},
+            onAddFile = {},
+            onRemoveFile = {}
+        )
+    }
 }
 
 
