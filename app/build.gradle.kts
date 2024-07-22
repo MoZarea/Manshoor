@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
 }
-
 android {
     namespace = "com.example.gemipost"
     compileSdk = 34
@@ -82,7 +81,11 @@ dependencies {
     implementation(libs.landscapist.glide)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
-    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.firebase.auth)
+    implementation(libs.play.services.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
 
 
 }

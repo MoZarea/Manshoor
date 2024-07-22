@@ -20,6 +20,8 @@ korgeFoundation = "5.4.0"
 kottie = "1.8.6"
 material3WindowSizeClassMultiplatform = "0.5.0"
 materialIconsExtended = "1.7.0-beta05"
+navigationCompose = "2.7.7"
+playServicesAuth = "21.2.0"
 supabase-client = "2.4.0"
 kodeinDiFrameworkCompose = "7.20.1"
 compose = "1.6.10"
@@ -52,11 +54,15 @@ constraintlayout = "2.1.4"
 
 
 [libraries]
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
+firebase-storage = { module = "com.google.firebase:firebase-storage" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -85,6 +91,7 @@ composeIcons-fontAwesome = { module = "br.com.devsrsouza.compose.icons:font-awes
 #Supabase
 kottie = { module = "io.github.ismai117:kottie", version.ref = "kottie" }
 landscapist-glide = { module = "com.github.skydoves:landscapist-glide", version.ref = "landscapistGlide" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 window-size-multiplatform = { module = "dev.chrisbanes.material3:material3-window-size-class-multiplatform", version.ref = "material3WindowSizeClassMultiplatform" }
 supabase-auth = { module = "io.github.jan-tennert.supabase:gotrue-kt", version.ref = "supabase-client" }
 supabase-storage = { module = "io.github.jan-tennert.supabase:storage-kt", version.ref = "supabase-client" }

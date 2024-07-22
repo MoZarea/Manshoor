@@ -12,7 +12,20 @@
           "package_name": "com.example.gemipost"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "165867862423-672g6qt6sjaequfg3m955q4du4tdc5jt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.gemipost",
+            "certificate_hash": "ac45d32bfdf3418e4f9b8be7230712c77e8f2bd9"
+          }
+        },
+        {
+          "client_id": "165867862423-0mvn6mvnk3499m9t097db8mhmk5c9ca4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDK3HDVux9X-eEyRG1ipm8A3U0ogyMpK2I"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "165867862423-0mvn6mvnk3499m9t097db8mhmk5c9ca4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
