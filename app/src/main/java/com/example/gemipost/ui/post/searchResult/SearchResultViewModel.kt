@@ -5,8 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.gemipost.data.post.repository.PostRepository
 import com.example.gemipost.data.post.source.remote.model.Tag
 import com.example.gemipost.ui.post.searchResult.SearchResultUiState
-import com.gp.socialapp.util.DispatcherIO
+
 import com.gp.socialapp.util.Result
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -19,7 +20,7 @@ class SearchResultViewModel(
     private val _uiState = MutableStateFlow(SearchResultUiState())
     val uiState = _uiState.asStateFlow()
     fun init(searchTerm: String, searchTag: Tag, isTag: Boolean) {
-        viewModelScope.launch(DispatcherIO) {
+        viewModelScope.launch(Dispatchers.IO) {
             if (isTag) {
                 postRepo.searchByTag(searchTag).collect {
                     when (it) {

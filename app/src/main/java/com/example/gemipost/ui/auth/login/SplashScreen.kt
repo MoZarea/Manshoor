@@ -14,12 +14,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import org.jetbrains.compose.resources.painterResource
-import socialmultiplatform.composeapp.generated.resources.Res
-import socialmultiplatform.composeapp.generated.resources.logo
-import socialmultiplatform.composeapp.generated.resources.logoDark
 
 @Composable
 fun SplashScreen() {
@@ -31,10 +28,10 @@ fun SplashScreen() {
     ) {
     val systemIsDark = isSystemInDarkTheme()
     val isDarkState by remember { mutableStateOf(systemIsDark) }
-        Image(
-            painter = painterResource(resource = if(isDarkState) Res.drawable.logoDark else Res.drawable.logo),
-            contentDescription = "Logo",
-        )
+//        Image(
+//            painter = painterResource(resource = if(isDarkState) R.drawable.logoDark else R.drawable.logo),
+//            contentDescription = "Logo",
+//        )
 
     }
 }}

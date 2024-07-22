@@ -1,6 +1,6 @@
 package com.example.gemipost.ui.auth.login
 
-import androidx.compose.foundation.isSystemInDarkTheme
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -29,7 +29,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +36,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -45,114 +45,21 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cafe.adriel.voyager.core.lifecycle.LifecycleEffect
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.kodein.rememberNavigatorScreenModel
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
+import com.example.gemipost.R
 import com.example.gemipost.ui.auth.login.components.MyOAuthProvider
 import com.example.gemipost.ui.auth.login.components.OAuthProviderItem
-import com.example.gemipost.ui.auth.login.components.imagevectors.OAuthProviderIcons
-import com.example.gemipost.ui.auth.login.components.imagevectors.oauthprovidericons.Discord
-import com.example.gemipost.ui.auth.login.components.imagevectors.oauthprovidericons.Github
-import com.example.gemipost.ui.auth.login.components.imagevectors.oauthprovidericons.Google
-import com.example.gemipost.ui.auth.login.components.imagevectors.oauthprovidericons.Microsoft
-import com.example.gemipost.ui.auth.login.components.imagevectors.oauthprovidericons.Slack
-import com.gp.socialapp.presentation.auth.passwordreset.PasswordResetScreen
-import com.example.gemipost.ui.auth.signup.SignUpScreen
 import com.example.gemipost.ui.auth.util.AuthError.EmailError
 import com.example.gemipost.ui.auth.util.AuthError.PasswordError
 import com.example.gemipost.ui.auth.util.AuthError.ServerError
-import com.gp.socialapp.presentation.home.container.HomeContainer
-import com.gp.socialapp.presentation.settings.components.AppThemeOptions
-import com.gp.socialapp.theme.LocalThemeIsDark
 import com.gp.socialapp.util.getPlatform
-import io.github.jan.supabase.gotrue.providers.Azure
-import io.github.jan.supabase.gotrue.providers.Discord
-import io.github.jan.supabase.gotrue.providers.Github
-import io.github.jan.supabase.gotrue.providers.Google
-import io.github.jan.supabase.gotrue.providers.OAuthProvider
-import io.github.jan.supabase.gotrue.providers.Slack
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.stringResource
-import socialmultiplatform.composeapp.generated.resources.Res
-import socialmultiplatform.composeapp.generated.resources.dont_have_an_account
-import socialmultiplatform.composeapp.generated.resources.email
-import socialmultiplatform.composeapp.generated.resources.forgot_password
-import socialmultiplatform.composeapp.generated.resources.hide_password
-import socialmultiplatform.composeapp.generated.resources.login_str
-import socialmultiplatform.composeapp.generated.resources.or_login_with
-import socialmultiplatform.composeapp.generated.resources.password
-import socialmultiplatform.composeapp.generated.resources.show_password
-import socialmultiplatform.composeapp.generated.resources.sign_up
-
-object LoginScreen : Screen {
-    @Composable
-    override fun Content() {
-        val navigator = LocalNavigator.currentOrThrow
-        val screenModel = navigator.rememberNavigatorScreenModel<LoginScreenModel>()
-        val state by screenModel.uiState.collectAsState()
-        var isDark by LocalThemeIsDark.current
-        val isSystemInDarkTheme = isSystemInDarkTheme()
-        var statesplashShowed by remember { mutableStateOf(false) }
-        val scope = rememberCoroutineScope()
-
-        LifecycleEffect(
-            onStarted = { screenModel.init() },
-            onDisposed = { screenModel.dispose() },
-        )
-        isDark = when (state.theme) {
-            AppThemeOptions.LIGHT.value -> {
-                false
-            }
-
-            AppThemeOptions.DARK.value -> {
-                true
-            }
-
-            else -> {
-                !isSystemInDarkTheme
-            }
-        }
-        if(!statesplashShowed){
-            SplashScreen()
-            scope.launch {
-                delay(3000)
-                statesplashShowed = true
-            }
-        }else {
-            if (state.signedInUser != null) {
-                navigator.replaceAll(HomeContainer())
-            } else {
-                val providers = listOf(
-                    MyOAuthProvider("Google", OAuthProviderIcons.Google, Google),
-                    MyOAuthProvider("Microsoft", OAuthProviderIcons.Microsoft, Azure),
-                    MyOAuthProvider("GitHub", OAuthProviderIcons.Github, Github),
-                    MyOAuthProvider("Discord", OAuthProviderIcons.Discord, Discord),
-                    MyOAuthProvider("Slack", OAuthProviderIcons.Slack, Slack),
-                )
-                LoginContent(
-                    oAuthProviders = providers,
-                    onSignInWithOAuth = { provider -> screenModel.signInWithOAuth(provider) },
-                    state = state,
-                    navigateToSignUp = { navigator.push(SignUpScreen) },
-                    navigateToForgotPassword = { navigator.push(PasswordResetScreen) },
-                    onEmailChange = { screenModel.updateEmail(it) },
-                    onPasswordChange = { screenModel.updatePassword(it) },
-                    onSignIn = { screenModel.onSignIn() },
-                )
-            }
-        }
-    }
 
 
-
+@SuppressLint("CoroutineCreationDuringComposition")
     @OptIn(ExperimentalLayoutApi::class)
     @Composable
     private fun LoginContent(
         oAuthProviders: List<MyOAuthProvider>,
-        onSignInWithOAuth: (OAuthProvider) -> Unit,
         onSignIn: () -> Unit,
         state: LoginUiState,
         navigateToSignUp: () -> Unit,
@@ -188,7 +95,7 @@ object LoginScreen : Screen {
                     modifier = Modifier.fillMaxWidth()
                         .wrapContentWidth(Alignment.CenterHorizontally),
                     fontSize = 42.sp,
-                    text = stringResource(resource = Res.string.login_str),
+                    text = stringResource(id = R.string.login_str),
                 )
                 OutlinedTextField(value = email,
                     onValueChange = {
@@ -196,7 +103,7 @@ object LoginScreen : Screen {
                         onEmailChange(it)
                     },
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                    label = { Text(text = stringResource(Res.string.email)) },
+                    label = { Text(text = stringResource(R.string.email)) },
                     leadingIcon = { Icon(Icons.Filled.Email, contentDescription = null) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     isError = state.error is EmailError,
@@ -216,7 +123,7 @@ object LoginScreen : Screen {
                         onPasswordChange(it)
                     },
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
-                    label = { Text(text = stringResource(Res.string.password)) },
+                    label = { Text(text = stringResource(R.string.password)) },
                     leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = null) },
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -224,7 +131,7 @@ object LoginScreen : Screen {
                         val image = if (passwordVisible) Icons.Filled.Visibility
                         else Icons.Filled.VisibilityOff
                         val description =
-                            stringResource(if (passwordVisible) Res.string.hide_password else Res.string.show_password)
+                            stringResource(if (passwordVisible) R.string.hide_password else R.string.show_password)
                         IconButton(onClick = { passwordVisible = !passwordVisible }) {
                             Icon(imageVector = image, description)
                         }
@@ -246,7 +153,7 @@ object LoginScreen : Screen {
                     modifier = Modifier.padding(start = 16.dp),
                 ) {
                     Text(
-                        text = stringResource(resource = Res.string.forgot_password),
+                        text = stringResource(id = R.string.forgot_password),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         style = TextStyle(textDecoration = TextDecoration.Underline),
@@ -259,13 +166,13 @@ object LoginScreen : Screen {
                     shape = RoundedCornerShape(8.dp),
                 ) {
                     Text(
-                        text = stringResource(resource = Res.string.login_str),
+                        text = stringResource(id = R.string.login_str),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                     )
                 }
                 Text(
-                    text = stringResource(Res.string.or_login_with),
+                    text = stringResource(R.string.or_login_with),
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp)
                         .wrapContentWidth(Alignment.CenterHorizontally),
                     fontSize = 16.sp,
@@ -279,7 +186,6 @@ object LoginScreen : Screen {
                         OAuthProviderItem(
                             modifier = Modifier.padding(4.dp),
                             provider = provider,
-                            onClick = onSignInWithOAuth,
                             isEnabled = true,
                         )
                     }
@@ -290,12 +196,12 @@ object LoginScreen : Screen {
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = stringResource(resource = Res.string.dont_have_an_account),
+                        text = stringResource(R.string.dont_have_an_account),
                         fontSize = 16.sp
                     )
                     TextButton(onClick = navigateToSignUp) {
                         Text(
-                            text = stringResource(resource = Res.string.sign_up),
+                            text = stringResource(R.string.sign_up),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             style = TextStyle(textDecoration = TextDecoration.Underline),
@@ -307,4 +213,4 @@ object LoginScreen : Screen {
         }
     }
 
-}
+

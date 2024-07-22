@@ -1,6 +1,6 @@
 package com.example.gemipost.ui.auth.userinfo
 
-import androidx.compose.foundation.Image
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -37,7 +37,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,89 +46,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cafe.adriel.voyager.core.lifecycle.LifecycleEffect
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.kodein.rememberNavigatorScreenModel
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
-import com.example.gemipost.data.auth.source.remote.model.User
+import com.example.gemipost.R
 import com.example.gemipost.ui.auth.util.AuthError
-import com.gp.socialapp.presentation.home.container.HomeContainer
-import com.gp.socialapp.util.LocalDateTimeUtil.now
-import com.gp.socialapp.util.LocalDateTimeUtil.toLocalDateTime
-import com.gp.socialapp.util.LocalDateTimeUtil.toMillis
-import com.gp.socialapp.util.LocalDateTimeUtil.toYYYYMMDD
-import com.gp.socialapp.util.Result
-import com.mohamedrejeb.calf.core.LocalPlatformContext
-import com.mohamedrejeb.calf.io.readByteArray
-import com.mohamedrejeb.calf.picker.FilePickerFileType
-import com.mohamedrejeb.calf.picker.FilePickerSelectionMode
-import com.mohamedrejeb.calf.picker.rememberFilePickerLauncher
-import com.mohamedrejeb.calf.picker.toImageBitmap
+import com.example.gemipost.utils.LocalDateTimeUtil.now
+import com.example.gemipost.utils.LocalDateTimeUtil.toLocalDateTime
+import com.example.gemipost.utils.LocalDateTimeUtil.toMillis
+import com.example.gemipost.utils.LocalDateTimeUtil.toYYYYMMDD
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
-import org.jetbrains.compose.resources.stringResource
-import socialmultiplatform.composeapp.generated.resources.Res
-import socialmultiplatform.composeapp.generated.resources.about
-import socialmultiplatform.composeapp.generated.resources.cancel
-import socialmultiplatform.composeapp.generated.resources.complete_profile
-import socialmultiplatform.composeapp.generated.resources.complete_your_profile
-import socialmultiplatform.composeapp.generated.resources.date_of_birth
-import socialmultiplatform.composeapp.generated.resources.name
-import socialmultiplatform.composeapp.generated.resources.phone_number
-import socialmultiplatform.composeapp.generated.resources.select
 
-data class UserInformationScreen(
-    val signedInUser: User,
-) : Screen {
-    @Composable
-    override fun Content() {
-        val navigator = LocalNavigator.currentOrThrow
-        val screenModel = navigator.rememberNavigatorScreenModel<UserInformationScreenModel>()
-        val state by screenModel.uiState.collectAsState()
-        LifecycleEffect(
-            onStarted = {
-                println("UserInformationScreen started")
-                screenModel.onScreenStart(signedInUser)
-            },
-            onDisposed = {
-                screenModel.onDispose()
-            }
-        )
-        val scope = rememberCoroutineScope()
-        val context = LocalPlatformContext.current
-        val pickerLauncher = rememberFilePickerLauncher(
-            type = FilePickerFileType.Image,
-            selectionMode = FilePickerSelectionMode.Single,
-            onResult = { files ->
-                scope.launch {
-                    files.firstOrNull()?.let { file ->
-                        val image = file.readByteArray(context)
-                        screenModel.onImageChange(image)
-                    }
-                }
-            }
-        )
-        if (state.createdState is Result.Success) {
-            navigator.replaceAll(HomeContainer())
-        }
-        Scaffold { paddingValues ->
-            UserInformationContent(
-                paddingValues = paddingValues,
-                state = state,
-                onNameChange = { screenModel.onNameChange(it) },
-                onProfileImageClicked = { pickerLauncher.launch() },
-                onPhoneNumberChange = { screenModel.onPhoneNumberChange(it) },
-                onBioChange = { screenModel.onBioChange(it) },
-                onDateOfBirthChange = { screenModel.onBirthDateChange(it) },
-                onContinueClicked = { screenModel.onCompleteAccount() }
-            )
-        }
-    }
-
+@SuppressLint("CoroutineCreationDuringComposition")
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun UserInformationContent(
@@ -164,13 +93,13 @@ data class UserInformationScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
+                    .padding(it)
                     .widthIn(max = 600.dp)
                     .padding(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = stringResource(Res.string.complete_your_profile),
+                    text = stringResource(R.string.complete_your_profile),
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentWidth(align = Alignment.CenterHorizontally),
@@ -193,13 +122,13 @@ data class UserInformationScreen(
                             tint = MaterialTheme.colorScheme.outline
                         )
                     } else {
-                        val bitmap = state.pfpImageByteArray.toImageBitmap()
-                        Image(
-                            bitmap = bitmap,
-                            contentDescription = null,
-                            modifier = imageModifier,
-                            contentScale = ContentScale.Crop
-                        )
+//                        val bitmap = state.pfpImageByteArray.toImageBitmap()
+//                        Image(
+//                            bitmap = bitmap,
+//                            contentDescription = null,
+//                            modifier = imageModifier,
+//                            contentScale = ContentScale.Crop
+//                        )
                     }
                     IconButton(
                         onClick = { onProfileImageClicked() },
@@ -217,7 +146,7 @@ data class UserInformationScreen(
                 OutlinedTextField(
                     value = state.name,
                     onValueChange = onNameChange,
-                    label = { Text(text = stringResource(Res.string.name)) },
+                    label = { Text(text = stringResource(R.string.name)) },
                     isError = state.error is AuthError.FirstNameError,
                     supportingText = {
                         if (state.error is AuthError.FirstNameError) {
@@ -236,7 +165,7 @@ data class UserInformationScreen(
                 OutlinedTextField(
                     value = state.phoneNumber,
                     onValueChange = onPhoneNumberChange,
-                    label = { Text(text = stringResource(Res.string.phone_number)) },
+                    label = { Text(text = stringResource(R.string.phone_number)) },
                     isError = state.error is AuthError.PhoneNumberError,
                     supportingText = {
                         if (state.error is AuthError.PhoneNumberError) {
@@ -261,7 +190,7 @@ data class UserInformationScreen(
                     OutlinedTextField(
                         value = formattedDate,
                         onValueChange = {},
-                        label = { Text(text = stringResource(Res.string.date_of_birth)) },
+                        label = { Text(text = stringResource(R.string.date_of_birth)) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 4.dp)
@@ -293,7 +222,7 @@ data class UserInformationScreen(
                 OutlinedTextField(
                     value = state.bio,
                     onValueChange = onBioChange,
-                    label = { Text(text = stringResource(Res.string.about)) },
+                    label = { Text(text = stringResource(R.string.about)) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 4.dp),
@@ -314,7 +243,7 @@ data class UserInformationScreen(
                         .height(52.dp)
                 ) {
                     Text(
-                        text = stringResource(Res.string.complete_profile),
+                        text = stringResource(R.string.complete_profile),
                         fontSize = 18.sp,
                     )
                 }
@@ -340,7 +269,7 @@ data class UserInformationScreen(
                                 },
                                 enabled = confirmEnabled.value
                             ) {
-                                Text(stringResource(Res.string.select))
+                                Text(stringResource(R.string.select))
                             }
                         },
                         dismissButton = {
@@ -349,7 +278,7 @@ data class UserInformationScreen(
                                     isDateDialogOpen = false
                                 }
                             ) {
-                                Text(stringResource(Res.string.cancel))
+                                Text(stringResource(R.string.cancel))
                             }
                         }
                     ) {
@@ -359,4 +288,4 @@ data class UserInformationScreen(
             }
         }
     }
-}
+

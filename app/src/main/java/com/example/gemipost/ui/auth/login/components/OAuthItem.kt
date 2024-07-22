@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 fun OAuthProviderItem(
     modifier: Modifier = Modifier,
     provider: MyOAuthProvider,
-    onClick: () -> Unit,
+    onClick: () -> Unit={},
     isEnabled: Boolean,
 ) {
     IconButton(
