@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "165867862423",
+    "project_id": "gemipost",
+    "storage_bucket": "gemipost.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:165867862423:android:e518df0ef493b723566cd2",
+        "android_client_info": {
+          "package_name": "com.example.gemipost"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDK3HDVux9X-eEyRG1ipm8A3U0ogyMpK2I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
