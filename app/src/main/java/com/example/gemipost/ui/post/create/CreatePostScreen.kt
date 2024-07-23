@@ -40,7 +40,7 @@ import com.example.gemipost.ui.theme.GemiPostTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun CreatePostContent(
+     fun CreatePostContent(
     state: CreatePostUIState,
     channelTags: List<Tag>,
     onBackClick: () -> Unit,

@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.gemipost" />
+                  <option name="mobileSdkAppId" value="1:165867862423:android:e518df0ef493b723566cd2" />
+                  <option name="projectId" value="gemipost" />
+                  <option name="projectNumber" value="165867862423" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

@@ -144,7 +144,7 @@ fun PostDetailsScreen(
         onResetActionResult = viewModel::resetActionResult,
         onBackPressed = { onBackPressed() },
         isEditingReply = isEditingReply,
-        post = post
+        post = state.post
     )
 }
 
