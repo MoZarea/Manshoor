@@ -10,10 +10,10 @@ import kotlinx.datetime.LocalDateTime
 data class UserInformationUiState(
     val signedInUser: User? = null,
     var name: String = "",
+    var pfpImageByteArray: ByteArray = byteArrayOf(),
     var phoneNumber: String = "",
     var birthDate: LocalDateTime = LocalDateTime.now(),
     var bio: String = "",
-    var pfpImageByteArray: ByteArray = byteArrayOf(),
     var error: AuthError = AuthError.NoError,
     val createdState: Result<Unit,UserError> = Result.idle()
 )

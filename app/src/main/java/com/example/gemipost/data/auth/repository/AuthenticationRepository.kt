@@ -10,7 +10,7 @@ interface AuthenticationRepository {
     fun clearStorage()
 //    fun signInWithOAuth(provider: OAuthProvider): Flow<Result<User,AuthError>>
     fun signInWithEmail(email: String, password: String): Flow<Result<User,AuthError>>
-    fun signUpWithEmail(email: String, password: String): Flow<Result<User,AuthError>>
+    fun signUpWithEmail(name: String, avatarByteArray: ByteArray, email: String, password: String): Flow<Result<User,AuthError>>
     suspend fun getSignedInUser(): Result<User,AuthError>
     suspend fun logout(): Result<Unit, AuthError>
     suspend fun deleteAccount(userId: String): Result<Unit, AuthError>
