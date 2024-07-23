@@ -25,6 +25,7 @@ import com.example.gemipost.navigation.PostDetails
 import com.example.gemipost.navigation.Search
 import com.example.gemipost.navigation.SearchResult
 import com.example.gemipost.navigation.SignUp
+import com.example.gemipost.ui.auth.forgotpassword.ForgotPasswordScreen
 import com.example.gemipost.ui.auth.login.LoginScreen
 import com.example.gemipost.ui.auth.signup.SignUpScreen
 import com.example.gemipost.ui.post.postDetails.PostDetailsScreen
@@ -73,7 +74,14 @@ fun MyApp() {
             )
         }
         composable<ForgotPassword> {
-            //TODO
+            ForgotPasswordScreen(
+                onNavigateToLogin = {
+                    navController.navigate(Login)
+                },
+                onBackPressed = {
+                    navController.popBackStack()
+                }
+            )
         }
         composable<Feed> {
             //TODO

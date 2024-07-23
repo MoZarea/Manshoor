@@ -1,4 +1,4 @@
-package com.gp.socialapp.presentation.auth.passwordreset
+package com.example.gemipost.ui.auth.forgotpassword
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,13 +14,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,82 +35,105 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gemipost.R
-import com.example.gemipost.ui.auth.forgotpassword.ForgotPasswordUiState
-import com.example.gemipost.ui.auth.forgotpassword.ForgotPasswordViewModel
+import com.gp.socialapp.util.Result
 
 @Composable
 fun ForgotPasswordScreen(
-    viewModel: ForgotPasswordViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: ForgotPasswordViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    onNavigateToLogin: () -> Unit,
+    onBackPressed: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
-    Scaffold { paddingValues ->
+    if(state.sentState is Result.Success){
+        onNavigateToLogin()
+    }
         ForgetPasswordContent(
-            modifier = Modifier.padding(paddingValues),
             state = state,
             onEmailChange = { viewModel.onEmailChange(it) },
-            onSendResetEmail = { /*todo*/ }
+            onSendResetEmail = { viewModel.onSendResetEmail() },
+            onBackPressed = onBackPressed
         )
-    }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ForgetPasswordContent(
     modifier: Modifier = Modifier,
     state: ForgotPasswordUiState = ForgotPasswordUiState(),
     onEmailChange: (String) -> Unit = {},
-    onSendResetEmail: () -> Unit = {}
+    onSendResetEmail: () -> Unit = {},
+    onBackPressed: () -> Unit
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .widthIn(max = 600.dp)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(
-            text = stringResource(R.string.reset_your_password),
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentWidth(
-                    Alignment.CenterHorizontally
-                ),
-            style = MaterialTheme.typography.headlineMedium,
-            maxLines = 1,
-        )
-        OutlinedTextField(
-            value = state.email,
-            onValueChange = { onEmailChange(it) },
-            label = {
-                Text(
-                    text = stringResource(R.string.email),
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            singleLine = true,
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Filled.Email,
-                    contentDescription = null,
-                )
-            },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-        )
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 32.dp)
-                .height(50.dp),
-            shape = RoundedCornerShape(5.dp),
-            onClick = onSendResetEmail,
-        ) {
-            Icon(imageVector = Icons.AutoMirrored.Filled.Send, contentDescription = null)
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = stringResource(R.string.send_reset_email),
-                fontSize = 16.sp
+    Scaffold (
+        topBar = {
+            TopAppBar(
+                title = {},
+                navigationIcon = {
+                    IconButton(onClick = { onBackPressed() }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBackIosNew,
+                            contentDescription = "back button"
+                        )
+                    }
+                }
             )
+        },
+        modifier = modifier
+    ){ paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .widthIn(max = 600.dp)
+                .padding(paddingValues)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                text = stringResource(R.string.reset_your_password),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentWidth(
+                        Alignment.CenterHorizontally
+                    ),
+                style = MaterialTheme.typography.headlineMedium,
+                maxLines = 1,
+            )
+            OutlinedTextField(
+                value = state.email,
+                onValueChange = { onEmailChange(it) },
+                label = {
+                    Text(
+                        text = stringResource(R.string.email),
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                singleLine = true,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.Email,
+                        contentDescription = null,
+                    )
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            )
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 32.dp)
+                    .height(50.dp),
+                shape = RoundedCornerShape(5.dp),
+                onClick = onSendResetEmail,
+            ) {
+                Icon(imageVector = Icons.AutoMirrored.Filled.Send, contentDescription = null)
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(
+                    text = stringResource(R.string.send_reset_email),
+                    fontSize = 16.sp
+                )
+            }
         }
     }
+
 }
