@@ -12,7 +12,7 @@ import com.example.gemipost.ui.post.feed.PostEvent
 fun PostContent(
     title: String,
     body: String,
-    attachments: List<PostAttachment>,
+    attachments: List<String>,
     onPostEvent: (PostEvent) -> Unit
 ) {
     BoxWithConstraints {

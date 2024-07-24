@@ -1,6 +1,6 @@
 package com.example.gemipost.data.post.util
 
-import com.gp.socialapp.util.AppConstants
+import com.example.gemipost.utils.AppConstants
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.http.ContentType
 import io.ktor.http.contentType

@@ -35,9 +35,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(R.color.transparent))
         super.onCreate(savedInstanceState)
         setContent {
-            GemiPostTheme {
-                MyApp()
-            }
+                GemiPostTheme {
+                    MyApp()
+                }
         }
     }
 }
@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp() {
     val navController = rememberNavController()
-    NavHost(navController, startDestination = SearchResult("Term", false)) {
+    NavHost(navController, startDestination = CreatePost) {
         composable<Login> {
             LoginScreen(onNavigateToFeed = {
                 navController.navigate(Feed)
@@ -71,23 +71,25 @@ fun MyApp() {
                 }
             )
         }
-        composable<EditPost> {
-            //TODO
-        }
-        composable<PostDetails> { backStackEntry ->
-            val postId: String = backStackEntry.toRoute<PostDetails>().postId
-            PostDetailsScreen(postId = postId, onBackPressed = {
-                navController.popBackStack()
-            }, onTagClicked = {
-                navController.navigate(
-                    SearchResult(
-                        label = "",
-                        isTag = true,
-                        tagIntColor = it.intColor
-                    )
-                )
-            })
-        }
+//        composable<EditPost> {
+//            //TODO
+//        }
+//        composable<PostDetails>(
+//            typeMap = mapOf(typeOf<Post>() to parcelableType<Post>())
+//        ) { backStackEntry ->
+//            val post: Post = backStackEntry.toRoute<PostDetails>().post
+//            PostDetailsScreen(post = post, onBackPressed = {
+//                navController.popBackStack()
+//            }, onTagClicked = {
+//                navController.navigate(
+//                    SearchResult(
+//                        label = "",
+//                        isTag = true,
+//                        tagIntColor = it.intColor
+//                    )
+//                )
+//            })
+//        }
         composable<Search> {
             SearchScreen(onNavigateToSearchResult = {
                 navController.navigate(SearchResult(label = it, isTag = false))

@@ -17,7 +17,7 @@ sealed class PostEvent {
     object OnAddPost : PostEvent()
     data class OnTagClicked(val tag: Tag) : PostEvent()
     data class OnAttachmentClicked(val attachment: PostAttachment) : PostEvent()
-    data class OnImageClicked(val image: PostAttachment) : PostEvent()
+    data class OnImageClicked(val image: String) : PostEvent()
     data class OnCommentClicked(val post: Post) : PostEvent()
     data class OnCommentAdded(
         val text: String,
@@ -25,7 +25,7 @@ sealed class PostEvent {
     ) : PostEvent()
 
     object Initial : PostEvent()
-    data class OnViewFilesAttachmentClicked(val files: List<PostAttachment>) : PostEvent()
+    data class OnViewFilesAttachmentClicked(val files: List<String>) : PostEvent()
 
 }
 

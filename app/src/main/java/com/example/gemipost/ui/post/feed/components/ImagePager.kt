@@ -31,15 +31,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.gemipost.data.post.source.remote.model.PostAttachment
-import com.gp.socialapp.util.AppConstants.BASE_URL
+import com.example.gemipost.utils.AppConstants.BASE_URL
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ImagePager(
     pageCount: Int,
-    images: List<PostAttachment> = emptyList(),
+    images: List<String> = emptyList(),
     width: Dp,
-    onImageClicked: (PostAttachment) -> Unit
+    onImageClicked: (String) -> Unit
 ) {
     Box(
         modifier = Modifier.size(height = 300.dp, width = width).clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
@@ -76,7 +76,7 @@ fun ImagePager(
                     .background(Color.Transparent),
                 contentAlignment = Alignment.Center
             ) {
-                val imageURL = BASE_URL + images[pagerState.currentPage].url
+                val imageURL = BASE_URL + images[pagerState.currentPage]
             }
         }
         if(images.size > 1){

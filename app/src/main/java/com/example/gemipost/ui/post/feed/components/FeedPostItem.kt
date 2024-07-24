@@ -68,7 +68,7 @@ fun FeedPostItem(
                         onCommentClicked = {
                             onPostEvent(PostEvent.OnCommentClicked(post))
                         },
-                        filesCount = (post.attachments.filter { MimeType.getMimeTypeFromFileName(it.name) !is MimeType.Image }).size,
+                        filesCount = post.attachments.size,
                         currentUserID = currentUserID,
                         onShowFilesClicked = {
                             onPostEvent(

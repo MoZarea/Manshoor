@@ -1,11 +1,19 @@
 package com.example.gemipost.ui.post.create
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.gemipost.data.auth.repository.AuthenticationRepository
 import com.example.gemipost.data.post.repository.PostRepository
+import com.example.gemipost.data.post.source.remote.model.Post
+import com.example.gemipost.utils.LocalDateTimeUtil.now
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 
 class CreatePostViewModel(
     private val postRepository: PostRepository,
@@ -14,34 +22,61 @@ class CreatePostViewModel(
     private val _uiState = MutableStateFlow(CreatePostUIState())
     val uiState = _uiState.asStateFlow()
 
-    fun handleEvent(createPostEvents: CreatePostEvents) {
+    fun handleEvent(createPostEvents: CreatePostEvents) =
         when (createPostEvents) {
             is CreatePostEvents.OnBodyChanged -> {
                 _uiState.update { it.copy(body = createPostEvents.newBody) }
-                println("CreatePostEvents.OnBodyChanged")
             }
 
             is CreatePostEvents.OnTitleChanged -> {
                 _uiState.update { it.copy(title = createPostEvents.newTitle) }
-                println("CreatePostEvents.OnTitleChanged")
             }
+
             is CreatePostEvents.OnAddFile -> {
-                println("CreatePostEvents.OnAddFile")
+                _uiState.update { it.copy(files = it.files + createPostEvents.uri) }
             }
+
             is CreatePostEvents.OnAddTag -> {
-                println("CreatePostEvents.OnAddTag")
+                _uiState.update { it.copy(tags = it.tags + createPostEvents.tag) }
             }
+
             CreatePostEvents.OnCreatePostClicked -> {
-                println("CreatePostEvents.OnCreatePostClicked")
+                createPost()
             }
+
             is CreatePostEvents.OnRemoveFile -> {
-                println("CreatePostEvents.OnRemoveFile")
+                _uiState.update { it.copy(files = it.files - createPostEvents.uri) }
             }
+
             is CreatePostEvents.OnRemoveTag -> {
-                println("CreatePostEvents.OnRemoveTag")
+                _uiState.update {
+                    it.copy(tags = it.tags - createPostEvents.tag)
+                }
+            }
+        }
+
+    private fun createPost() {
+        with(uiState.value) {
+            viewModelScope.launch(Dispatchers.IO) {
+                postRepository.createPost(
+                    Post(
+                        title = title,
+                        body = body,
+                        tags = tags.toList(),
+                        attachments = files.map { it.toString() },
+                        createdAt = LocalDateTime.now().toInstant(TimeZone.UTC)
+                            .toEpochMilliseconds()
+
+                    )
+                ).collect { result ->
+                    result
+                        .onSuccess { println("Post created") }
+                        .onFailure { println("Post creation failed$it") }
+                        .onLoading {
+                            println("Post creation loading")
+                        }
+                }
             }
         }
     }
-
-
 }

@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("org.jetbrains.kotlin.plugin.serialization")
+    id("com.google.gms.google-services")
+
     id("kotlin-parcelize") // needed only for non-primitive classes
 
 }
@@ -91,7 +93,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
     implementation(libs.korge.foundation)
-    implementation ("io.insert-koin:koin-androidx-compose:3.5.6")
+    implementation("io.insert-koin:koin-androidx-compose:3.5.6")
 
 
 }

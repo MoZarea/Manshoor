@@ -1,7 +1,6 @@
 package com.example.gemipost.data.post.repository
 
 
-import com.example.gemipost.data.post.source.local.PostLocalDataSource
 import com.example.gemipost.data.post.source.remote.PostRemoteDataSource
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.PostRequest

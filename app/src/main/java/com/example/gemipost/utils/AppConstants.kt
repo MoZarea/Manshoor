@@ -1,4 +1,4 @@
-package com.gp.socialapp.util
+package com.example.gemipost.utils
 
 object AppConstants {
     enum class StorageKeys {
@@ -7,7 +7,15 @@ object AppConstants {
         POST_LAST_UPDATED,
         RECENT_SEARCHES,
         APP_THEME;
+
         val key get() = this.name
+    }
+
+    enum class DB_Constants {
+        GEMIPOST,
+        POSTS,
+        USERS,
+        REPLIES,
     }
 
     val DB_NAME = "edulink.db"

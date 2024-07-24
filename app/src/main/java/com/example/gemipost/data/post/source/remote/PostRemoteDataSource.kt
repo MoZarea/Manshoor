@@ -12,7 +12,7 @@ import com.gp.socialapp.util.Result
 import kotlinx.coroutines.flow.Flow
 
 interface PostRemoteDataSource {
-    suspend fun createPost(request: PostRequest.CreateRequest): Flow<Result<Unit, PostError>>
+    fun createPost(request: PostRequest.CreateRequest): Flow<Result<Unit, PostError>>
     fun fetchPosts(request: FetchRequest): Flow<Result<List<Post>,PostError>>
     suspend fun updatePost(request: PostRequest.UpdateRequest): Result<Unit, PostError>
     suspend fun deletePost(request: DeleteRequest): Result<Unit, PostError>

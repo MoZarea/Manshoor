@@ -2,6 +2,7 @@ package com.example.gemipost.data.auth.source.remote
 
 import com.example.gemipost.data.auth.source.remote.model.User
 import com.example.gemipost.data.auth.source.remote.model.UserSettings
+import com.google.firebase.auth.FirebaseAuth
 import com.gp.socialapp.util.AuthError
 import com.gp.socialapp.util.Result
 import io.ktor.client.HttpClient
@@ -9,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 
 class AuthenticationRemoteDataSourceImpl(
-    private val httpClient: HttpClient,
+    private val auth: FirebaseAuth,
 //    private val supabaseClient: SupabaseClient
 ) : AuthenticationRemoteDataSource {
     //

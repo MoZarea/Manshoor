@@ -1,7 +1,6 @@
 package com.example.gemipost.data.auth.source.local
 
-import com.example.gemipost.data.auth.source.local.AuthKeyValueStorage
-import com.gp.socialapp.util.AppConstants
+import com.example.gemipost.utils.AppConstants
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 

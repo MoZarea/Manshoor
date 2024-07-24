@@ -149,7 +149,7 @@ import kotlinx.coroutines.launch
                     when (index) {
                         0 -> {
                             FeedPosts(
-                                posts = state.posts.filter { it.type == FeedTab.GENERAL.title },
+                                posts = state.posts,
                                 onPostEvent = onPostEvent,
                                 currentUserID = currentUserID
                             )
@@ -157,7 +157,7 @@ import kotlinx.coroutines.launch
 
                         1 -> {
                             FeedPosts(
-                                posts = state.posts.filter { it.type == FeedTab.SPOTLIGHT.title },
+                                posts = state.posts,
                                 onPostEvent = onPostEvent,
                                 currentUserID = currentUserID
                             )
