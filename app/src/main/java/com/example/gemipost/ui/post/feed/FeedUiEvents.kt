@@ -8,6 +8,7 @@ import com.example.gemipost.data.post.source.remote.model.Tag
 sealed class PostEvent {
     data class OnPostAuthorClicked(val userId: String) : PostEvent()
     data class OnPostClicked(val post: Post) : PostEvent()
+    data object OnCreatePostClicked : PostEvent()
     data class OnPostDeleted(val post: Post) : PostEvent()
     data class OnPostEdited(val post: Post) : PostEvent()
     data class OnPostUpVoted(val post: Post) : PostEvent()
