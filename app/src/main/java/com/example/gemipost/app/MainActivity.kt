@@ -24,6 +24,7 @@ import com.example.gemipost.navigation.SignUp
 import com.example.gemipost.ui.auth.forgotpassword.ForgotPasswordScreen
 import com.example.gemipost.ui.auth.login.LoginScreen
 import com.example.gemipost.ui.auth.signup.SignUpScreen
+import com.example.gemipost.ui.post.create.CreatePostScreen
 import com.example.gemipost.ui.post.postDetails.PostDetailsScreen
 import com.example.gemipost.ui.post.search.SearchScreen
 import com.example.gemipost.ui.post.searchResult.SearchResultScreen

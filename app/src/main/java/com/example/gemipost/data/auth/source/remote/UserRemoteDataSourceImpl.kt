@@ -5,14 +5,14 @@ import com.example.gemipost.data.auth.source.remote.UserRemoteDataSource
 import com.example.gemipost.data.auth.source.remote.model.User
 import com.example.gemipost.data.auth.source.remote.model.UserSettings
 import com.example.gemipost.data.auth.source.remote.model.requests.GetUsersByIdsRequest
+import com.google.firebase.firestore.FirebaseFirestore
 import com.gp.socialapp.util.Result
 import com.gp.socialapp.util.UserError
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.Flow
 
 class UserRemoteDataSourceImpl(
-    private val httpClient: HttpClient,
-//    private val supabaseClient: SupabaseClient
+    private val firestore: FirebaseFirestore
 ) : UserRemoteDataSource {
     override suspend fun updateUserInfo(user: User): Result<Unit, UserError> {
         TODO("Not yet implemented")
