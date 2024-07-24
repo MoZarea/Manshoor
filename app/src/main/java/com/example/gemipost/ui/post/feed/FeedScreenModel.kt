@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gemipost.data.auth.repository.AuthenticationRepository
 import com.example.gemipost.data.post.repository.PostRepository
+import com.example.gemipost.data.post.source.remote.model.Post
 import kotlinx.coroutines.Dispatchers
 
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,7 @@ class FeedScreenModel(
 ): ViewModel() {
     private val _state = MutableStateFlow(FeedUiState())
     val state = _state.asStateFlow()
+    val userid = "123456789"
 
     init {
         fetchPosts()
@@ -42,17 +44,42 @@ class FeedScreenModel(
 
     fun handleEvent(postEvent: PostEvent) {
         when(postEvent) {
-            is PostEvent.OnPostClicked -> {
-                println("Post Clicked")
-            }
-            is PostEvent.OnPostDeleted -> TODO()
-            is PostEvent.OnPostDownVoted -> TODO()
-            is PostEvent.OnPostReported -> TODO()
+            is PostEvent.OnPostDeleted -> deletePost(postEvent.post)
+            is PostEvent.OnPostDownVoted -> downVotePost(postEvent.post)
+            is PostEvent.OnPostReported ->  TODO()
             is PostEvent.OnPostShareClicked -> TODO()
-            is PostEvent.OnPostUpVoted -> TODO()
-            is PostEvent.OnTagClicked -> TODO()
-            is PostEvent.OnViewFilesAttachmentClicked -> TODO()
+            is PostEvent.OnPostUpVoted ->  upvotedPost(postEvent.post)
             else->Unit
+        }
+    }
+
+    private fun upvotedPost(post: Post) {
+        viewModelScope.launch(Dispatchers.IO) {
+            postRepo.upvotePost(post, userid).onSuccess {
+                println("zarea:Post upvoted")
+            }.onFailure {
+                println("zarea:Post not upvoted")
+            }
+        }
+    }
+
+    private fun downVotePost(post: Post) {
+        viewModelScope.launch(Dispatchers.IO) {
+            postRepo.downvotePost(post, userid).onSuccess {
+                println("zarea:Post downvoted")
+            }.onFailure {
+                println("zarea:Post not downvoted")
+            }
+        }
+    }
+
+    private fun deletePost(post: Post) {
+        viewModelScope.launch(Dispatchers.IO) {
+            postRepo.deletePost(post).onSuccess {
+                println("zarea:Post deleted")
+            }.onFailure {
+                println("zarea:Post not deleted")
+            }
         }
     }
 

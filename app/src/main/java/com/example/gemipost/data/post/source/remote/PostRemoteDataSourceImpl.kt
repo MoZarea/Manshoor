@@ -14,7 +14,6 @@ import com.gp.socialapp.util.Result
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
 class PostRemoteDataSourceImpl(
@@ -97,7 +96,7 @@ class PostRemoteDataSourceImpl(
                     trySend(Result.Error(PostError.SERVER_ERROR))
                 } else {
                     println("Value: ${value!!.toObject(Post::class.java)}")
-                    trySend(Result.Success(value!!.toObject(Post::class.java)!!))
+                    trySend(Result.Success(value.toObject(Post::class.java)!!))
                 }
             }
             awaitClose {
@@ -137,12 +136,27 @@ class PostRemoteDataSourceImpl(
 
     }
 
-    override fun searchByTag(tag: String): Flow<Result<List<Post>, PostError>> = flow {
-        emit(Result.Loading)
+    override fun searchByTag(tag: String): Flow<Result<List<Post>, PostError>> = callbackFlow {
+        trySend(Result.Loading)
         try {
             Result.Loading
+            val query = colRef.whereArrayContains("tags", tag)
+            val listener = query.addSnapshotListener { value, error ->
+                if (error != null) {
+                    trySend(Result.Error(PostError.SERVER_ERROR))
+                } else {
+                    val posts = mutableListOf<Post>()
+                    for (doc in value!!) {
+                        posts.add(doc.toObject(Post::class.java))
+                    }
+                    trySend(Result.Success(posts))
+                }
+            }
+            awaitClose {
+                listener.remove()
+            }
         } catch (e: Exception) {
-            emit(Result.Error(PostError.SERVER_ERROR))
+            trySend(Result.Error(PostError.SERVER_ERROR))
             e.printStackTrace()
         }
     }
@@ -151,25 +165,26 @@ class PostRemoteDataSourceImpl(
         try {
             println(request.post)
             Result.Loading
-            if(request.post.id.isBlank()){
-                 Result.Error(PostError.SERVER_ERROR)
+            if (request.post.id.isBlank()) {
+                Result.Error(PostError.SERVER_ERROR)
             }
             val post = request.post
             val docRef = colRef.document(post.id)
             val updatedPost = post.copy(
-                attachments = post.attachments.filter{it.startsWith("content://")}.map { uriString ->
-                    var downloadUrl: String? = null
-                    val fileUri = Uri.parse(uriString)
-                    val uploadTask =
-                        storage.reference.child("POST_IMAGES/${post.id}/${fileUri.lastPathSegment}")
-                            .putFile(fileUri)
-                    val taskSnapshot =
-                        uploadTask.await() // Await for the upload to complete
-                    downloadUrl = taskSnapshot.metadata?.reference?.downloadUrl?.await()
-                        .toString() // Get the download URL
-                    downloadUrl
-                        ?: uriString // Use the download URL or fallback to the original URI string if null
-                }
+                attachments = post.attachments.filter { it.startsWith("content://") }
+                    .map { uriString ->
+                        var downloadUrl: String? = null
+                        val fileUri = Uri.parse(uriString)
+                        val uploadTask =
+                            storage.reference.child("POST_IMAGES/${post.id}/${fileUri.lastPathSegment}")
+                                .putFile(fileUri)
+                        val taskSnapshot =
+                            uploadTask.await() // Await for the upload to complete
+                        downloadUrl = taskSnapshot.metadata?.reference?.downloadUrl?.await()
+                            .toString() // Get the download URL
+                        downloadUrl
+                            ?: uriString // Use the download URL or fallback to the original URI string if null
+                    }
             )
             docRef.set(updatedPost)
             Result.Success(Unit)
@@ -181,7 +196,9 @@ class PostRemoteDataSourceImpl(
 
     override suspend fun deletePost(request: DeleteRequest): Result<Unit, PostError> =
         try {
-            Result.Loading
+            val docRef = colRef.document(request.postId)
+            docRef.delete().await()
+            Result.Success(Unit)
         } catch (e: Exception) {
             e.printStackTrace()
             Result.Error(PostError.SERVER_ERROR)
@@ -190,7 +207,11 @@ class PostRemoteDataSourceImpl(
 
     override suspend fun upvotePost(request: UpvoteRequest): Result<Unit, PostError> =
         try {
-            Result.Loading
+            val docRef = colRef.document(request.postId)
+            val post = docRef.get().await().toObject(Post::class.java)
+            val updatedPost = post!!.copy(upvoted = post.upvoted + request.userId, downvoted = post.downvoted - request.userId, votes = post.votes + 1)
+            docRef.set(updatedPost)
+            Result.Success(Unit)
         } catch (e: Exception) {
             e.printStackTrace()
             Result.Error(PostError.SERVER_ERROR)
@@ -199,8 +220,11 @@ class PostRemoteDataSourceImpl(
 
     override suspend fun downvotePost(request: DownvoteRequest): Result<Unit, PostError> =
         try {
-            Result.Loading
-
+            val docRef = colRef.document(request.postId)
+            val post = docRef.get().await().toObject(Post::class.java)
+            val updatedPost = post!!.copy(downvoted = post.downvoted + request.userId, upvoted = post.upvoted - request.userId, votes = post.votes - 1)
+            docRef.set(updatedPost)
+            Result.Success(Unit)
         } catch (e: Exception) {
             e.printStackTrace()
             Result.Error(PostError.SERVER_ERROR)
@@ -210,7 +234,7 @@ class PostRemoteDataSourceImpl(
     override suspend fun reportPost(request: PostRequest.ReportRequest): Result<Unit, PostError> =
         try {
             Result.Loading
-
+            //TODO: Implement report post :Next Feature
         } catch (e: Exception) {
             e.printStackTrace()
             Result.Error(PostError.SERVER_ERROR)

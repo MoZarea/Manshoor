@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.gemipost.R
+import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.navigation.CreatePost
 import com.example.gemipost.navigation.EditPost
 import com.example.gemipost.navigation.Feed
@@ -22,14 +23,17 @@ import com.example.gemipost.navigation.PostDetails
 import com.example.gemipost.navigation.Search
 import com.example.gemipost.navigation.SearchResult
 import com.example.gemipost.navigation.SignUp
+import com.example.gemipost.navigation.parcelableType
 import com.example.gemipost.ui.auth.forgotpassword.ForgotPasswordScreen
 import com.example.gemipost.ui.auth.login.LoginScreen
 import com.example.gemipost.ui.auth.signup.SignUpScreen
 import com.example.gemipost.ui.post.create.CreatePostScreen
 import com.example.gemipost.ui.post.feed.FeedScreen
+import com.example.gemipost.ui.post.postDetails.PostDetailsScreen
 import com.example.gemipost.ui.post.search.SearchScreen
 import com.example.gemipost.ui.post.searchResult.SearchResultScreen
 import com.example.gemipost.ui.theme.GemiPostTheme
+import kotlin.reflect.typeOf
 
 class MainActivity : ComponentActivity() {
 
@@ -110,22 +114,22 @@ fun MyApp() {
                 }
             )
         }
-//        composable<PostDetails>(
-//            typeMap = mapOf(typeOf<Post>() to parcelableType<Post>())
-//        ) { backStackEntry ->
-//            val post: Post = backStackEntry.toRoute<PostDetails>().post
-//            PostDetailsScreen(post = post, onBackPressed = {
-//                navController.popBackStack()
-//            }, onTagClicked = {
-//                navController.navigate(
-//                    SearchResult(
-//                        label = "",
-//                        isTag = true,
-//                        tagIntColor = it.intColor
-//                    )
-//                )
-//            })
-//        }
+        composable<PostDetails>{ backStackEntry ->
+            val postId = backStackEntry.toRoute<PostDetails>().postId
+            PostDetailsScreen(
+                postId = postId,
+                onBackPressed = {
+                navController.navigateUp()
+            }, onTagClicked = {tag->
+                navController.navigate(
+                    SearchResult(
+                        label = tag.label,
+                        isTag = true,
+                        tagIntColor = tag.intColor
+                    )
+                )
+            })
+        }
         composable<Search> {
             SearchScreen(onNavigateToSearchResult = {
                 navController.navigate(SearchResult(label = it, isTag = false))
