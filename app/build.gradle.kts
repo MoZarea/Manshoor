@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("org.jetbrains.kotlin.plugin.serialization")
+      id("kotlin-parcelize") // needed only for non-primitive classes
+
 }
 android {
     namespace = "com.example.gemipost"
@@ -61,6 +63,7 @@ dependencies {
     implementation(libs.androidx.material3)
     //
     implementation(libs.kodein.di.framework.compose)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.client.okhttp)
     implementation(libs.kotlinx.datetime)

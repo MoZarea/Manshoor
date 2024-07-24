@@ -1,5 +1,7 @@
 package com.example.gemipost.ui.post.create
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -14,13 +16,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -39,8 +38,8 @@ import com.example.gemipost.ui.theme.GemiPostTheme
 
 
 @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-     fun CreatePostContent(
+@Composable
+fun CreatePostContent(
     state: CreatePostUIState,
     channelTags: List<Tag>,
     onBackClick: () -> Unit,
@@ -49,108 +48,108 @@ import com.example.gemipost.ui.theme.GemiPostTheme
     confirmNewTags: (Set<Tag>) -> Unit,
     onAddFile: (PostAttachment) -> Unit,
     onRemoveFile: (PostAttachment) -> Unit
-    ) {
-
-        var tags by remember { mutableStateOf(setOf<Tag>()) }
-        var openBottomSheet by rememberSaveable { mutableStateOf(false) }
-        val skipPartiallyExpanded by remember { mutableStateOf(false) }
-        val scope = rememberCoroutineScope()
-        val bottomSheetState = rememberModalBottomSheetState(
-            skipPartiallyExpanded = skipPartiallyExpanded
-        )
-        var existingTagsDialogState by remember { mutableStateOf(false) }
-        var newTagDialogState by remember { mutableStateOf(false) }
-        var title by remember { mutableStateOf("") }
-        var body by remember { mutableStateOf("") }
-        Scaffold(
-            topBar = {
-                CreatePostTopBar(
-                    onBackClick = onBackClick,
-                    stringResource(id = R.string.create_post),
-                )
-            }
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(it)
-                    .fillMaxSize()
-            ) {
-                Spacer(modifier = Modifier.height(8.dp))
-                FilesRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    state.files,
-                    onFileDelete = { file ->
-                        onRemoveFile(file)
-                    },
-                    onAddFile = {
-                    }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                MyTextFieldTitle(
-                    value = title,
-                    label = "Title",
-                    onValueChange = { newTitle ->
-                        title = newTitle
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                MyTextFieldBody(
-                    value = body,
-                    label = "Body",
-                    onValueChange = { newBody ->
-                        body = newBody
-                    },
-                    tags = state.tags,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.5f)
-                        .padding(horizontal = 16.dp)
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                TagsRow(
-                    allTags = channelTags,
-                    selectedTags = state.tags,
-                    onTagClick = { tag ->
-                        onAddTag(tag)
-                    },
-                    onAddNewTagClick = {
-                        newTagDialogState = true
-                    }
-                )
-                Button(
-                    onClick = {
-                        onPostClick(title, body, tags)
-                    },
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    enabled = title.isNotBlank() && body.isNotBlank(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                ) {
-                    Text(
-                        text = "+ Post"
-                    )
-                }
-            }
-            if (newTagDialogState) {
-                NewTagAlertDialog(
-                    newTagDialogState = { value ->
-                        newTagDialogState = value
-                    },
-                    confirmNewTags = confirmNewTags,
-                )
-
+) {
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            uri?.let {
             }
         }
+    )
+    var tags by remember { mutableStateOf(setOf<Tag>()) }
+    var newTagDialogState by remember { mutableStateOf(false) }
+    var title by remember { mutableStateOf("") }
+    var body by remember { mutableStateOf("") }
+    Scaffold(
+        topBar = {
+            CreatePostTopBar(
+                onBackClick = onBackClick,
+                stringResource(id = R.string.create_post),
+            )
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize()
+        ) {
+            Spacer(modifier = Modifier.height(8.dp))
+            FilesRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                state.files,
+                onFileDelete = { file ->
+                    onRemoveFile(file)
+                },
+                onAddFile = {
+                    galleryLauncher.launch("image/*")
+                }
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            MyTextFieldTitle(
+                value = title,
+                label = "Title",
+                onValueChange = { newTitle ->
+                    title = newTitle
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            MyTextFieldBody(
+                value = body,
+                label = "Body",
+                onValueChange = { newBody ->
+                    body = newBody
+                },
+                tags = state.tags,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.5f)
+                    .padding(horizontal = 16.dp)
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            TagsRow(
+                allTags = channelTags,
+                selectedTags = state.tags,
+                onTagClick = { tag ->
+                    onAddTag(tag)
+                },
+                onAddNewTagClick = {
+                    newTagDialogState = true
+                }
+            )
+            Button(
+                onClick = {
+                    onPostClick(title, body, tags)
+                },
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                enabled = title.isNotBlank() && body.isNotBlank(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            ) {
+                Text(
+                    text = "+ Post"
+                )
+            }
+        }
+        if (newTagDialogState) {
+            NewTagAlertDialog(
+                newTagDialogState = { value ->
+                    newTagDialogState = value
+                },
+                confirmNewTags = confirmNewTags,
+            )
+
+        }
     }
+}
 
 @Composable
 @Preview

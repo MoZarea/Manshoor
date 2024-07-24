@@ -12,8 +12,8 @@ import com.example.gemipost.ui.auth.util.AuthError.PasswordError
 import com.example.gemipost.ui.auth.util.AuthError.ServerError
 import com.example.gemipost.ui.auth.util.Validator
 import com.google.firebase.auth.OAuthProvider
-import com.gp.socialapp.util.DispatcherIO
 import com.gp.socialapp.util.Result
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -51,7 +51,7 @@ class LoginViewModel(
     }
 
     private fun getSignedInUser() {
-        viewModelScope.launch(DispatcherIO) {
+        viewModelScope.launch(Dispatchers.IO) {
             authRepo.getSignedInUser().let { result ->
                 when (result) {
                     is Result.Success -> {
@@ -140,7 +140,7 @@ class LoginViewModel(
     }
 
     fun signInWithOAuth(provider: OAuthProvider) {
-        viewModelScope.launch(DispatcherIO) {
+        viewModelScope.launch(Dispatchers.IO) {
 //            authRepo.signInWithOAuth(provider).collect { result ->
 //                when (result) {
 //                    is Result.Success -> {

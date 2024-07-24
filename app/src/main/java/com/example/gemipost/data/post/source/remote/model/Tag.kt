@@ -1,12 +1,16 @@
 package com.example.gemipost.data.post.source.remote.model
 
-@kotlinx.serialization.Serializable
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
+@Parcelize
+@Serializable
 data class Tag(
     val label: String = "",
     val intColor: Int = 0,
     val hexColor: String = "#000000",
     val communityID: String = ""
-) {
+) : Parcelable {
     companion object {
         fun Tag.toDbString(): String {
             return "$label|$intColor|$hexColor|$communityID"

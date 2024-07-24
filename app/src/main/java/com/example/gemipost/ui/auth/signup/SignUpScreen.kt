@@ -99,7 +99,7 @@ import kotlinx.coroutines.launch
                     isError = state.error is EmailError,
                     supportingText = {
                         if (state.error is EmailError) {
-                            Text(text = (state.error as EmailError).message)
+                            Text(text = (state.error as EmailError).messageId.toString())
                         }
                     },
                     singleLine = true,
@@ -121,7 +121,7 @@ import kotlinx.coroutines.launch
                     isError = state.error is PasswordError,
                     supportingText = {
                         if (state.error is PasswordError) {
-                            Text(text = (state.error as PasswordError).message)
+                            Text(text = (state.error as PasswordError).toString())
                         }
                     },
                     singleLine = true,
@@ -153,7 +153,7 @@ import kotlinx.coroutines.launch
                     isError = state.error is RePasswordError,
                     supportingText = {
                         if (state.error is RePasswordError) {
-                            Text(text = (state.error as RePasswordError).message)
+                            Text(text = (state.error as RePasswordError).toString())
                         }
                     },
                     singleLine = true,

@@ -151,7 +151,7 @@ import kotlinx.datetime.LocalDateTime
                     supportingText = {
                         if (state.error is AuthError.FirstNameError) {
                             Text(
-                                text = (state.error as AuthError.FirstNameError).message,
+                                text = (state.error as AuthError.FirstNameError).toString(),
                                 color = MaterialTheme.colorScheme.error,
                                 fontSize = 12.sp
                             )
@@ -170,7 +170,7 @@ import kotlinx.datetime.LocalDateTime
                     supportingText = {
                         if (state.error is AuthError.PhoneNumberError) {
                             Text(
-                                text = (state.error as AuthError.PhoneNumberError).message,
+                                text = (state.error as AuthError.PhoneNumberError).toString(),
                                 color = MaterialTheme.colorScheme.error,
                                 fontSize = 12.sp
                             )
@@ -208,7 +208,7 @@ import kotlinx.datetime.LocalDateTime
                         supportingText = {
                             if (state.error is AuthError.BirthDateError) {
                                 Text(
-                                    text = (state.error as AuthError.BirthDateError).message,
+                                    text = (state.error as AuthError.BirthDateError).toString(),
                                     color = MaterialTheme.colorScheme.error,
                                     fontSize = 12.sp
                                 )

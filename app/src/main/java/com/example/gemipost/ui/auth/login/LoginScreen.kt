@@ -36,7 +36,6 @@ import com.example.gemipost.ui.auth.login.components.imagevectors.OAuthProviderI
 import com.example.gemipost.ui.auth.login.components.imagevectors.oauthprovidericons.Google
 import com.example.gemipost.ui.auth.util.AuthError
 import com.example.gemipost.ui.auth.util.AuthError.ServerError
-import com.gp.socialapp.util.getPlatform
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -96,7 +95,6 @@ private fun LoginContent(
     val snackbarHostState = remember { SnackbarHostState() }
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-    val platform = getPlatform()
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
