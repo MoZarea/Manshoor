@@ -103,7 +103,7 @@ private fun EditPostContent(
                 allTags = state.channelTags.toList(),
                 selectedTags = state.postTags.toList(),
                 onTagClick = { tag ->
-                    action(EditPostAction.OnTagAdded(setOf(tag)))
+                    action(EditPostAction.OnTagAdded(tag))
                 },
                 onAddNewTagClick = {
                     newTagDialogState = true

@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gemipost.R
 import com.example.gemipost.data.post.source.remote.model.PostAttachment
 import com.example.gemipost.data.post.source.remote.model.Tag
@@ -36,18 +39,26 @@ import com.example.gemipost.ui.post.create.component.NewTagAlertDialog
 import com.example.gemipost.ui.post.create.component.TagsRow
 import com.example.gemipost.ui.theme.GemiPostTheme
 
+@Composable
+fun CreatePostScreen(
+    viewModel: CreatePostViewModel = viewModel(),
+    onNavigateBack: () -> Unit
+) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    CreatePostContent(
+        action = viewModel::handleEvent,
+        state = state,
+        onNavigateBack = onNavigateBack,
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreatePostContent(
+    action : (CreatePostEvents) -> Unit,
     state: CreatePostUIState,
-    channelTags: List<Tag>,
-    onBackClick: () -> Unit,
-    onPostClick: (String, String, tags: Set<Tag>) -> Unit,
-    onAddTag: (Tag) -> Unit,
-    confirmNewTags: (Set<Tag>) -> Unit,
-    onAddFile: (PostAttachment) -> Unit,
-    onRemoveFile: (PostAttachment) -> Unit
+    onNavigateBack: () -> Unit,
+
 ) {
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
@@ -56,14 +67,11 @@ fun CreatePostContent(
             }
         }
     )
-    var tags by remember { mutableStateOf(setOf<Tag>()) }
     var newTagDialogState by remember { mutableStateOf(false) }
-    var title by remember { mutableStateOf("") }
-    var body by remember { mutableStateOf("") }
     Scaffold(
         topBar = {
             CreatePostTopBar(
-                onBackClick = onBackClick,
+                onBackClick = onNavigateBack,
                 stringResource(id = R.string.create_post),
             )
         }
@@ -74,24 +82,11 @@ fun CreatePostContent(
                 .fillMaxSize()
         ) {
             Spacer(modifier = Modifier.height(8.dp))
-            FilesRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                state.files,
-                onFileDelete = { file ->
-                    onRemoveFile(file)
-                },
-                onAddFile = {
-                    galleryLauncher.launch("image/*")
-                }
-            )
-            Spacer(modifier = Modifier.height(16.dp))
             MyTextFieldTitle(
-                value = title,
+                value = state.title,
                 label = "Title",
                 onValueChange = { newTitle ->
-                    title = newTitle
+                    action(CreatePostEvents.OnTitleChanged(newTitle))
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -99,10 +94,10 @@ fun CreatePostContent(
             )
             Spacer(modifier = Modifier.height(8.dp))
             MyTextFieldBody(
-                value = body,
+                value = state.body,
                 label = "Body",
                 onValueChange = { newBody ->
-                    body = newBody
+                    action(CreatePostEvents.OnBodyChanged(newBody))
                 },
                 tags = state.tags,
                 modifier = Modifier
@@ -110,12 +105,25 @@ fun CreatePostContent(
                     .fillMaxHeight(0.5f)
                     .padding(horizontal = 16.dp)
             )
+            Spacer(modifier = Modifier.height(16.dp))
+            FilesRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                state.files,
+                onFileDelete = { file ->
+                    action(CreatePostEvents.OnRemoveFile(file))
+                },
+                onAddFile = {
+                    galleryLauncher.launch("image/*")
+                }
+            )
             Spacer(modifier = Modifier.weight(1f))
             TagsRow(
-                allTags = channelTags,
+                allTags = state.tags,
                 selectedTags = state.tags,
                 onTagClick = { tag ->
-                    onAddTag(tag)
+                    action(CreatePostEvents.OnRemoveTag(tag))
                 },
                 onAddNewTagClick = {
                     newTagDialogState = true
@@ -123,13 +131,13 @@ fun CreatePostContent(
             )
             Button(
                 onClick = {
-                    onPostClick(title, body, tags)
+                    action(CreatePostEvents.OnCreatePostClicked)
                 },
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                enabled = title.isNotBlank() && body.isNotBlank(),
+                enabled = state.title.isNotBlank() && state.body.isNotBlank(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
@@ -144,7 +152,9 @@ fun CreatePostContent(
                 newTagDialogState = { value ->
                     newTagDialogState = value
                 },
-                confirmNewTags = confirmNewTags,
+                confirmNewTags = {
+                    action(CreatePostEvents.OnAddTag(it))
+                },
             )
 
         }
@@ -156,14 +166,9 @@ fun CreatePostContent(
 fun CreatePostContentPreview() {
     GemiPostTheme {
         CreatePostContent(
+            action = {},
             state = CreatePostUIState(),
-            channelTags = emptyList(),
-            onBackClick = {},
-            onPostClick = { _, _, _ -> },
-            onAddTag = {},
-            confirmNewTags = {},
-            onAddFile = {},
-            onRemoveFile = {}
+            onNavigateBack = {}
         )
     }
 }

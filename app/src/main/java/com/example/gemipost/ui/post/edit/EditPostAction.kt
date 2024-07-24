@@ -14,7 +14,7 @@ sealed interface EditPostAction {
     data class OnTitleChanged(val title: String) : EditPostAction
     data class OnContentChanged(val content: String) : EditPostAction
     data object OnApplyEditClicked : EditPostAction
-    data class OnTagAdded(val tags: Set<Tag>) : EditPostAction
+    data class OnTagAdded(val tags: Tag) : EditPostAction
     data class OnTagRemoved(val tag: Tag) : EditPostAction
     data class OnFileRemoved(val file: PostAttachment) : EditPostAction
 

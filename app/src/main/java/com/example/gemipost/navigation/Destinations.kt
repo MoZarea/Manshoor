@@ -28,8 +28,7 @@ data class PostDetails(val post: Post)
 @Serializable
 object Search
 @Serializable
-@Parcelize
-data class SearchResult(val query: String, val isTag: Boolean, val tag: Tag) : Parcelable
+data class SearchResult(val query: String, val isTag: Boolean, val tag: Tag)
 
 @Serializable
 object CreatePost

@@ -1,13 +1,14 @@
 package com.example.gemipost.data.post.source.local.model
 
 import com.example.gemipost.data.post.source.remote.model.Post
-import com.example.gemipost.data.post.source.remote.model.PostAttachment.Companion.toPostFile
-import com.example.gemipost.data.post.source.remote.model.Tag.Companion.toTag
+import com.example.gemipost.data.post.source.remote.model.toPostFile
+import com.example.gemipost.data.post.source.remote.model.toTag
 import com.example.gemipost.utils.LocalDateTimeUtil.now
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 
+@kotlinx.serialization.Serializable
 data class PostEntity(
     val communityID: String = "",
     val replyCount: Int = 0,
@@ -27,32 +28,32 @@ data class PostEntity(
     val type: String = "general",
     val attachments: String = "",
     val lastModified: Long = LocalDateTime.now().toInstant(TimeZone.UTC).epochSeconds
-) {
-    companion object {
-        fun PostEntity.toPost(): Post {
-            return with(this) {
-                Post(
-                    replyCount = replyCount,
-                    authorName = authorName,
-                    authorPfp = authorPfp,
-                    id = id,
-                    authorID = authorID,
-                    createdAt = createdAt,
-                    title = title,
-                    body = body,
-                    votes = votes,
-                    downvoted = downvoted.split(",").filter { it.isNotBlank() },
-                    upvoted = upvoted.split(",").filter { it.isNotBlank() },
-                    moderationStatus = moderationStatus,
-                    editedStatus = editedStatus == 1,
-                    tags = tags.split(",").filter { it.isNotBlank() }.map { it.toTag() },
-                    type = type,
-                    attachments = attachments.split(",").filter { it.isNotBlank() }
-                        .map { it.toPostFile() },
-                    lastModified = lastModified,
-                    communityID = communityID
-                )
-            }
-        }
+) {}
+
+fun PostEntity.toPost(): Post {
+    return with(this) {
+        Post(
+            replyCount = replyCount,
+            authorName = authorName,
+            authorPfp = authorPfp,
+            id = id,
+            authorID = authorID,
+            createdAt = createdAt,
+            title = title,
+            body = body,
+            votes = votes,
+            downvoted = downvoted.split(",").filter { it.isNotBlank() },
+            upvoted = upvoted.split(",").filter { it.isNotBlank() },
+            moderationStatus = moderationStatus,
+            editedStatus = editedStatus == 1,
+            tags = tags.split(",").filter { it.isNotBlank() }.map { it.toTag() },
+            type = type,
+            attachments = attachments.split(",").filter { it.isNotBlank() }
+                .map { it.toPostFile() },
+            lastModified = lastModified,
+            communityID = communityID
+        )
     }
 }
+
+

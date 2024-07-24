@@ -39,7 +39,7 @@ import com.example.gemipost.ui.theme.TagsColorPalette.fixedColor
 @Composable
 fun NewTagAlertDialog(
     newTagDialogState: (Boolean) -> Unit,
-    confirmNewTags: (Set<Tag>) -> Unit
+    confirmNewTags: (Tag) -> Unit
 ) {
     var tempTag by remember { mutableStateOf(Tag("", 0)) }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -98,7 +98,7 @@ fun NewTagAlertDialog(
         },
         confirmButton = {
             Button(onClick = {
-                confirmNewTags(setOf(tempTag))
+                confirmNewTags(tempTag)
                 newTagDialogState(false)
             }) {
                 Text(text = "Add")

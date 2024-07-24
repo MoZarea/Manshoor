@@ -1,5 +1,10 @@
 package com.example.gemipost.data.post.source.remote.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
+
+@Parcelize
 @kotlinx.serialization.Serializable
 data class PostAttachment(
     val file: ByteArray = byteArrayOf(),
@@ -7,8 +12,7 @@ data class PostAttachment(
     val name: String = "",
     val type: String = "",
     val size: Long = 0
-) {
-    companion object {
+) : Parcelable {}
         fun PostAttachment.toDbString(): String {
             return "$url|$name|$type|$size"
         }
@@ -23,6 +27,6 @@ data class PostAttachment(
                 size = parts[3].toLong()
             )
         }
-    }
-}
+
+
 
