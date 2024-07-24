@@ -1,5 +1,6 @@
 package com.example.gemipost.app
 
+import EditPostScreen
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -24,7 +25,8 @@ import com.example.gemipost.navigation.SignUp
 import com.example.gemipost.ui.auth.forgotpassword.ForgotPasswordScreen
 import com.example.gemipost.ui.auth.login.LoginScreen
 import com.example.gemipost.ui.auth.signup.SignUpScreen
-import com.example.gemipost.ui.post.postDetails.PostDetailsScreen
+import com.example.gemipost.ui.post.create.CreatePostScreen
+import com.example.gemipost.ui.post.feed.FeedScreen
 import com.example.gemipost.ui.post.search.SearchScreen
 import com.example.gemipost.ui.post.searchResult.SearchResultScreen
 import com.example.gemipost.ui.theme.GemiPostTheme
@@ -36,9 +38,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(R.color.transparent))
         super.onCreate(savedInstanceState)
         setContent {
-                GemiPostTheme {
-                    MyApp()
-                }
+            GemiPostTheme {
+                MyApp()
+            }
         }
     }
 }
@@ -46,7 +48,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp() {
     val navController = rememberNavController()
-    NavHost(navController, startDestination = CreatePost) {
+    NavHost(navController, startDestination = Feed) {
         composable<Login> {
             LoginScreen(onNavigateToFeed = {
                 navController.clearBackStack<Feed>()
@@ -78,18 +80,36 @@ fun MyApp() {
             )
         }
         composable<Feed> {
-            //TODO
-        }
-        composable<CreatePost> {
-            CreatePostScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
+            println("$$$$$$$$$$$$$$$$$" + navController.currentBackStackEntry?.destination?.route)
+            FeedScreen(
+                navigateToCreatePost = {
+                    navController.navigate(CreatePost)
+                },
+                navigateToEditPost = {
+                    navController.navigate(EditPost(it))
+                },
+                navigateToPostDetails = {
+                    navController.navigate(PostDetails(it))
                 }
             )
         }
-//        composable<EditPost> {
-//            //TODO
-//        }
+        composable<CreatePost> {
+            println("$$$$$$$$$$$$$$$$$" + navController.currentBackStackEntry?.destination?.route)
+            CreatePostScreen(
+                onNavigateBack = {
+                    navController.navigateUp()
+                }
+            )
+        }
+        composable<EditPost> {
+            val postId = it.toRoute<EditPost>().postId
+            EditPostScreen(
+                postId = postId,
+                onNavigateBack = {
+                    navController.navigateUp()
+                }
+            )
+        }
 //        composable<PostDetails>(
 //            typeMap = mapOf(typeOf<Post>() to parcelableType<Post>())
 //        ) { backStackEntry ->

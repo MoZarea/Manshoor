@@ -22,7 +22,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,6 +34,7 @@ import com.example.gemipost.ui.post.create.component.MyTextFieldTitle
 import com.example.gemipost.ui.post.create.component.NewTagAlertDialog
 import com.example.gemipost.ui.post.create.component.TagsRow
 import com.example.gemipost.ui.theme.GemiPostTheme
+import com.example.gemipost.utils.Status
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -43,20 +43,24 @@ fun CreatePostScreen(
 ) {
     val viewModel: CreatePostViewModel = koinViewModel()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    CreatePostContent(
-        action = viewModel::handleEvent,
-        state = state,
-        onNavigateBack = onNavigateBack,
-    )
+    if (state.status == Status.SUCCESS) {
+        onNavigateBack()
+    }
+    else {
+        CreatePostContent(
+            action = viewModel::handleEvent,
+            state = state,
+            onNavigateBack = onNavigateBack,
+        )
+    }
 }
-
 @Composable
 fun CreatePostContent(
     action: (CreatePostEvents) -> Unit,
     state: CreatePostUIState,
     onNavigateBack: () -> Unit,
-
     ) {
+
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->

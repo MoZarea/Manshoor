@@ -1,5 +1,6 @@
 package com.example.gemipost.ui.post.feed.components
 
+import android.net.Uri
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -18,6 +19,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,10 +30,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.example.gemipost.data.post.source.remote.model.PostAttachment
-import com.example.gemipost.utils.AppConstants.BASE_URL
+import com.skydoves.landscapist.glide.GlideImage
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -42,7 +44,10 @@ fun ImagePager(
     onImageClicked: (String) -> Unit
 ) {
     Box(
-        modifier = Modifier.size(height = 300.dp, width = width).clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
+        modifier = Modifier
+            .size(height = 300.dp, width = width)
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
     ) {
         val pagerState = rememberPagerState(
             pageCount = { pageCount },
@@ -76,10 +81,23 @@ fun ImagePager(
                     .background(Color.Transparent),
                 contentAlignment = Alignment.Center
             ) {
-                val imageURL = BASE_URL + images[pagerState.currentPage]
+                GlideImage(
+                    imageModel = {
+                        Uri.parse(images[pagerState.currentPage])
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                    loading = {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    },
+                )
             }
         }
-        if(images.size > 1){
+        if (images.size > 1) {
             LazyRow(
                 state = indicatorScrollState,
                 modifier = Modifier

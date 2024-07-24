@@ -26,7 +26,7 @@ import org.koin.dsl.module
 
 
 val remoteDataSourceModuleK = module {
-    single<PostRemoteDataSource>{ PostRemoteDataSourceImpl(get()) }
+    single<PostRemoteDataSource>{ PostRemoteDataSourceImpl(get(),get()) }
     single<ReplyRemoteDataSource> { ReplyRemoteDataSourceImpl(get()) }
     single <AuthenticationRemoteDataSource>{AuthenticationRemoteDataSourceImpl(get())  }
     single<FirebaseFirestore> {

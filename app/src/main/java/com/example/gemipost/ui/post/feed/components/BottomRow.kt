@@ -129,39 +129,10 @@ fun BottomRow(
                 )
             }
         }
-        if (filesCount > 0) {
-            Spacer(modifier = Modifier.width(16.dp))
-            FilledTonalButton(
-                onClick = onShowFilesClicked,
-                contentPadding = PaddingValues(
-                    horizontal = 12.dp,
-                )
-                ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        imageVector = FeedIcons.Attachment2,
-                        contentDescription = "Attachments",
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.padding(horizontal = 8.dp).size(24.dp)
-                    )
-                    Text(
-                        text = filesCount.toString(),
-                        style = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        ),
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                }
-            }
-        }
         Spacer(modifier = Modifier.weight(1f))
         FilledTonalButton(
             onClick = onShareClicked,
-            enabled = false,
+            enabled = true,
             ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,

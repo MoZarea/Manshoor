@@ -6,6 +6,7 @@ import com.example.gemipost.data.auth.repository.AuthenticationRepository
 import com.example.gemipost.data.post.repository.PostRepository
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.utils.LocalDateTimeUtil.now
+import com.example.gemipost.utils.Status
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -70,10 +71,14 @@ class CreatePostViewModel(
                     )
                 ).collect { result ->
                     result
-                        .onSuccess { println("Post created") }
-                        .onFailure { println("Post creation failed$it") }
+                        .onSuccess {
+                            _uiState.update { it.copy(status = Status.SUCCESS) }
+                        }
+                        .onFailure { message ->
+                            _uiState.update { it.copy(status = Status.ERROR(message.userMessage)) }
+                        }
                         .onLoading {
-                            println("Post creation loading")
+                            _uiState.update { it.copy(status = Status.LOADING) }
                         }
                 }
             }

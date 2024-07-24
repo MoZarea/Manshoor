@@ -10,6 +10,7 @@ fun Attachments(
     width: Dp,
     onPostEvent: (PostEvent) -> Unit
 ) {
+    if (attachments.isEmpty()) return
     ImagePager(
         pageCount = attachments.size,
         images = attachments,
