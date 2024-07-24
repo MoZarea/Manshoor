@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.Flow
 
 class AuthenticationRemoteDataSourceImpl(
     private val auth: FirebaseAuth,
-//    private val supabaseClient: SupabaseClient
 ) : AuthenticationRemoteDataSource {
     //
 //    private val sessionStatusFlow = supabaseClient.auth.sessionStatus
