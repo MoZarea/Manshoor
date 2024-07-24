@@ -7,11 +7,15 @@ import com.gp.socialapp.util.Result
 import kotlinx.coroutines.flow.Flow
 
 interface ReplyRemoteDataSource {
-    suspend fun createReply(request: ReplyRequest.CreateRequest): Result<Unit, ReplyError>
-    fun fetchReplies(request: ReplyRequest.FetchRequest): Flow<Result<List<Reply>, ReplyError>>
-    suspend fun updateReply(request: ReplyRequest.UpdateRequest): Result<Unit, ReplyError>
-    suspend fun deleteReply(request: ReplyRequest.DeleteRequest): Result<Unit, ReplyError>
-    suspend fun upvoteReply(request: ReplyRequest.UpvoteRequest): Result<Unit, ReplyError>
-    suspend fun downvoteReply(request: ReplyRequest.DownvoteRequest): Result<Unit, ReplyError>
-    suspend fun reportReply(request: ReplyRequest.ReportRequest): Result<Unit, ReplyError>
+    suspend fun createReply(reply: Reply): Result<Unit, ReplyError>
+    fun fetchReplies(postId: String): Flow<Result<List<Reply>, ReplyError>>
+    suspend fun updateReply(replyId: String, replyContent: String): Result<Unit, ReplyError>
+    suspend fun deleteReply(replyId: String): Result<Unit, ReplyError>
+    suspend fun upvoteReply(
+        replyId: String,
+        currentUserId: String): Result<Unit, ReplyError>
+    suspend fun downvoteReply(replyId: String, currentUserId: String): Result<Unit, ReplyError>
+    suspend fun reportReply(
+        replyId: String, replyContent: String, reporterId: String
+    ): Result<Unit, ReplyError>
 }

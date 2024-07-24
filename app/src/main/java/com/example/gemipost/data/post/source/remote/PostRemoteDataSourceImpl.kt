@@ -79,6 +79,10 @@ val     colRef = db.collection(AppConstants.DB_Constants.POSTS.name)
         }
     }
 
+    override suspend fun getPostWithId(postId: String): Result<Post, PostError> {
+        TODO("Not yet implemented")
+    }
+
 
     override fun fetchPosts(request: FetchRequest): Flow<Result<List<Post>, PostError>> =
         flow {

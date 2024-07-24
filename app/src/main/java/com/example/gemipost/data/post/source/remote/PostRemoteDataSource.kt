@@ -26,4 +26,5 @@ interface PostRemoteDataSource {
     fun searchByTitle(title: String): Flow<Result<List<Post>, PostError>>
     fun searchByTag(tag: String): Flow<Result<List<Post>, PostError>>
     suspend fun getUserPosts(userId: String): Result<List<Post>,PostError>
+    suspend fun getPostWithId(postId: String): Result<Post, PostError>
 }

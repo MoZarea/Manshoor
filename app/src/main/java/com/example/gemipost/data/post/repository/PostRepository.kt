@@ -25,4 +25,5 @@ interface PostRepository {
     fun searchByTag(tagLabel: String): Flow<Result<List<Post>, PostError>>
     suspend fun openAttachment(url: String, mimeType: String)
     suspend fun getUserPosts(userId: String): Result<List<Post>,PostError>
+    suspend fun getPostWithId(postId: String): Result<Post, PostError>
 }

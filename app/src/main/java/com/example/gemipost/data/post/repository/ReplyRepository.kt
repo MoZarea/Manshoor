@@ -10,15 +10,15 @@ interface ReplyRepository {
     suspend fun updateReply(replyId: String, replyContent: String): Result<Unit, ReplyError>
     suspend fun deleteReply(replyId: String): Result<Unit, ReplyError>
     suspend fun upvoteReply(
-        replyId: String,
-        currentUserId: String
+        replyId: String, currentUserId: String
     ): Result<Unit, ReplyError>
 
     suspend fun downvoteReply(
-        replyId: String,
-        currentUserId: String
+        replyId: String, currentUserId: String
     ): Result<Unit, ReplyError>
 
-    suspend fun insertReply(reply: Reply): Result<Unit, ReplyError>
-    suspend fun reportReply(replyId: String, reporterId: String): Result<Unit, ReplyError>
+    suspend fun createReply(reply: Reply): Result<Unit, ReplyError>
+    suspend fun reportReply(
+        replyId: String, replyContent: String, reporterId: String
+    ): Result<Unit, ReplyError>
 }

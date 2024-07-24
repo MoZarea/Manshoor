@@ -120,6 +120,10 @@ class PostRepositoryImpl(
         return postRemoteSource.getUserPosts(userId)
     }
 
+    override suspend fun getPostWithId(postId: String): Result<Post, PostError> {
+        return postRemoteSource.getPostWithId(postId)
+    }
+
     override suspend fun getRecentSearches(): List<String> {
         return emptyList()
     }
