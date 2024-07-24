@@ -1,3 +1,6 @@
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -8,21 +11,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.gemipost.R
 import com.example.gemipost.ui.post.create.component.CreatePostTopBar
 import com.example.gemipost.ui.post.create.component.FilesRow
@@ -32,42 +32,59 @@ import com.example.gemipost.ui.post.create.component.NewTagAlertDialog
 import com.example.gemipost.ui.post.create.component.TagsRow
 import com.example.gemipost.ui.post.edit.EditPostAction
 import com.example.gemipost.ui.post.edit.EditPostUIState
+import com.example.gemipost.ui.post.edit.EditPostViewModel
+import com.example.gemipost.utils.Status
+import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun EditPostContent(
+fun EditPostScreen(
+    viewModel: EditPostViewModel = koinViewModel(),
+    onNavigateBack: () -> Unit,
+    postId: String
+) {
+    viewModel.init(postId)
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    if(state.status== Status.SUCCESS){
+        onNavigateBack()
+    }
+    EditPostContent(
+        action = viewModel::handleActions,
+        state = state,
+        navigationBack = onNavigateBack
+    )
+}
+
+@Composable
+fun EditPostContent(
     action: (EditPostAction) -> Unit,
     state: EditPostUIState,
-
-    ) {
+    navigationBack: () -> Unit
+) {
     var newTagDialogState by remember { mutableStateOf(false) }
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            uri?.let { selectedUri ->
+                action(EditPostAction.OnFileAdded(selectedUri))
+            }
+        }
+
+    )
     Scaffold(
         topBar = {
             CreatePostTopBar(
-                onBackClick = { action(EditPostAction.NavigateBack) },
+                onBackClick = navigationBack,
                 stringResource(R.string.edit_post)
             )
         }
     ) { it ->
+
         Column(
             modifier = Modifier
                 .padding(it)
                 .fillMaxSize()
         ) {
-
-
             Spacer(modifier = Modifier.height(8.dp))
-            FilesRow(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                state.postAttachments,
-                onFileDelete = { file ->
-                    action(EditPostAction.OnFileRemoved(file))
-                },
-                onAddFile = {
-                }
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-
             MyTextFieldTitle(
                 value = state.title,
                 label = "Title",
@@ -92,6 +109,23 @@ private fun EditPostContent(
                     .fillMaxHeight(0.5f)
                     .padding(horizontal = 16.dp)
             )
+            Spacer(modifier = Modifier.height(16.dp))
+            FilesRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                state.postAttachments,
+                onFileDelete = { file ->
+                    action(EditPostAction.OnFileRemoved(file))
+                },
+                onAddFile = {
+                    galleryLauncher.launch(
+                        PickVisualMediaRequest(
+                            mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
+                        )
+                    )
+                }
+            )
             Spacer(modifier = Modifier.weight(1f))
             TagsRow(
                 selectedTags = state.postTags.toList(),
@@ -106,7 +140,9 @@ private fun EditPostContent(
                 onClick = {
                     action(EditPostAction.OnApplyEditClicked)
                 },
-                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 enabled = state.title.isNotBlank() && state.body.isNotBlank(),
                 colors = ButtonDefaults.buttonColors(
