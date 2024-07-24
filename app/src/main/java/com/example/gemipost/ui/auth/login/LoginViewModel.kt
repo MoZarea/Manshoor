@@ -27,8 +27,8 @@ class LoginViewModel(
     val uiState = _uiState.asStateFlow()
 
     fun initViewModel() {
-        getTheme()
-        getSignedInUser()
+//        getTheme()
+//        getSignedInUser()
     }
 
 

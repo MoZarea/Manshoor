@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp() {
     val navController = rememberNavController()
-    NavHost(navController, startDestination = CreatePost) {
+    NavHost(navController, startDestination = SearchResult("Term", false)) {
         composable<Login> {
             LoginScreen(onNavigateToFeed = {
                 navController.navigate(Feed)

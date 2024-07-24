@@ -27,10 +27,11 @@ import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.Tag
 import com.example.gemipost.ui.post.searchResult.components.SearchResultHeader
 import com.example.gemipost.ui.post.searchResult.components.SearchResultList
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
     fun SearchResultScreen(
-    viewModel: SearchResultViewModel = viewModel(),
+    viewModel: SearchResultViewModel = koinViewModel(),
     searchLabel: String,
     @ColorInt searchTagIntColor: Int = Color.Transparent.toArgb(),
     isTag: Boolean = false,

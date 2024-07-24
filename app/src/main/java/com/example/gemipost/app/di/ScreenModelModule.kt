@@ -1,6 +1,7 @@
 package com.example.gemipost.app.di
 
 import androidx.lifecycle.ViewModelProvider.NewInstanceFactory.Companion.instance
+import com.example.gemipost.ui.auth.login.LoginViewModel
 import com.example.gemipost.ui.post.create.CreatePostViewModel
 import com.example.gemipost.ui.post.edit.EditPostScreenModel
 import com.example.gemipost.ui.post.feed.FeedScreenModel
@@ -30,6 +31,7 @@ val screenModelModuleK = module{
     }
     viewModel { SearchResultViewModel(get()) }
     viewModel{ SearchViewModel(get()) }
+    viewModel{ LoginViewModel(get(), get()) }
 
 }
 

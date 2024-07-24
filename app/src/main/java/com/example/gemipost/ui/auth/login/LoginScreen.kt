@@ -38,10 +38,11 @@ import com.example.gemipost.ui.auth.util.AuthError
 import com.example.gemipost.ui.auth.util.AuthError.ServerError
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = viewModel(),
+    viewModel: LoginViewModel = koinViewModel(),
     onNavigateToFeed: () -> Unit,
     onNavigateToSignUp: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,

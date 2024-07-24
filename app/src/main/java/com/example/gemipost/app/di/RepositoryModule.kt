@@ -23,7 +23,6 @@ val repositoryModuleK = module {
     }
     single<ReplyRepository> { ReplyRepositoryImpl(get()) }
     single<AuthenticationRepository> { AuthenticationRepositoryImpl(get()) }
-
 }
 
 

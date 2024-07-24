@@ -35,10 +35,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gemipost.ui.post.search.components.RecentSearchesSection
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
     fun SearchScreen(
-    viewModel: SearchViewModel = viewModel(),
+    viewModel: SearchViewModel = koinViewModel(),
     onNavigateToSearchResult: (String) -> Unit,
     onBackPressed: () -> Unit,
     ) {

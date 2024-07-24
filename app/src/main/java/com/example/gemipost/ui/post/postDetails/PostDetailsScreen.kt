@@ -45,6 +45,7 @@ import com.example.gemipost.ui.post.postDetails.components.RepliesList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,7 +53,7 @@ fun PostDetailsScreen(
     postId: String,
     onBackPressed: () -> Unit,
     onTagClicked: (Tag) -> Unit,
-    viewModel: PostDetailsViewModel = viewModel()
+    viewModel: PostDetailsViewModel = koinViewModel()
 ) {
     LaunchedEffect(true){
         viewModel.initScreenModel(postId)
