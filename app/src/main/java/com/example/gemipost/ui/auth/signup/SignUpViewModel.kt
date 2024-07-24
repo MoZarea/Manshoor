@@ -1,5 +1,6 @@
 package com.example.gemipost.ui.auth.signup
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gemipost.R
@@ -87,7 +88,7 @@ class SignUpViewModel(
         _uiState.update { it.copy(name = name) }
     }
 
-    fun onImageChange(image: ByteArray) {
+    fun onImageChange(image: Uri) {
         _uiState.update { it.copy(avatarByteArray = image) }
     }
 

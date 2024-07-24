@@ -27,7 +27,7 @@ val screenModelModuleK = module{
     }
     viewModel { SearchResultViewModel(get()) }
     viewModel{ SearchViewModel(get()) }
-    viewModel{ LoginViewModel(get(), get()) }
+    viewModel{ LoginViewModel(get()) }
     viewModel{ SignUpViewModel(get()) }
     viewModel{ ForgotPasswordViewModel(get()) }
 

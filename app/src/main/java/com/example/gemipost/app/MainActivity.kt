@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp() {
     val navController = rememberNavController()
-    NavHost(navController, startDestination = Feed) {
+    NavHost(navController, startDestination = Login) {
         composable<Login> {
             LoginScreen(onNavigateToFeed = {
                 navController.clearBackStack<Feed>()

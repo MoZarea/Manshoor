@@ -3,8 +3,6 @@ package com.example.gemipost.app.di
 import androidx.lifecycle.ViewModelProvider.NewInstanceFactory.Companion.instance
 import com.example.gemipost.data.auth.source.remote.AuthenticationRemoteDataSource
 import com.example.gemipost.data.auth.source.remote.AuthenticationRemoteDataSourceImpl
-import com.example.gemipost.data.auth.source.remote.UserRemoteDataSource
-import com.example.gemipost.data.auth.source.remote.UserRemoteDataSourceImpl
 import com.example.gemipost.data.post.source.remote.PostRemoteDataSource
 import com.example.gemipost.data.post.source.remote.PostRemoteDataSourceImpl
 import com.example.gemipost.data.post.source.remote.ReplyRemoteDataSource
@@ -31,7 +29,6 @@ val remoteDataSourceModuleK = module {
     single<PostRemoteDataSource>{ PostRemoteDataSourceImpl(get(),get()) }
     single<ReplyRemoteDataSource> { ReplyRemoteDataSourceImpl(get()) }
     single <AuthenticationRemoteDataSource>{AuthenticationRemoteDataSourceImpl(get())  }
-    single <UserRemoteDataSource>{UserRemoteDataSourceImpl(get())  }
     single<FirebaseFirestore> {
         Firebase.firestore
     }

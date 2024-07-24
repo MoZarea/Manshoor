@@ -1,6 +1,6 @@
 package com.example.gemipost.data.auth.repository
 
-import com.example.gemipost.data.auth.source.local.AuthKeyValueStorage
+import android.net.Uri
 import com.example.gemipost.data.auth.source.remote.AuthenticationRemoteDataSource
 import com.example.gemipost.data.auth.source.remote.model.User
 import com.gp.socialapp.util.AuthError
@@ -12,20 +12,15 @@ class AuthenticationRepositoryImpl(
 ) : AuthenticationRepository {
     override fun sendPasswordResetEmail(email: String) =
         remoteDataSource.sendPasswordResetEmail(email)
-    override fun clearStorage() {
-//        localKeyValueStorage.cleanStorage()
-    }
-//    override fun signInWithOAuth(provider: OAuthProvider): Flow<Result<User,AuthError>> =
-//        remoteDataSource.signInWithOAuth(provider)
+
     override fun signInWithEmail(email: String, password: String): Flow<Result<User,AuthError>> =
         remoteDataSource.signInWithEmail(email, password)
-    override fun signUpWithEmail(name: String, avatarByteArray: ByteArray, email: String, password: String): Flow<Result<User,AuthError>> =
-        remoteDataSource.signUpWithEmail(email, password)
+    override fun signUpWithEmail(name: String, avatarByteArray: Uri, email: String, password: String): Flow<Result<User,AuthError>> =
+        remoteDataSource.signUpWithEmail(name,avatarByteArray,email, password)
     override suspend fun getSignedInUser(): Result<User,AuthError> =
         remoteDataSource.getSignedInUser()
 
     override suspend fun logout(): Result<Unit, AuthError> {
-        clearStorage()
         return remoteDataSource.logout()
     }
 

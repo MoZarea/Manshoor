@@ -15,12 +15,10 @@ class ReplyRepositoryImpl(
     }
 
     override suspend fun updateReply(replyId: String, replyContent: String): Result<Unit, ReplyError> {
-        val request = ReplyRequest.UpdateRequest(replyId, replyContent)
         return remoteSource.updateReply(replyId, replyContent)
     }
 
     override suspend fun deleteReply(replyId: String): Result<Unit, ReplyError> {
-        val request = ReplyRequest.DeleteRequest(replyId)
         return remoteSource.deleteReply(replyId)
     }
 
@@ -35,7 +33,6 @@ class ReplyRepositoryImpl(
         replyId: String,
         currentUserId: String
     ): Result<Unit, ReplyError> {
-        val request = ReplyRequest.DownvoteRequest(replyId, currentUserId)
         return remoteSource.downvoteReply(replyId, currentUserId)
     }
 

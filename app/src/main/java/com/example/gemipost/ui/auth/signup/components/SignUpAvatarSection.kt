@@ -1,5 +1,6 @@
 package com.example.gemipost.ui.auth.signup.components
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,7 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SignUpAvatarSection(avatarByteArray: ByteArray, onChangeAvatarClicked: () -> Unit) {
+fun SignUpAvatarSection(avatarByteArray: Uri, onChangeAvatarClicked: () -> Unit) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxWidth()
@@ -28,7 +29,7 @@ fun SignUpAvatarSection(avatarByteArray: ByteArray, onChangeAvatarClicked: () ->
             .size(100.dp)
             .align(Alignment.Center)
             .clip(CircleShape)
-        if (avatarByteArray.isEmpty()) {
+        if (avatarByteArray== Uri.EMPTY) {
             Icon(
                 imageVector = Icons.Filled.AccountCircle,
                 contentDescription = null,

@@ -3,8 +3,6 @@ package com.example.gemipost.app.di
 import androidx.lifecycle.ViewModelProvider.NewInstanceFactory.Companion.instance
 import com.example.gemipost.data.auth.repository.AuthenticationRepository
 import com.example.gemipost.data.auth.repository.AuthenticationRepositoryImpl
-import com.example.gemipost.data.auth.repository.UserRepository
-import com.example.gemipost.data.auth.repository.UserRepositoryImpl
 import com.example.gemipost.data.post.repository.PostRepository
 import com.example.gemipost.data.post.repository.PostRepositoryImpl
 import com.example.gemipost.data.post.repository.ReplyRepository
@@ -25,7 +23,6 @@ val repositoryModuleK = module {
     }
     single<ReplyRepository> { ReplyRepositoryImpl(get()) }
     single<AuthenticationRepository> { AuthenticationRepositoryImpl(get()) }
-    single<UserRepository> { UserRepositoryImpl(get(), get())}
 }
 
 

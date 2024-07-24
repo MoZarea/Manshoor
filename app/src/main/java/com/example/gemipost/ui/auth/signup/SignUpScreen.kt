@@ -1,5 +1,6 @@
 package com.example.gemipost.ui.auth.signup
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -82,7 +83,7 @@ fun SignUpScreen(
 @Composable
 private fun SignUpContent(
     error: AuthError,
-    avatarByteArray: ByteArray,
+    avatarByteArray: Uri,
     onChangeAvatarClicked: () -> Unit,
     name: String,
     onNameChanged: (String) -> Unit,

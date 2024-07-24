@@ -12,4 +12,6 @@ sealed class AuthError {
     data class PhoneNumberError(@StringRes var messageId: Int) : AuthError()
     data class BirthDateError(@StringRes var messageId: Int) : AuthError()
     data object NoError : AuthError()
+    data object UserNotFoundError : AuthError()
+
 }

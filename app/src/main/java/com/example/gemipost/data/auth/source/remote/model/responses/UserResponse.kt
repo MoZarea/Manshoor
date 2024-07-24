@@ -16,12 +16,10 @@ data class UserResponse(
 ) {
     fun toUser() = User(
         id = id,
-        isAdmin = isAdmin,
         name = name,
         profilePictureURL = profilePictureURL,
         email = email,
         phoneNumber = phoneNumber,
-        birthdate = birthdate,
-        bio = bio,
+ 
     )
 }
