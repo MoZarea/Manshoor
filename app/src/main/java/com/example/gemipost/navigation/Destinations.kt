@@ -3,6 +3,9 @@ package com.example.gemipost.navigation
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import androidx.annotation.ColorInt
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.navigation.NavType
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.Tag
@@ -24,16 +27,17 @@ object ForgotPassword
 @Serializable
 object Feed
 @Serializable
-data class PostDetails(val post: Post)
+data class PostDetails(val postId: String)
 @Serializable
 object Search
 @Serializable
-data class SearchResult(val query: String, val isTag: Boolean, val tag: Tag)
+data class SearchResult(val label: String, val isTag: Boolean, @ColorInt val tagIntColor: Int = Color.Transparent.toArgb())
+
 
 @Serializable
 object CreatePost
 @Serializable
-data class EditPost(val post: Post)
+data class EditPost(val postId: String)
 
 inline fun <reified T : Parcelable> parcelableType(
     isNullableAllowed: Boolean = false,

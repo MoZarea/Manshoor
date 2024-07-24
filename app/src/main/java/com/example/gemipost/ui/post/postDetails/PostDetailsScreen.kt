@@ -49,13 +49,13 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostDetailsScreen(
-    post: Post,
+    postId: String,
     onBackPressed: () -> Unit,
     onTagClicked: (Tag) -> Unit,
     viewModel: PostDetailsViewModel = viewModel()
 ) {
     LaunchedEffect(true){
-        viewModel.initScreenModel(post)
+        viewModel.initScreenModel(postId)
     }
     val state by viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()

@@ -22,7 +22,7 @@ interface PostRepository {
     suspend fun getRecentSearches(): List<String>
     suspend fun deleteRecentSearch(search: String)
     suspend fun addRecentSearch(search: String)
-    fun searchByTag(tag: Tag): Flow<Result<List<Post>, PostError>>
+    fun searchByTag(tagLabel: String): Flow<Result<List<Post>, PostError>>
     suspend fun openAttachment(url: String, mimeType: String)
     suspend fun getUserPosts(userId: String): Result<List<Post>,PostError>
 }

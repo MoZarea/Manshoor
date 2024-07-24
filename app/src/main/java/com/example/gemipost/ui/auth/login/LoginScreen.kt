@@ -51,7 +51,7 @@ fun LoginScreen(
     val scope = rememberCoroutineScope()
     LaunchedEffect(key1 = true) {
         isSplashVisible = true
-        viewModel.init()
+        viewModel.initViewModel()
     }
 
     if (isSplashVisible) {
@@ -67,7 +67,7 @@ fun LoginScreen(
             onNavigateToFeed()
         } else {
             LoginContent(
-                onContinueWithGoogle = {/*TODO*/ },
+                onContinueWithGoogle = { /*TODO*/ },
                 onSignIn = { viewModel.onSignIn() },
                 error = state.error,
                 onSignUpClicked = { onNavigateToSignUp() },

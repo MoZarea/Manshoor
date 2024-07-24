@@ -19,10 +19,10 @@ class SearchResultViewModel(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SearchResultUiState())
     val uiState = _uiState.asStateFlow()
-    fun init(searchTerm: String, searchTag: Tag, isTag: Boolean) {
+    fun init(searchTerm: String, searchTagIntColor: Int, isTag: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             if (isTag) {
-                postRepo.searchByTag(searchTag).collect {
+                postRepo.searchByTag(searchTerm).collect {
                     when (it) {
                         is com.gp.socialapp.util.Result.Success -> {
                             val posts = it.data

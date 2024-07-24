@@ -19,11 +19,11 @@ import com.example.gemipost.utils.LocalDateTimeUtil.getPostDate
 fun SearchResultItem(
     modifier: Modifier = Modifier,
     item: Post,
-    onPostClicked: (Post) -> Unit,
+    onPostClicked: (String) -> Unit,
     onPostAuthorClicked: (String) -> Unit
 ) {
     Card(
-        onClick = { onPostClicked(item) },
+        onClick = { onPostClicked(item.id) },
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.03f)),
         modifier = modifier

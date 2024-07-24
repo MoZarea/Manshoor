@@ -26,7 +26,7 @@ class LoginViewModel(
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState = _uiState.asStateFlow()
 
-    fun init() {
+    fun initViewModel() {
         getTheme()
         getSignedInUser()
     }

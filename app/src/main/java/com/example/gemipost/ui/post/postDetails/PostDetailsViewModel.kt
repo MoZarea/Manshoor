@@ -26,13 +26,13 @@ class PostDetailsViewModel(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(PostDetailsUiState())
     val uiState = _uiState.asStateFlow()
-    fun initScreenModel(post: Post) {
+    fun initScreenModel(postId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             //todo
             authRepo.getSignedInUser().let { result ->
                 when (result) {
                     is Result.Success -> {
-                        _uiState.update { it.copy(post = post, currentUserId = result.data.id) }
+//                        _uiState.update { it.copy(post = post, currentUserId = result.data.id) }
                     }
 
                     is Result.Error -> {
@@ -43,7 +43,7 @@ class PostDetailsViewModel(
                     else -> Unit
                 }
             }
-            getRepliesById(post.id)
+            getRepliesById(postId)
         }
     }
 

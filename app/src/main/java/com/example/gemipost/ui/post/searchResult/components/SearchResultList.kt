@@ -13,7 +13,7 @@ import com.example.gemipost.ui.post.searchResult.components.SearchResultItem
 fun SearchResultList(
     modifier: Modifier = Modifier,
     posts: List<Post>,
-    onPostClicked: (Post) -> Unit,
+    onPostClicked: (String) -> Unit,
     onPostAuthorClicked: (String) -> Unit
 ) {
     LazyColumn(

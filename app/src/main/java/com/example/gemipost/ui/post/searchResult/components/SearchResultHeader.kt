@@ -15,7 +15,7 @@ import com.example.gemipost.ui.post.feed.components.TagItem
 fun SearchResultHeader(
     modifier: Modifier = Modifier,
     searchTerm: String,
-    searchTag: Tag,
+    searchTagIntColor: Int,
     isTag: Boolean
 ) {
     Row(
@@ -27,8 +27,9 @@ fun SearchResultHeader(
             style = MaterialTheme.typography.titleMedium,
         )
         if(isTag){
+            val tag = Tag(label = searchTerm, intColor = searchTagIntColor)
             TagItem(
-                tag = searchTag,
+                tag = tag,
                 onTagClicked = {},
                 modifier = Modifier.padding(start = 8.dp)
             )

@@ -133,10 +133,10 @@ class PostRepositoryImpl(
 
     }
 
-    override fun searchByTag(tag: Tag): Flow<Result<List<Post>, PostError>> = flow {
+    override fun searchByTag(tagLabel: String): Flow<Result<List<Post>, PostError>> = flow {
         emit(Result.Loading)
         try {
-            if (tag.label.isEmpty()) {
+            if (tagLabel.isEmpty()) {
                 emit(Result.Success(emptyList()))
                 return@flow
             }  else {
