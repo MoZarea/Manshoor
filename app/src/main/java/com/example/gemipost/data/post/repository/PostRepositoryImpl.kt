@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.flow
 
 
 class PostRepositoryImpl(
-    private val postLocalSource: PostLocalDataSource,
     private val postRemoteSource: PostRemoteDataSource,
 
     ) : PostRepository {
@@ -37,9 +36,9 @@ class PostRepositoryImpl(
                 emit(Result.Success(emptyList()))
                 return@flow
             } else {
-                postLocalSource.searchByTitle(title).collect {
-                    emit(Result.Success(it))
-                }
+//                postLocalSource.searchByTitle(title).collect {
+//                    emit(Result.Success(it))
+//                }
             }
         } catch (e: Exception) {
             emit(Result.Error(PostError.SERVER_ERROR))
@@ -47,7 +46,7 @@ class PostRepositoryImpl(
     }
 
     override suspend fun insertLocalPost(post: Post) {
-        postLocalSource.insertPost(post)
+//        postLocalSource.insertPost(post)
     }
 
     override fun getPosts(): Flow<Result<List<Post>, PostError>> = flow {
@@ -57,9 +56,9 @@ class PostRepositoryImpl(
                 getRemotePosts().collect {
                     println(it)
                 }
-                getLocalPosts().collect {
-                    emit(Result.Success(it))
-                }
+//                getLocalPosts().collect {
+//                    emit(Result.Success(it))
+//                }
 
 
         } catch (e: Exception) {
@@ -72,9 +71,7 @@ class PostRepositoryImpl(
         return postRemoteSource.fetchAllPosts()
     }
 
-    private fun getLocalPosts(): Flow<List<Post>> {
-        return postLocalSource.getAllPosts()
-    }
+
 
     override suspend fun updatePost(post: Post): Result<Unit,PostError > {
         val request = PostRequest.UpdateRequest(post)
@@ -84,7 +81,7 @@ class PostRepositoryImpl(
 
     override suspend fun deletePost(post: Post): Result<Unit,PostError> {
         val request = PostRequest.DeleteRequest(post.id)
-        postLocalSource.deletePostById(post.id)
+//        postLocalSource.deletePostById(post.id)
         return postRemoteSource.deletePost(request)
     }
 
@@ -107,9 +104,11 @@ class PostRepositoryImpl(
         return postRemoteSource.downvotePost(request)
     }
 
-    override suspend fun fetchPostById(id: String): Flow<Post> {
-        return postLocalSource.getPostById(id)
-    }
+    override suspend fun fetchPostById(id: String): Flow<Post> = flow {  }
+
+//    override suspend fun fetchPostById(id: String): Flow<Post> {
+//        return postLocalSource.getPostById(id)
+//    }
 
     override fun getAllTags(communityId: String) = postRemoteSource.getAllTags(communityId)
 
@@ -141,9 +140,9 @@ class PostRepositoryImpl(
                 emit(Result.Success(emptyList()))
                 return@flow
             }  else {
-                postLocalSource.searchByTag(tag.label).collect {
-                    emit(Result.Success(it))
-                }
+//                postLocalSource.searchByTag(tag.label).collect {
+//                    emit(Result.Success(it))
+//                }
             }
         } catch (e: Exception) {
             emit(Result.Error(PostError.SERVER_ERROR))

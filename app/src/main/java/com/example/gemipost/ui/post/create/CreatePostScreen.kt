@@ -1,6 +1,7 @@
 package com.example.gemipost.ui.post.create
 
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,25 +13,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gemipost.R
-import com.example.gemipost.data.post.source.remote.model.PostAttachment
-import com.example.gemipost.data.post.source.remote.model.Tag
 import com.example.gemipost.ui.post.create.component.CreatePostTopBar
 import com.example.gemipost.ui.post.create.component.FilesRow
 import com.example.gemipost.ui.post.create.component.MyTextFieldBody
@@ -38,12 +35,13 @@ import com.example.gemipost.ui.post.create.component.MyTextFieldTitle
 import com.example.gemipost.ui.post.create.component.NewTagAlertDialog
 import com.example.gemipost.ui.post.create.component.TagsRow
 import com.example.gemipost.ui.theme.GemiPostTheme
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CreatePostScreen(
-    viewModel: CreatePostViewModel = viewModel(),
     onNavigateBack: () -> Unit
 ) {
+    val viewModel: CreatePostViewModel = koinViewModel()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     CreatePostContent(
         action = viewModel::handleEvent,
@@ -52,20 +50,21 @@ fun CreatePostScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreatePostContent(
-    action : (CreatePostEvents) -> Unit,
+    action: (CreatePostEvents) -> Unit,
     state: CreatePostUIState,
     onNavigateBack: () -> Unit,
 
-) {
+    ) {
     val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
+        contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
-            uri?.let {
+            uri?.let { selectedUri ->
+                action(CreatePostEvents.OnAddFile(selectedUri))
             }
         }
+
     )
     var newTagDialogState by remember { mutableStateOf(false) }
     Scaffold(
@@ -115,12 +114,15 @@ fun CreatePostContent(
                     action(CreatePostEvents.OnRemoveFile(file))
                 },
                 onAddFile = {
-                    galleryLauncher.launch("image/*")
+                    galleryLauncher.launch(
+                        PickVisualMediaRequest(
+                            mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
+                        )
+                    )
                 }
             )
             Spacer(modifier = Modifier.weight(1f))
             TagsRow(
-                allTags = state.tags,
                 selectedTags = state.tags,
                 onTagClick = { tag ->
                     action(CreatePostEvents.OnRemoveTag(tag))

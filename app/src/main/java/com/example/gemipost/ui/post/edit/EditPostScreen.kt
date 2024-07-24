@@ -40,12 +40,6 @@ private fun EditPostContent(
     state: EditPostUIState,
 
     ) {
-    var openBottomSheet by rememberSaveable { mutableStateOf(false) }
-    val skipPartiallyExpanded by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-    val bottomSheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = skipPartiallyExpanded
-    )
     var newTagDialogState by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
@@ -100,7 +94,6 @@ private fun EditPostContent(
             )
             Spacer(modifier = Modifier.weight(1f))
             TagsRow(
-                allTags = state.channelTags.toList(),
                 selectedTags = state.postTags.toList(),
                 onTagClick = { tag ->
                     action(EditPostAction.OnTagAdded(tag))

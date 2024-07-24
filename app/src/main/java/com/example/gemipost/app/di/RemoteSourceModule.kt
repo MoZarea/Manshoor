@@ -1,5 +1,8 @@
 package com.example.gemipost.app.di
 
+import androidx.lifecycle.ViewModelProvider.NewInstanceFactory.Companion.instance
+import com.example.gemipost.data.auth.source.remote.AuthenticationRemoteDataSource
+import com.example.gemipost.data.auth.source.remote.AuthenticationRemoteDataSourceImpl
 import com.example.gemipost.data.post.source.remote.PostRemoteDataSource
 import com.example.gemipost.data.post.source.remote.PostRemoteDataSourceImpl
 import com.example.gemipost.data.post.source.remote.ReplyRemoteDataSource
@@ -12,12 +15,14 @@ import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.instance
 import org.kodein.di.singleton
+import org.koin.dsl.module
 
 
-val remoteDataSourceModuleK = DI.Module("remoteDataSourceModule") {
-    bind<PostRemoteDataSource>() with singleton { PostRemoteDataSourceImpl(instance()) }
-    bind<ReplyRemoteDataSource>() with singleton { ReplyRemoteDataSourceImpl(instance()) }
-    bind<HttpClient>() with singleton {
+val remoteDataSourceModuleK = module {
+    single<PostRemoteDataSource>{ PostRemoteDataSourceImpl(get()) }
+    single<ReplyRemoteDataSource> { ReplyRemoteDataSourceImpl(get()) }
+    single <AuthenticationRemoteDataSource>{AuthenticationRemoteDataSourceImpl(get())  }
+    single<HttpClient> {
         HttpClient {
             install(ContentNegotiation) {
                 json(Json {

@@ -12,7 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.gemipost.R
-import com.example.gemipost.app.di.appModuleK
+import com.example.gemipost.app.di.appModule
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.Tag
 import com.example.gemipost.navigation.CreatePost
@@ -29,6 +29,9 @@ import com.example.gemipost.ui.post.postDetails.PostDetailsScreen
 import com.example.gemipost.ui.post.searchResult.SearchResultScreen
 import com.example.gemipost.ui.theme.GemiPostTheme
 import org.kodein.di.compose.withDI
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.GlobalContext.startKoin
 import kotlin.reflect.typeOf
 
 class MainActivity : ComponentActivity() {
@@ -38,12 +41,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(R.color.transparent))
         super.onCreate(savedInstanceState)
         setContent {
-            withDI(appModuleK) {
-
                 GemiPostTheme {
                     MyApp()
                 }
-            }
         }
     }
 }
@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp() {
     val navController = rememberNavController()
-    NavHost(navController, startDestination = SearchResult) {
+    NavHost(navController, startDestination = CreatePost) {
         composable<Login> {
             LoginScreen(onNavigateToFeed = {
                 navController.navigate(Feed)

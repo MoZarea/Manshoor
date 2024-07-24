@@ -27,7 +27,6 @@ import com.example.gemipost.data.post.source.remote.model.Tag
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TagsRow(
-    allTags: List<Tag>,
     selectedTags: List<Tag>,
     onTagClick: (Tag) -> Unit,
     onAddNewTagClick: () -> Unit,
@@ -59,7 +58,7 @@ fun TagsRow(
                 Spacer(modifier = Modifier.width(4.dp))
 
             }
-            val tags = (selectedTags + allTags).distinct()
+            val tags = (selectedTags ).distinct()
             items(tags) { tag ->
                 AssistChip(
                     label = { Text(tag.label) },
