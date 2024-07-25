@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp() {
     val navController = rememberNavController()
-    NavHost(navController, startDestination = Feed) {
+    NavHost(navController, startDestination = Login) {
         composable<Splash> {
             Log.d("seerde", "Splash screen")
             SplashScreen(
@@ -130,6 +130,13 @@ fun MyApp() {
                 },
                 navigateToSearch = {
                     navController.navigate(Search)
+                },
+                navigateToLogin = {
+                    navController.navigate(Login){
+                        popUpTo(Feed){
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
