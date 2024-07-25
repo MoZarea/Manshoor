@@ -52,7 +52,6 @@ val remoteDataSourceModuleK = module {
         val sexuallyExplicitSafety = SafetySetting(HarmCategory.SEXUALLY_EXPLICIT, BlockThreshold.NONE)
         GenerativeModel(
             modelName = "gemini-1.5-flash",
-            // Access your API key as a Build Configuration variable (see "Set up your API key" above)
             apiKey = "AIzaSyAk6pVifvbGe6ClXj-aJKNu2fouQpMR4Sw",
             safetySettings = listOf(harassmentSafety, hateSpeechSafety, dangerousSafety, sexuallyExplicitSafety)
         )

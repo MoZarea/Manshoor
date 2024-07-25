@@ -9,14 +9,12 @@ import com.example.gemipost.data.auth.repository.AuthenticationRepository
 import com.example.gemipost.data.post.repository.PostRepository
 import com.example.gemipost.data.post.repository.ReplyRepository
 import com.example.gemipost.data.post.source.remote.model.Post
-import com.example.gemipost.data.post.source.remote.model.PostAttachment
 import com.example.gemipost.data.post.source.remote.model.Reply
 import com.example.gemipost.data.post.util.ToNestedReplies.toNestedReplies
 import com.example.gemipost.ui.post.feed.PostEvent
 import com.example.gemipost.ui.post.feed.ReplyEvent
 import com.example.gemipost.utils.urlToBitmap
 import com.gp.socialapp.util.Result
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -50,12 +48,12 @@ class PostDetailsViewModel(
         viewModelScope.launch {
             postRepo.fetchPostById(postId).let { result ->
                 result.onLoading {
-                        println("zarea:Loading")
-                    }.onFailure {
-                        println("zarea:Error")
-                    }.onSuccessWithData { post ->
-                        _uiState.update { it.copy(post = post) }
-                    }
+                    println("zarea:Loading")
+                }.onFailure {
+                    println("zarea:Error")
+                }.onSuccessWithData { post ->
+                    _uiState.update { it.copy(post = post) }
+                }
                     .onSuccessWithData { post ->
                         _uiState.update {
                             it.copy(
@@ -98,6 +96,8 @@ class PostDetailsViewModel(
                     is Result.Loading -> {
                         _uiState.update { it.copy(isLoading = true) }
                     }
+
+                    else -> {}
                 }
             }
         }
@@ -105,10 +105,12 @@ class PostDetailsViewModel(
 
     private fun createReply(reply: Reply) {
         viewModelScope.launch(Dispatchers.IO) {
-            replyRepo.createReply(reply.copy(
-                authorName = _uiState.value.currentUser.name,
-                authorImageLink = _uiState.value.currentUser.profilePictureURL
-            )).let { result ->
+            replyRepo.createReply(
+                reply.copy(
+                    authorName = _uiState.value.currentUser.name,
+                    authorImageLink = _uiState.value.currentUser.profilePictureURL
+                )
+            ).let { result ->
                 when (result) {
                     is Result.Success -> {
                         getRepliesById(reply.postId)
@@ -129,8 +131,6 @@ class PostDetailsViewModel(
             }
         }
     }
-
-
 
 
     private fun upvotePost(post: Post) {
@@ -154,6 +154,8 @@ class PostDetailsViewModel(
                 is Result.Success -> {
                     getPost(post.id)
                 }
+
+                else -> {}
             }
         }
     }
@@ -179,6 +181,8 @@ class PostDetailsViewModel(
                 Result.Loading -> {
                     // TODO
                 }
+
+                else -> {}
             }
         }
     }
@@ -206,6 +210,8 @@ class PostDetailsViewModel(
                     // TODO
 
                 }
+
+                else -> {}
             }
         }
     }
@@ -233,6 +239,8 @@ class PostDetailsViewModel(
                         Result.Loading -> {
                             // TODO
                         }
+
+                        else -> {}
                     }
                 }
         }
@@ -259,6 +267,8 @@ class PostDetailsViewModel(
                     Result.Loading -> {
                         // TODO
                     }
+
+                    else -> {}
                 }
             }
         }
@@ -286,6 +296,8 @@ class PostDetailsViewModel(
                     Result.Loading -> {
                         // TODO
                     }
+
+                    else -> {}
                 }
             }
         }
@@ -313,6 +325,8 @@ class PostDetailsViewModel(
                     Result.Loading -> {
                         // TODO
                     }
+
+                    else -> {}
                 }
             }
         }
@@ -351,19 +365,13 @@ class PostDetailsViewModel(
 
     private fun reportPost(post: Post, context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
-            val images = mutableListOf<Bitmap>().apply{
-                post.attachments.forEach { url->
-                    urlToBitmap(
-                        scope = this@launch,
-                        imageURL = url,
-                        context = context,
-                        onSuccess = { bitmap ->
-                            add(bitmap)
-                        },
-                        onError = { Log.d("seerde", "Error loading image") }
-                    )
-                }
-            }
+            val images =
+                urlToBitmap(
+                    scope = this@launch,
+                    imageURLs = post.attachments,
+                    context = context,
+                )
+
             postRepo.reportPost(post.id, post.title, post.body, images).onSuccess {
                 Log.d("seerde", "Post reported")
             }.onFailure {

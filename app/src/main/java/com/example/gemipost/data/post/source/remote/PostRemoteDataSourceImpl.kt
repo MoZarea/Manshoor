@@ -4,6 +4,7 @@ package com.example.gemipost.data.post.source.remote
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
+import android.util.Log
 import androidx.compose.ui.platform.LocalContext
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.PostRequest
@@ -13,6 +14,7 @@ import com.example.gemipost.data.post.source.remote.model.PostRequest.UpvoteRequ
 import com.example.gemipost.data.post.source.remote.model.downvote
 import com.example.gemipost.data.post.source.remote.model.upvote
 import com.example.gemipost.utils.AppConstants
+import com.google.ai.client.generativeai.type.PromptBlockedException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.gp.socialapp.util.PostError
@@ -220,7 +222,13 @@ class PostRemoteDataSourceImpl(
             Result.Success(Unit)
         } catch (e: Exception) {
             e.printStackTrace()
-            Result.Error(PostError.SERVER_ERROR)
+            if(e is PromptBlockedException){
+                removePost(postId)
+                Result.Success(Unit)
+            } else {
+                Log.d("seerde","exception message: ${e.message}")
+                Result.Error(PostError.SERVER_ERROR)
+            }
         }
     }
 

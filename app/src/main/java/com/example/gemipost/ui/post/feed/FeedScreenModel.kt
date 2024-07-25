@@ -1,7 +1,6 @@
 package com.example.gemipost.ui.post.feed
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,7 +9,6 @@ import com.example.gemipost.data.post.repository.PostRepository
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.utils.urlToBitmap
 import kotlinx.coroutines.Dispatchers
-
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -44,25 +42,23 @@ class FeedScreenModel(
             postRepo.getPosts().collect { result ->
                 result.onLoading {
                     println("zarea:Loading")
-                }
-                    .onFailure {
-                        println("zarea:Error")
-                    }
-                    .onSuccessWithData { data ->
-                        println("zarea:Success")
-                        _state.update {
-                            it.copy(
-                                posts = data
-                                    .sortedByDescending { it.createdAt }
-                                    .map { post->
-                                        post.copy(
-                                            upvoted = if(state.value.user.id in post.upvoted) listOf("") else emptyList(),
-                                            downvoted = if(state.value.user.id in post.downvoted) listOf("") else emptyList()
-                                        )
-                                    }
+                }.onFailure {
+                    println("zarea:Error")
+                }.onSuccessWithData { data ->
+                    println("zarea:Success")
+                    _state.update {
+                        it.copy(posts = data.sortedByDescending { it.createdAt }.map { post ->
+                            post.copy(
+                                upvoted = if (state.value.user.id in post.upvoted) listOf(
+                                    ""
+                                ) else emptyList(),
+                                downvoted = if (state.value.user.id in post.downvoted) listOf(
+                                    ""
+                                ) else emptyList()
                             )
-                        }
+                        })
                     }
+                }
 
             }
         }
@@ -72,39 +68,32 @@ class FeedScreenModel(
         when (postEvent) {
             is PostEvent.OnPostDeleted -> deletePost(postEvent.post)
             is PostEvent.OnPostDownVoted -> downVotePost(postEvent.post)
-            is PostEvent.OnPostReported ->  reportPost(postEvent.post, postEvent.context)
+            is PostEvent.OnPostReported -> reportPost(postEvent.post, postEvent.context)
             is PostEvent.OnPostShareClicked -> TODO()
-            is PostEvent.OnPostUpVoted ->  upvotedPost(postEvent.post)
+            is PostEvent.OnPostUpVoted -> upvotedPost(postEvent.post)
             is PostEvent.OnLogoutClicked -> logout()
-            else->Unit
+            else -> Unit
         }
     }
 
     private fun logout() {
         viewModelScope.launch(Dispatchers.IO) {
             authRepo.logout().onSuccess {
-                _state.update { it.copy(isLoggedIn = false)}
+                _state.update { it.copy(isLoggedIn = false) }
             }.onFailure {
                 println("zarea:Logout failed")
             }
         }
     }
 
-    private fun reportPost(post: Post, context: Context){
+    private fun reportPost(post: Post, context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
-            val images = mutableListOf<Bitmap>().apply{
-                post.attachments.forEach { url->
-                    urlToBitmap(
-                        scope = this@launch,
-                        imageURL = url,
-                        context = context,
-                        onSuccess = { bitmap ->
-                            add(bitmap)
-                        },
-                        onError = { Log.d("seerde", "Error loading image") }
-                    )
-                }
-            }
+            val images =
+                urlToBitmap(
+                    scope = this@launch,
+                    imageURLs = post.attachments,
+                    context = context,
+                )
             postRepo.reportPost(post.id, post.title, post.body, images).onSuccess {
                 Log.d("seerde", "Post reported")
             }.onFailure {
@@ -112,6 +101,7 @@ class FeedScreenModel(
             }
         }
     }
+
     private fun upvotedPost(post: Post) {
         viewModelScope.launch(Dispatchers.IO) {
             postRepo.upvotePost(post, state.value.user.id).onSuccess {
