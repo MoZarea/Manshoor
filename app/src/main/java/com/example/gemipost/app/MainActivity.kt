@@ -54,8 +54,9 @@ fun MyApp() {
     val navController = rememberNavController()
     NavHost(navController, startDestination = Login) {
         composable<Login> {
-            LoginScreen(onNavigateToFeed = {
-                navController.clearBackStack<Feed>()
+            LoginScreen(
+                onNavigateToFeed = {
+                navController.navigate(Feed)
             }, onNavigateToSignUp = {
                 navController.navigate(SignUp)
             }, onNavigateToForgotPassword = {

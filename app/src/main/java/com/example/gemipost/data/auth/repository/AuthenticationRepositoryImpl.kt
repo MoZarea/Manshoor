@@ -4,6 +4,7 @@ import android.net.Uri
 import com.example.gemipost.data.auth.source.remote.AuthenticationRemoteDataSource
 import com.example.gemipost.data.auth.source.remote.model.User
 import com.gp.socialapp.util.AuthError
+import com.gp.socialapp.util.ErrorMessage
 import com.gp.socialapp.util.Result
 import kotlinx.coroutines.flow.Flow
 
@@ -13,7 +14,7 @@ class AuthenticationRepositoryImpl(
     override fun sendPasswordResetEmail(email: String) =
         remoteDataSource.sendPasswordResetEmail(email)
 
-    override fun signInWithEmail(email: String, password: String): Flow<Result<User,AuthError>> =
+    override fun signInWithEmail(email: String, password: String): Flow<Result<User, ErrorMessage>> =
         remoteDataSource.signInWithEmail(email, password)
     override fun signUpWithEmail(name: String, avatarByteArray: Uri, email: String, password: String): Flow<Result<User,AuthError>> =
         remoteDataSource.signUpWithEmail(name,avatarByteArray,email, password)
@@ -31,4 +32,6 @@ class AuthenticationRepositoryImpl(
             }
         }
     }
+
+
 }

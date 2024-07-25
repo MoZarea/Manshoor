@@ -10,7 +10,7 @@ sealed interface Error
 enum class AssignmentError(val userMessage: String) : Error {
     SERVER_ERROR("Server error"),
 }
-
+data class ErrorMessage(val userMessage: String) : Error
 @Serializable
 enum class AuthError(val userMessage: String) : Error {
     SERVER_ERROR("Server error"),

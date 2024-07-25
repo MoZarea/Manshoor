@@ -21,9 +21,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gemipost.R
 import com.example.gemipost.ui.auth.login.components.AuthButton
 import com.example.gemipost.ui.auth.login.components.AuthEmailField
@@ -32,10 +33,11 @@ import com.example.gemipost.ui.auth.login.components.AuthTextButton
 import com.example.gemipost.ui.auth.login.components.LoginHeader
 import com.example.gemipost.ui.auth.login.components.LoginSignUpSection
 import com.example.gemipost.ui.auth.login.components.SplashScreen
+import com.example.gemipost.ui.auth.login.components.googleSignInOption
 import com.example.gemipost.ui.auth.login.components.imagevectors.OAuthProviderIcons
 import com.example.gemipost.ui.auth.login.components.imagevectors.oauthprovidericons.Google
+import com.example.gemipost.ui.auth.login.components.rememberFirebaseAuthLauncher
 import com.example.gemipost.ui.auth.util.AuthError
-import com.example.gemipost.ui.auth.util.AuthError.ServerError
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -52,7 +54,6 @@ fun LoginScreen(
     val scope = rememberCoroutineScope()
     LaunchedEffect(key1 = true) {
         isSplashVisible = true
-        viewModel.initViewModel()
     }
 
     if (isSplashVisible) {
@@ -66,11 +67,21 @@ fun LoginScreen(
     } else {
         if (state.signedInUser != null) {
             onNavigateToFeed()
+            viewModel.dispose()
         } else {
+            val context = LocalContext.current
+            val launcher = rememberFirebaseAuthLauncher(
+                result = { result ->
+                    viewModel.onGoogleSignedIn(result)
+                },
+            )
+            val googleSignInClient = googleSignInOption(context)
             LoginContent(
-                onContinueWithGoogle = { /*TODO*/ },
+                onContinueWithGoogle = {  launcher.launch(googleSignInClient.signInIntent) },
                 onSignIn = { viewModel.onSignIn() },
                 error = state.error,
+                email = state.email,
+                password = state.password,
                 onSignUpClicked = { onNavigateToSignUp() },
                 onForgotPasswordClicked = { onNavigateToForgotPassword() },
                 onEmailChanged = { viewModel.updateEmail(it) },
@@ -90,12 +101,13 @@ private fun LoginContent(
     onForgotPasswordClicked: () -> Unit,
     onEmailChanged: (String) -> Unit,
     onPasswordChanged: (String) -> Unit,
+    email: String,
+    password: String,
 ) {
+
     var passwordVisible by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    var password by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
@@ -105,7 +117,7 @@ private fun LoginContent(
         LaunchedEffect(error) {
             scope.launch {
                 snackbarHostState.showSnackbar(
-                    message = (error as ServerError).message,
+                    message = (error).toString(),
                 )
             }
         }
@@ -136,4 +148,14 @@ private fun LoginContent(
             LoginSignUpSection(onSignUpClicked)
         }
     }
+}
+
+@Composable
+@Preview
+fun LoginScreenPreview() {
+    LoginScreen(
+        onNavigateToFeed = {},
+        onNavigateToSignUp = {},
+        onNavigateToForgotPassword = {},
+    )
 }

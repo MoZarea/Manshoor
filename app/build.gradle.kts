@@ -95,6 +95,7 @@ dependencies {
     implementation(libs.firebase.storage)
     implementation(libs.korge.foundation)
     implementation("io.insert-koin:koin-androidx-compose:3.5.6")
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
 
 
 }

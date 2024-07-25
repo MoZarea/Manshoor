@@ -5,14 +5,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gemipost.R
 import com.example.gemipost.data.auth.repository.AuthenticationRepository
-import com.example.gemipost.data.auth.repository.UserRepository
+import com.example.gemipost.data.auth.source.remote.model.User
+import com.example.gemipost.ui.auth.util.AuthError
 import com.example.gemipost.ui.auth.util.AuthError.EmailError
 import com.example.gemipost.ui.auth.util.AuthError.NoError
 import com.example.gemipost.ui.auth.util.AuthError.PasswordError
 import com.example.gemipost.ui.auth.util.AuthError.ServerError
 import com.example.gemipost.ui.auth.util.Validator
+import com.example.gemipost.utils.Status
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.OAuthProvider
 import com.gp.socialapp.util.Result
+import com.gp.socialapp.util.UserError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,50 +25,35 @@ import kotlinx.coroutines.launch
 
 class LoginViewModel(
     private val authRepo: AuthenticationRepository,
-    private val userRepo: UserRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState = _uiState.asStateFlow()
 
-    fun initViewModel() {
-//        getTheme()
-//        getSignedInUser()
+    init {
+        getSignedInUser()
     }
 
 
-    private fun getTheme() {
-        viewModelScope.launch {
-            userRepo.getTheme().let { result ->
-                when (result) {
-                    is Result.Success -> {
-                        _uiState.update { it.copy(theme = result.data) }
-                    }
-
-                    is Result.Error -> {
-                        Log.e("seerde", "getTheme: ${result.message}")
-                    }
-
-                    else -> Unit
-                }
-            }
-        }
-    }
 
     private fun getSignedInUser() {
         viewModelScope.launch(Dispatchers.IO) {
             authRepo.getSignedInUser().let { result ->
                 when (result) {
                     is Result.Success -> {
+                        println("getSignedInUser: ${result.data}")
                         _uiState.update {
                             it.copy(
                                 signedInUser = result.data,
-                                userId = result.data.id,
                             )
                         }
                     }
 
                     is Result.Error -> {
-                        Log.e("seerde", "getSignedInUser: ${result.message}")
+                        _uiState.update {
+                            it.copy(
+                                error = AuthError.UserNotFoundError
+                            )
+                        }
                     }
 
                     else -> Unit
@@ -101,7 +90,6 @@ class LoginViewModel(
                         is Result.Success -> {
                             _uiState.update {
                                 it.copy(
-                                    userId = result.data.id,
                                     signedInUser = result.data,
                                     error = NoError
                                 )
@@ -126,10 +114,12 @@ class LoginViewModel(
     }
 
     fun updateEmail(email: String) {
+        println("zarea:updateEmail: $email")
         _uiState.update { it.copy(email = email) }
     }
 
     fun updatePassword(password: String) {
+        println("zarea:updatePassword: $password")
         _uiState.update { it.copy(password = password) }
     }
 
@@ -177,6 +167,30 @@ class LoginViewModel(
             it.copy(
                 signedInUser = null,
             )
+        }
+    }
+    fun onGoogleSignedIn(result: Result<AuthResult, UserError>) {
+        result.onSuccessWithData { authResult ->
+//            _uiState.update {
+//                it.copy(
+//                    signedInUser = User(
+//                        id = authResult.user?.uid ?: "",
+//                        name = authResult.user?.displayName ?: "",
+//                        email = authResult.user?.email ?: "",
+//                        profilePictureURL = authResult.user?.photoUrl.toString(),
+//                        phoneNumber = authResult.user?.phoneNumber ?: "",
+//                        createdAt = authResult.user?.metadata?.creationTimestamp ?: 0L,
+//                        lastLoginAt = authResult.user?.metadata?.lastSignInTimestamp ?: 0L
+//                    )
+//                )
+//            }
+            getSignedInUser()
+        }.onFailure { error->
+            _uiState.update {
+                it.copy(
+                    error = ServerError(error.userMessage)
+                )
+            }
         }
     }
 }
