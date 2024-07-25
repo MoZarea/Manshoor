@@ -31,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,8 +53,14 @@ fun FeedScreen(
     navigateToPostDetails: (String) -> Unit,
     navigateToCreatePost: () -> Unit,
     navigateToSearch: () -> Unit,
+    navigateToLogin: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    LaunchedEffect(key1 = state.isLoggedIn) {
+        if (!state.isLoggedIn) {
+            navigateToLogin()
+        }
+    }
     FeedContent(
         action = { action ->
             when (action) {

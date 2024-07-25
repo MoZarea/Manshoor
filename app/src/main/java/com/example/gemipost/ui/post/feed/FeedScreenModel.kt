@@ -79,7 +79,7 @@ class FeedScreenModel(
     private fun logout() {
         viewModelScope.launch(Dispatchers.IO) {
             authRepo.logout().onSuccess {
-                println("zarea:Logout success")
+                _state.update { it.copy(isLoggedIn = false)}
             }.onFailure {
                 println("zarea:Logout failed")
             }
