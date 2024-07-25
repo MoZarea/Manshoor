@@ -3,12 +3,15 @@ package com.example.gemipost.data.auth.source.remote
 import android.net.Uri
 import com.example.gemipost.data.auth.source.remote.model.User
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import com.gp.socialapp.util.AuthError
 import com.gp.socialapp.util.ErrorMessage
 import com.gp.socialapp.util.Result
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 
 
 class AuthenticationRemoteDataSourceImpl(
@@ -43,7 +46,7 @@ class AuthenticationRemoteDataSourceImpl(
                         )
                     )
                 } else {
-                    trySend(Result.Error(ErrorMessage(task.exception?.localizedMessage?:"error")))
+                    trySend(Result.Error(ErrorMessage(task.exception?.localizedMessage ?: "error")))
                 }
             }
             awaitClose()
@@ -54,9 +57,39 @@ class AuthenticationRemoteDataSourceImpl(
         avatarByteArray: Uri,
         email: String,
         password: String
-    ): Flow<Result<User, AuthError>> {
-        TODO("Not yet implemented")
-
+    ): Flow<Result<User, AuthError>> = callbackFlow {
+        var uri = Uri.EMPTY
+        if (avatarByteArray != Uri.EMPTY) {
+            uri = Firebase.storage.reference.child("avatars").putFile(avatarByteArray)
+                .await().storage.downloadUrl.await()
+        }
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                auth.currentUser?.updateProfile(
+                    com.google.firebase.auth.UserProfileChangeRequest.Builder()
+                        .setDisplayName(name)
+                        .setPhotoUri(uri)
+                        .build()
+                )
+                val user = auth.currentUser
+                trySend(
+                    Result.Success(
+                        User(
+                            id = user?.uid ?: "",
+                            name = name,
+                            profilePictureURL = uri.toString(),
+                            email = user?.email ?: "",
+                            phoneNumber = user?.phoneNumber ?: "",
+                            createdAt = user?.metadata?.creationTimestamp ?: 0L,
+                            lastLoginAt = user?.metadata?.lastSignInTimestamp ?: 0L,
+                        )
+                    )
+                )
+            } else {
+                trySend(Result.Error(AuthError.SERVER_ERROR))
+            }
+        }
+        awaitClose()
     }
 
     override suspend fun getSignedInUser(): Result<User, AuthError> {

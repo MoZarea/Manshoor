@@ -1,28 +1,19 @@
 package com.example.gemipost.ui.auth.signup
 
 import android.net.Uri
-import androidx.compose.foundation.background
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.rounded.Create
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -38,37 +29,53 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gemipost.R
 import com.example.gemipost.ui.auth.login.components.AuthEmailField
 import com.example.gemipost.ui.auth.login.components.AuthPasswordField
 import com.example.gemipost.ui.auth.signup.components.SignUpAvatarSection
-import com.example.gemipost.ui.auth.signup.components.SignUpRePasswordField
 import com.example.gemipost.ui.auth.signup.components.SignUpHeader
 import com.example.gemipost.ui.auth.signup.components.SignUpNameSection
+import com.example.gemipost.ui.auth.signup.components.SignUpRePasswordField
 import com.example.gemipost.ui.auth.util.AuthError
+import com.example.gemipost.ui.post.create.CreatePostEvents
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SignUpScreen(
-    viewModel: SignUpViewModel = viewModel(),
+    viewModel: SignUpViewModel = koinViewModel(),
     onNavigateToFeed: () -> Unit,
     onBackPressed: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
     if (state.signedUpUser != null) {
         onNavigateToFeed()
+        viewModel.despose()
     }
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            uri?.let { selectedUri ->
+                viewModel.onImageChange(selectedUri)
+            }
+        }
+
+    )
     SignUpContent(
         error = state.error,
         avatarByteArray = state.avatarByteArray,
-        onChangeAvatarClicked = {/*TODO*/},
+        onChangeAvatarClicked = {
+            galleryLauncher.launch(
+                PickVisualMediaRequest(
+                    mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
+                )
+            )
+        },
         name = state.name,
-        onNameChanged = {viewModel.onNameChange(it)},
+        onNameChanged = { viewModel.onNameChange(it) },
         email = state.email,
         onEmailChanged = { viewModel.onEmailChange(it) },
         password = state.password,

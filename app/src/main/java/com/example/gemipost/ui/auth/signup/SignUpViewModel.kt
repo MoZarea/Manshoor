@@ -103,4 +103,8 @@ class SignUpViewModel(
     fun rePasswordChange(rePassword: String) {
         _uiState.update { it.copy(rePassword = rePassword) }
     }
+
+    fun despose() {
+        _uiState.value = SignUpUiState()
+    }
 }
