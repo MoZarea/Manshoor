@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,24 +24,29 @@ fun ReplyItem(
     level: Int,
     replyEvent: (ReplyEvent) -> Unit,
 ) {
+
     val padding = with(LocalDensity.current) { 16.dp.toPx() }
     Column {
-        val color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimaryContainer
+        val color = MaterialTheme.colorScheme.onPrimaryContainer
         androidx.compose.material3.Card(
-            modifier = Modifier.drawBehind {
-                repeat(level + 1) {
-                    drawLine(
-                        color = color.copy(alpha = 1f),
-                        start = Offset(it * padding, 0f),
-                        end = Offset(it * padding, size.height),
-                        strokeWidth = 2f
-                    )
+            modifier = Modifier
+                .drawBehind {
+                    repeat(level + 1) {
+                        drawLine(
+                            color = color.copy(alpha = 1f),
+                            start = Offset(it * padding, 0f),
+                            end = Offset(it * padding, size.height),
+                            strokeWidth = 2f
+                        )
+                    }
                 }
-            }.padding(start = (16.dp * level) + 8.dp, end = 8.dp),
+                .padding(start = (16.dp * level) + 8.dp, end = 8.dp),
             shape = ShapeDefaults.Medium,
             colors = CardDefaults.cardColors(
-                containerColor = androidx.compose.material3.MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.03f),
-                )
+                containerColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(
+                    alpha = 0.03f
+                ),
+            )
         ) {
             ReplyContent(nestedReply, replyEvent, currentUserId)
         }

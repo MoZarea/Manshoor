@@ -1,6 +1,8 @@
 package com.example.gemipost.data.post.source.remote
 
 import com.example.gemipost.data.post.source.remote.model.Reply
+import com.example.gemipost.data.post.source.remote.model.downvote
+import com.example.gemipost.data.post.source.remote.model.upvote
 import com.example.gemipost.utils.AppConstants
 import com.google.firebase.firestore.FirebaseFirestore
 import com.gp.socialapp.util.ReplyError
@@ -79,14 +81,11 @@ class ReplyRemoteDataSourceImpl(
     override suspend fun upvoteReply(replyId: String, userId: String): Result<Unit, ReplyError> =
         try {
             val docRef = colRef.document(replyId)
-            val reply = docRef.get().await().toObject(Reply::class.java)
-            docRef.set(
-                reply!!.copy(
-                    upvoted = reply.upvoted + userId,
-                    downvoted = reply.downvoted - userId,
-                    votes = reply.votes + 1
+            docRef.get().await().toObject(Reply::class.java)?.let {
+                docRef.set(
+                    it.upvote(userId)
                 )
-            )
+            }
             success(Unit)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -97,14 +96,11 @@ class ReplyRemoteDataSourceImpl(
     override suspend fun downvoteReply(replyId: String, userId: String): Result<Unit, ReplyError> =
         try {
             val docRef = colRef.document(replyId)
-            val reply = docRef.get().await().toObject(Reply::class.java)
-            docRef.set(
-                reply!!.copy(
-                    downvoted = reply.downvoted + userId,
-                    upvoted = reply.upvoted - userId,
-                    votes = reply.votes - 1
+            docRef.get().await().toObject(Reply::class.java)?.let {
+                docRef.set(
+                    it.downvote(userId)
                 )
-            )
+            }
             success(Unit)
         } catch (e: Exception) {
             e.printStackTrace()

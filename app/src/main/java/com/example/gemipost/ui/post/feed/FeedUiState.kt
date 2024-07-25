@@ -8,6 +8,7 @@ import com.gp.socialapp.util.Result
 
 data class FeedUiState(
     val posts: List<Post> = emptyList(),
+    val user: User = User(),
 )
 
 

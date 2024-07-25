@@ -25,3 +25,15 @@ data class Reply(
     val editStatus: Boolean = false,
     val moderationStatus: String = "SAFE"
 )
+fun Reply.isUpvoted(userId: String): Boolean = userId in upvoted
+fun Reply.isDownvoted(userId: String): Boolean = userId in downvoted
+fun Reply.upvote(userId: String): Reply {
+    if(isUpvoted(userId)) return copy(votes = votes - 1, upvoted = upvoted - userId)
+    else if (isDownvoted(userId)) return copy(votes = votes + 2, upvoted = upvoted + userId, downvoted = downvoted - userId )
+    return copy(votes = votes + 1, upvoted = upvoted + userId)
+}
+fun Reply.downvote(userId: String): Reply {
+    if(isDownvoted(userId)) return copy(votes = votes + 1, downvoted = downvoted - userId)
+    else if (isUpvoted(userId)) return copy(votes = votes - 2, downvoted = downvoted + userId, upvoted = upvoted - userId )
+    return copy(votes = votes - 1, downvoted = downvoted + userId)
+}

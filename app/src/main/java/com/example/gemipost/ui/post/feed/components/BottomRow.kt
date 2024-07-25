@@ -44,12 +44,10 @@ fun BottomRow(
     onDownVoteClicked: () -> Unit,
     onCommentClicked: () -> Unit,
     currentUserID: String,
-    filesCount: Int = 0,
-    onShowFilesClicked: () -> Unit,
     onShareClicked: () -> Unit,
 ) {
-    val isUpvoted = upVotes.contains(currentUserID)
-    val isDownvoted = downVotes.contains(currentUserID)
+    val isUpvoted = upVotes.isNotEmpty()
+    val isDownvoted = downVotes.isNotEmpty()
     val upvoteColor = MaterialTheme.colorScheme.onPrimaryContainer
     val neutralColor = MaterialTheme.colorScheme.secondaryContainer
     val downvoteColor = MaterialTheme.colorScheme.error
