@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.gemipost.data.auth.repository.AuthenticationRepository
 import com.example.gemipost.data.post.repository.PostRepository
 import com.example.gemipost.data.post.source.remote.model.Post
+import com.gp.socialapp.util.PostError
 import kotlinx.coroutines.Dispatchers
 
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +30,9 @@ class FeedScreenModel(
         viewModelScope.launch(Dispatchers.IO) {
             authRepo.getSignedInUser().let { result ->
                 result.onSuccessWithData { data ->
-                    _state.update { it.copy(user = data) }
+                        _state.update { it.copy(user = data) }
+                    }.onFailure {
+                        _state.update { it.copy(error = PostError.USER_NOT_FOUND) }
                 }
             }
         }
@@ -42,7 +45,8 @@ class FeedScreenModel(
                     println("zarea:Loading")
                 }
                     .onFailure {
-                        println("zarea:Error")
+                        println("zarea:Failure")
+                        _state.update { it.copy(error = PostError.SERVER_ERROR) }
                     }
                     .onSuccessWithData { data ->
                         println("zarea:Success")
@@ -50,10 +54,14 @@ class FeedScreenModel(
                             it.copy(
                                 posts = data
                                     .sortedByDescending { it.createdAt }
-                                    .map { post->
+                                    .map { post ->
                                         post.copy(
-                                            upvoted = if(state.value.user.id in post.upvoted) listOf("") else emptyList(),
-                                            downvoted = if(state.value.user.id in post.downvoted) listOf("") else emptyList()
+                                            upvoted = if (state.value.user.id in post.upvoted) listOf(
+                                                ""
+                                            ) else emptyList(),
+                                            downvoted = if (state.value.user.id in post.downvoted) listOf(
+                                                ""
+                                            ) else emptyList()
                                         )
                                     }
                             )
@@ -69,19 +77,20 @@ class FeedScreenModel(
             is PostEvent.OnPostDeleted -> deletePost(postEvent.post)
             is PostEvent.OnPostDownVoted -> downVotePost(postEvent.post)
             is PostEvent.OnPostReported -> TODO()
-            is PostEvent.OnPostShareClicked -> TODO()
-            is PostEvent.OnPostUpVoted ->  upvotedPost(postEvent.post)
+            is PostEvent.OnPostShareClicked -> _state.update { it.copy(error = PostError.SHARE_POST_IS_NOT_AVAILABLE) }
+            is PostEvent.OnPostUpVoted -> upvotedPost(postEvent.post)
             is PostEvent.OnLogoutClicked -> logout()
-            else->Unit
+            else -> Unit
         }
     }
 
     private fun logout() {
         viewModelScope.launch(Dispatchers.IO) {
             authRepo.logout().onSuccess {
-                _state.update { it.copy(isLoggedIn = false)}
+                _state.update { it.copy(isLoggedIn = false) }
             }.onFailure {
                 println("zarea:Logout failed")
+                _state.update { it.copy(error = PostError.LOGOUT_FAILED) }
             }
         }
     }
@@ -91,7 +100,7 @@ class FeedScreenModel(
             postRepo.upvotePost(post, state.value.user.id).onSuccess {
                 println("zarea:Post upvoted")
             }.onFailure {
-                println("zarea:Post not upvoted")
+                _state.update { it.copy(error = PostError.UPVOATE_FAILED) }
             }
         }
     }
@@ -101,7 +110,7 @@ class FeedScreenModel(
             postRepo.downvotePost(post, state.value.user.id).onSuccess {
                 println("zarea:Post downvoted")
             }.onFailure {
-                println("zarea:Post not downvoted")
+                _state.update { it.copy(error = PostError.DOWNVOTE_FAILED)}
             }
         }
     }
@@ -109,9 +118,9 @@ class FeedScreenModel(
     private fun deletePost(post: Post) {
         viewModelScope.launch(Dispatchers.IO) {
             postRepo.deletePost(post).onSuccess {
-                println("zarea:Post deleted")
+                _state.update { it.copy(error = PostError.DELETE_POST_SUCCESS) }
             }.onFailure {
-                println("zarea:Post not deleted")
+                _state.update { it.copy(error = PostError.DELETE_POST_FAILED)}
             }
         }
     }

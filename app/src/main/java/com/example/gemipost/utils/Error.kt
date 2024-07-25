@@ -40,7 +40,18 @@ enum class MaterialError(val userMessage: String) : Error {
 
 @Serializable
 enum class PostError(val userMessage: String) : Error {
+    NO_ERROR("No error"),
+    USER_NOT_FOUND("User not found"),
     SERVER_ERROR("Server error"),
+    YOU_ARE_NOT_AUTHORIZED("You are not authorized to perform this action"),
+    LOGOUT_FAILED("Logout failed"),
+    UPVOATE_FAILED("Upvote failed"),
+    DOWNVOTE_FAILED("Downvote failed"),
+    DELETE_POST_FAILED("Delete post failed"),
+    DELETE_POST_SUCCESS("Post deleted successfully"),
+    REPORT_POST_FAILED("Report post failed"),
+    REPORT_POST_SUCCESS("Post reported successfully"),
+    SHARE_POST_IS_NOT_AVAILABLE("Share post is not available"),
 }
 
 @Serializable

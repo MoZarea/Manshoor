@@ -44,6 +44,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.ui.post.feed.components.FeedPostItem
 import com.example.gemipost.ui.post.feed.components.isUnsafe
+import com.gp.socialapp.util.PostError
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -84,6 +85,11 @@ fun FeedContent(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val snackbarHostState = remember { SnackbarHostState() }
     var menuVisibility by remember { mutableStateOf(false) }
+    LaunchedEffect(key1 = state.error) {
+        if (state.error != PostError.NO_ERROR) {
+            snackbarHostState.showSnackbar(state.error.userMessage, withDismissAction = true)
+        }
+    }
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
