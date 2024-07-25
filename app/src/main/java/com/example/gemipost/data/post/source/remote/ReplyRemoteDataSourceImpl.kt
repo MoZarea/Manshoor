@@ -43,13 +43,12 @@ class ReplyRemoteDataSourceImpl(
                             trySend(Result.Success(replies))
                         }
                     }
-                awaitClose {
-                    listener.remove()
-                }
+
             } catch (e: Exception) {
                 e.printStackTrace()
                 trySend(Result.Error(ReplyError.SERVER_ERROR))
             }
+            awaitClose()
         }
 
     override suspend fun updateReply(
