@@ -39,13 +39,20 @@ fun ReplyOptions(
     currentUserId: String,
     replyEvent: (ReplyEvent) -> Unit
 ) {
+    val isUpvoted = nestedReply.reply?.upvoted?.contains(currentUserId) == true
+    val isDownvoted = nestedReply.reply?.downvoted?.contains(currentUserId) == true
+    val upvoteColor = MaterialTheme.colorScheme.onPrimaryContainer
+    val downvoteColor = MaterialTheme.colorScheme.error
     if (nestedReply.reply?.moderationStatus != ModerationSafety.UNSAFE_REPLY.name)
 
         Row(
-            modifier = Modifier.fillMaxWidth().padding(
-                start = 4.dp,
-                end = 4.dp,
-            ).sizeIn(maxHeight = 28.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 4.dp,
+                    end = 4.dp,
+                )
+                .sizeIn(maxHeight = 28.dp),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -121,7 +128,9 @@ fun ReplyOptions(
                     imageVector = Icons.AutoMirrored.Filled.Comment,
                     contentDescription = "Comment",
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.padding(horizontal = 8.dp).size(20.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .size(20.dp)
                 )
             }
             IconButton(onClick = {
@@ -133,8 +142,7 @@ fun ReplyOptions(
             }) {
                 Icon(
                     imageVector = Icons.Filled.ThumbUpAlt, contentDescription = "Like",
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-
+                    tint = if (isUpvoted) upvoteColor  else MaterialTheme.colorScheme.onPrimaryContainer,
                     )
             }
             Text(text = (nestedReply.reply?.votes ?: 0).toString())
@@ -147,7 +155,7 @@ fun ReplyOptions(
             }) {
                 Icon(
                     imageVector = Icons.Filled.ThumbDownAlt, contentDescription = "Share",
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    tint = if (isDownvoted) downvoteColor else MaterialTheme.colorScheme.onPrimaryContainer,
 
                     )
             }

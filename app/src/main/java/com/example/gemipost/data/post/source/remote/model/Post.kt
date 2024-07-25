@@ -37,6 +37,17 @@ val sortByVotes = compareByDescending<Post> {
         it.replyCount
     )
 }
-//        val sortByDate = compareByDescending<Post>{convertStringToDate(it.publishedAt)}
+fun Post.isUpvoted(userId: String): Boolean = userId in upvoted
+fun Post.isDownvoted(userId: String): Boolean = userId in downvoted
+fun Post.upvote(userId: String): Post {
+    if(isUpvoted(userId)) return copy(votes = votes - 1, upvoted = upvoted - userId)
+    else if (isDownvoted(userId)) return copy(votes = votes + 2, upvoted = upvoted + userId, downvoted = downvoted - userId )
+    return copy(votes = votes + 1, upvoted = upvoted + userId)
+}
+fun Post.downvote(userId: String): Post {
+    if(isDownvoted(userId)) return copy(votes = votes + 1, downvoted = downvoted - userId)
+    else if (isUpvoted(userId)) return copy(votes = votes - 2, downvoted = downvoted + userId, upvoted = upvoted - userId )
+    return copy(votes = votes - 1, downvoted = downvoted + userId)
+}
 
 

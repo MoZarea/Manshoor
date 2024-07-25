@@ -52,7 +52,14 @@ class PostDetailsViewModel(
                         println("zarea:Error")
                     }
                     .onSuccessWithData { post ->
-                        _uiState.update { it.copy(post = post) }
+                        _uiState.update {
+                            it.copy(
+                                post = post.copy(
+                                    upvoted = if (it.currentUser.id in post.upvoted) listOf("") else emptyList(),
+                                    downvoted = if (it.currentUser.id in post.downvoted) listOf("") else emptyList()
+                                )
+                            )
+                        }
                         getRepliesById(postId)
                     }
             }
@@ -94,7 +101,10 @@ class PostDetailsViewModel(
 
     private fun createReply(reply: Reply) {
         viewModelScope.launch(Dispatchers.IO) {
-            replyRepo.createReply(reply).let { result ->
+            replyRepo.createReply(reply.copy(
+                authorName = _uiState.value.currentUser.name,
+                authorImageLink = _uiState.value.currentUser.profilePictureURL
+            )).let { result ->
                 when (result) {
                     is Result.Success -> {
                         getRepliesById(reply.postId)
@@ -131,140 +141,117 @@ class PostDetailsViewModel(
 //        }
     }
 
-    private fun updatePost() {
-        viewModelScope.launch(Dispatchers.IO) {
-            postRepo.updatePost(_uiState.value.post).let { result ->
-                when (result) {
-                    is Result.Success -> {
-                        _uiState.update { it.copy(actionResult = PostDetailsActionResult.PostUpdated) }
-                    }
 
-                    is Result.Error -> {
-                        _uiState.update {
-                            it.copy(
-                                actionResult = PostDetailsActionResult.NetworkError(
-                                    result.message.userMessage
-                                )
+
+
+    private fun upvotePost(post: Post) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = postRepo.upvotePost(post, _uiState.value.currentUser.id)
+            when (result) {
+                is Result.Error -> {
+                    _uiState.update {
+                        it.copy(
+                            actionResult = PostDetailsActionResult.NetworkError(
+                                result.message.userMessage
                             )
+                        )
+                    }
+                }
+
+                Result.Loading -> {
+                    // TODO
+                }
+
+                is Result.Success -> {
+                    getPost(post.id)
+                }
+            }
+        }
+    }
+
+    private fun downvotePost(post: Post) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = postRepo.downvotePost(post, _uiState.value.currentUser.id)
+            when (result) {
+                is Result.Success -> {
+                    getPost(post.id)
+                }
+
+                is Result.Error -> {
+                    _uiState.update {
+                        it.copy(
+                            actionResult = PostDetailsActionResult.NetworkError(
+                                result.message.userMessage
+                            )
+                        )
+                    }
+                }
+
+                Result.Loading -> {
+                    // TODO
+                }
+            }
+        }
+    }
+
+    private fun deletePost(post: Post) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = postRepo.deletePost(post)
+            when (result) {
+                is Result.Success -> {
+                    _uiState.update { it.copy(actionResult = PostDetailsActionResult.PostDeleted) }
+                    getPost(post.id)
+                }
+
+                is Result.Error -> {
+                    _uiState.update {
+                        it.copy(
+                            actionResult = PostDetailsActionResult.NetworkError(
+                                result.message.userMessage
+                            )
+                        )
+                    }
+                }
+
+                Result.Loading -> {
+                    // TODO
+
+                }
+            }
+        }
+    }
+
+
+    private fun upvoteReply(reply: Reply) {
+        viewModelScope.launch(Dispatchers.IO) {
+            replyRepo.upvoteReply(reply.id, currentUserId = _uiState.value.currentUser.id)
+                .let { result ->
+                    when (result) {
+                        is Result.Success -> {
+                            getRepliesById(reply.postId)
+                        }
+
+                        is Result.Error -> {
+                            _uiState.update {
+                                it.copy(
+                                    actionResult = PostDetailsActionResult.NetworkError(
+                                        result.message.userMessage
+                                    )
+                                )
+                            }
+                        }
+
+                        Result.Loading -> {
+                            // TODO
                         }
                     }
-
-                    Result.Loading -> {
-                        // TODO
-                    }
                 }
-            }
         }
     }
 
-
-
-private fun upvotePost(post: Post) {
-    viewModelScope.launch(Dispatchers.IO) {
-        val result = postRepo.upvotePost(post, _uiState.value.currentUser.id)
-        when (result) {
-            is Result.Error -> {
-                _uiState.update {
-                    it.copy(
-                        actionResult = PostDetailsActionResult.NetworkError(
-                            result.message.userMessage
-                        )
-                    )
-                }
-            }
-
-            Result.Loading -> {
-                // TODO
-            }
-
-            is Result.Success -> {
-                updatePost()
-            }
-        }
-    }
-}
-
-private fun downvotePost(post: Post) {
-    viewModelScope.launch(Dispatchers.IO) {
-        val result = postRepo.downvotePost(post, _uiState.value.currentUser.id)
-        when (result) {
-            is Result.Success -> {
-                updatePost()
-            }
-
-            is Result.Error -> {
-                _uiState.update {
-                    it.copy(
-                        actionResult = PostDetailsActionResult.NetworkError(
-                            result.message.userMessage
-                        )
-                    )
-                }
-            }
-
-            Result.Loading -> {
-                // TODO
-            }
-        }
-    }
-}
-
-private fun deletePost(post: Post) {
-    viewModelScope.launch(Dispatchers.IO) {
-        val result = postRepo.deletePost(post)
-        when (result) {
-            is Result.Success -> {
-                _uiState.update { it.copy(actionResult = PostDetailsActionResult.PostDeleted) }
-            }
-
-            is Result.Error -> {
-                _uiState.update {
-                    it.copy(
-                        actionResult = PostDetailsActionResult.NetworkError(
-                            result.message.userMessage
-                        )
-                    )
-                }
-            }
-
-            Result.Loading -> {
-                // TODO
-
-            }
-        }
-    }
-}
-
-private fun updatePost(post: Post) {
-    viewModelScope.launch(Dispatchers.IO) {
-        val result = postRepo.updatePost(post)
-        when (result) {
-            is Result.Success -> {
-                updatePost()
-                _uiState.update { it.copy(actionResult = PostDetailsActionResult.PostUpdated) }
-            }
-
-            is Result.Error -> {
-                _uiState.update {
-                    it.copy(
-                        actionResult = PostDetailsActionResult.NetworkError(
-                            result.message.userMessage
-                        )
-                    )
-                }
-            }
-
-            Result.Loading -> {
-                // TODO
-            }
-        }
-    }
-}
-
-private fun upvoteReply(reply: Reply) {
-    viewModelScope.launch(Dispatchers.IO) {
-        replyRepo.upvoteReply(reply.id, currentUserId = _uiState.value.currentUser.id)
-            .let { result ->
+    private fun downvoteReply(reply: Reply) {
+        viewModelScope.launch(Dispatchers.IO) {
+            replyRepo.downvoteReply(reply.id, _uiState.value.currentUser.id).let { result ->
                 when (result) {
                     is Result.Success -> {
                         getRepliesById(reply.postId)
@@ -285,157 +272,131 @@ private fun upvoteReply(reply: Reply) {
                     }
                 }
             }
+        }
     }
-}
 
-private fun downvoteReply(reply: Reply) {
-    viewModelScope.launch(Dispatchers.IO) {
-        replyRepo.downvoteReply(reply.id, _uiState.value.currentUser.id).let { result ->
-            when (result) {
-                is Result.Success -> {
-                    getRepliesById(reply.postId)
-                }
-
-                is Result.Error -> {
-                    _uiState.update {
-                        it.copy(
-                            actionResult = PostDetailsActionResult.NetworkError(
-                                result.message.userMessage
-                            )
-                        )
+    private fun deleteReply(reply: Reply) {
+        viewModelScope.launch(Dispatchers.IO) {
+            replyRepo.deleteReply(reply.id).let { result ->
+                when (result) {
+                    is Result.Success -> {
+                        getRepliesById(reply.postId)
+                        _uiState.update { it.copy(actionResult = PostDetailsActionResult.ReplyDeleted) }
                     }
-                }
 
-                Result.Loading -> {
-                    // TODO
+                    is Result.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                actionResult = PostDetailsActionResult.NetworkError(
+                                    result.message.userMessage
+                                )
+                            )
+                        }
+                    }
+
+                    Result.Loading -> {
+                        // TODO
+                    }
                 }
             }
         }
     }
-}
 
-private fun deleteReply(reply: Reply) {
-    viewModelScope.launch(Dispatchers.IO) {
-        replyRepo.deleteReply(reply.id).let { result ->
-            when (result) {
-                is Result.Success -> {
-                    getRepliesById(reply.postId)
-                    _uiState.update { it.copy(actionResult = PostDetailsActionResult.ReplyDeleted) }
-                }
-
-                is Result.Error -> {
-                    _uiState.update {
-                        it.copy(
-                            actionResult = PostDetailsActionResult.NetworkError(
-                                result.message.userMessage
-                            )
-                        )
+    private fun updateReply(reply: Reply) {
+        viewModelScope.launch(Dispatchers.IO) {
+            replyRepo.updateReply(reply.id, reply.content).let { result ->
+                when (result) {
+                    is Result.Success -> {
+                        getRepliesById(reply.postId)
+                        _uiState.update { it.copy(actionResult = PostDetailsActionResult.ReplyUpdated) }
                     }
-                }
 
-                Result.Loading -> {
-                    // TODO
+                    is Result.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                actionResult = PostDetailsActionResult.NetworkError(
+                                    result.message.userMessage
+                                )
+                            )
+                        }
+                    }
+
+                    Result.Loading -> {
+                        // TODO
+                    }
                 }
             }
         }
     }
-}
 
-private fun updateReply(reply: Reply) {
-    viewModelScope.launch(Dispatchers.IO) {
-        replyRepo.updateReply(reply.id, reply.content).let { result ->
-            when (result) {
-                is Result.Success -> {
-                    getRepliesById(reply.postId)
-                    _uiState.update { it.copy(actionResult = PostDetailsActionResult.ReplyUpdated) }
-                }
+    fun resetActionResult() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(actionResult = PostDetailsActionResult.NoActionResult) }
+        }
+    }
 
-                is Result.Error -> {
-                    _uiState.update {
-                        it.copy(
-                            actionResult = PostDetailsActionResult.NetworkError(
-                                result.message.userMessage
-                            )
-                        )
-                    }
-                }
-
-                Result.Loading -> {
-                    // TODO
-                }
+    fun handlePostEvent(event: PostEvent) {
+        when (event) {
+            is PostEvent.OnPostDeleted -> deletePost(event.post)
+            is PostEvent.OnPostUpVoted -> upvotePost(event.post)
+            is PostEvent.OnPostDownVoted -> downvotePost(event.post)
+            is PostEvent.OnCommentAdded -> {
+                val reply = Reply(
+                    postId = event.postId,
+                    parentReplyId = "-1",
+                    depth = 0,
+                    content = event.text,
+                    authorID = _uiState.value.currentUser.id,
+                )
+                println("reply in screen model: $reply")
+                createReply(reply)
             }
+
+            is PostEvent.OnAttachmentClicked -> {
+                openAttachment(event.attachment)
+            }
+
+            else -> {}
         }
     }
-}
 
-fun resetActionResult() {
-    viewModelScope.launch {
-        _uiState.update { it.copy(actionResult = PostDetailsActionResult.NoActionResult) }
-    }
-}
-
-fun handlePostEvent(event: PostEvent) {
-    when (event) {
-        is PostEvent.OnPostDeleted -> deletePost(event.post)
-        is PostEvent.OnPostUpVoted -> upvotePost(event.post)
-        is PostEvent.OnPostDownVoted -> downvotePost(event.post)
-        is PostEvent.OnCommentAdded -> {
-            val reply = Reply(
-                postId = event.postId,
-                parentReplyId = "-1",
-                depth = 0,
-                content = event.text,
-                authorID = _uiState.value.currentUser.id,
-            )
-            println("reply in screen model: $reply")
-            createReply(reply)
-        }
-
-        is PostEvent.OnAttachmentClicked -> {
-            openAttachment(event.attachment)
-        }
-
-        else -> {}
-    }
-}
-
-private fun openAttachment(attachment: PostAttachment) {
-    viewModelScope.launch(Dispatchers.IO) {
-        //todo
-        //            val mimeType = MimeType.getMimeTypeFromFileName(attachment.name)
+    private fun openAttachment(attachment: PostAttachment) {
+        viewModelScope.launch(Dispatchers.IO) {
+            //todo
+            //            val mimeType = MimeType.getMimeTypeFromFileName(attachment.name)
 //            val fullMimeType = MimeType.getFullMimeType(mimeType)
 //            postRepo.openAttachment(attachment.url, fullMimeType)
+        }
     }
-}
 
-fun handleReplyEvent(event: ReplyEvent) {
-    when (event) {
-        is ReplyEvent.OnReplyDeleted -> deleteReply(event.reply)
-        is ReplyEvent.OnReplyUpVoted -> upvoteReply(event.reply)
-        is ReplyEvent.OnReplyDownVoted -> downvoteReply(event.reply)
-        is ReplyEvent.OnReplyAdded -> {
-            val reply = Reply(
-                postId = event.reply.postId,
-                parentReplyId = event.reply.id,
-                depth = event.reply.depth + 1,
-                content = event.text,
-                authorID = _uiState.value.currentUser.id,
-                authorName =_uiState.value.currentUser.name,
-                authorImageLink = _uiState.value.currentUser.profilePictureURL
-            )
-            println("nested reply in screen model: $reply")
-            createReply(reply)
+    fun handleReplyEvent(event: ReplyEvent) {
+        when (event) {
+            is ReplyEvent.OnReplyDeleted -> deleteReply(event.reply)
+            is ReplyEvent.OnReplyUpVoted -> upvoteReply(event.reply)
+            is ReplyEvent.OnReplyDownVoted -> downvoteReply(event.reply)
+            is ReplyEvent.OnReplyAdded -> {
+                val reply = Reply(
+                    postId = event.reply.postId,
+                    parentReplyId = event.reply.id,
+                    depth = event.reply.depth + 1,
+                    content = event.text,
+                    authorID = _uiState.value.currentUser.id,
+                    authorName = _uiState.value.currentUser.name,
+                    authorImageLink = _uiState.value.currentUser.profilePictureURL
+                )
+                println("nested reply in screen model: $reply")
+                createReply(reply)
+            }
+
+            is ReplyEvent.OnReplyReported -> {
+                reportReply(event.reply)
+            }
+
+            is ReplyEvent.OnReplyEdited -> {
+                updateReply(event.reply)
+            }
+
+            else -> {}
         }
-
-        is ReplyEvent.OnReplyReported -> {
-            reportReply(event.reply)
-        }
-
-        is ReplyEvent.OnReplyEdited -> {
-            updateReply(event.reply)
-        }
-
-        else -> {}
     }
-}
 }
