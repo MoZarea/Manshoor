@@ -108,19 +108,7 @@ class PostRemoteDataSourceImpl(
         trySend(Result.Loading)
         try {
             Result.Loading
-            val query = colRef.whereEqualTo("title", title)
-            val listener = query.addSnapshotListener { value, error ->
-                if (error != null) {
-                    trySend(Result.Error(PostError.SERVER_ERROR))
-                } else {
-                    val posts = mutableListOf<Post>()
-                    for (doc in value!!) {
-                        posts.add(doc.toObject(Post::class.java))
-                    }
-                    trySend(Result.Success(posts))
-                }
-            }
-
+            //TODO: Implement search by title :Next Feature
         } catch (e: Exception) {
             trySend(Result.Error(PostError.SERVER_ERROR))
             e.printStackTrace()
@@ -134,18 +122,7 @@ class PostRemoteDataSourceImpl(
         trySend(Result.Loading)
         try {
             Result.Loading
-            val query = colRef.whereArrayContains("tags", tag)
-            val listener = query.addSnapshotListener { value, error ->
-                if (error != null) {
-                    trySend(Result.Error(PostError.SERVER_ERROR))
-                } else {
-                    val posts = mutableListOf<Post>()
-                    for (doc in value!!) {
-                        posts.add(doc.toObject(Post::class.java))
-                    }
-                    trySend(Result.Success(posts))
-                }
-            }
+            //TODO: Implement search by tag :Next Feature
         } catch (e: Exception) {
             trySend(Result.Error(PostError.SERVER_ERROR))
             e.printStackTrace()
@@ -200,7 +177,7 @@ class PostRemoteDataSourceImpl(
     override suspend fun upvotePost(request: UpvoteRequest): Result<Unit, PostError> =
         try {
             val docRef = colRef.document(request.postId)
-            docRef.get().await().toObject(Post::class.java)?.let{
+            docRef.get().await().toObject(Post::class.java)?.let {
                 docRef.set(it.upvote(request.userId))
             }
             Result.Success(Unit)
@@ -213,7 +190,7 @@ class PostRemoteDataSourceImpl(
     override suspend fun downvotePost(request: DownvoteRequest): Result<Unit, PostError> =
         try {
             val docRef = colRef.document(request.postId)
-            docRef.get().await().toObject(Post::class.java)?.let{
+            docRef.get().await().toObject(Post::class.java)?.let {
                 docRef.set(it.downvote(request.userId))
             }
             Result.Success(Unit)
