@@ -70,8 +70,19 @@ class FeedScreenModel(
             is PostEvent.OnPostDownVoted -> downVotePost(postEvent.post)
             is PostEvent.OnPostReported -> TODO()
             is PostEvent.OnPostShareClicked -> TODO()
-            is PostEvent.OnPostUpVoted -> upvotedPost(postEvent.post)
-            else -> Unit
+            is PostEvent.OnPostUpVoted ->  upvotedPost(postEvent.post)
+            is PostEvent.OnLogoutClicked -> logout()
+            else->Unit
+        }
+    }
+
+    private fun logout() {
+        viewModelScope.launch(Dispatchers.IO) {
+            authRepo.logout().onSuccess {
+                println("zarea:Logout success")
+            }.onFailure {
+                println("zarea:Logout failed")
+            }
         }
     }
 
