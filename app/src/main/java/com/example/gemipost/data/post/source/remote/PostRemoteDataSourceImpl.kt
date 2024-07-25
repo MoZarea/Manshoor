@@ -228,17 +228,12 @@ class PostRemoteDataSourceImpl(
         }
 
 
-    override suspend fun reportPost(postId: String, title: String, body: String, attachments: List<String>): Result<Unit, PostError> {
+    override suspend fun reportPost(postId: String, title: String, body: String, images: List<Bitmap>): Result<Unit, PostError> {
         return try {
-            val shouldBeRemoved = if (attachments.isNotEmpty()) {
+            val shouldBeRemoved = if (images.isNotEmpty()) {
                 moderationSource.validateText(title, body)
             } else {
-                val imageList = mutableListOf<Bitmap>().apply{
-                    attachments.forEach {
-
-                    }
-                }
-                moderationSource.validateTextWithImages(title, body, images = imageList)
+                moderationSource.validateTextWithImages(title, body, images = images)
             }
             if (shouldBeRemoved) {
                 removePost(postId)

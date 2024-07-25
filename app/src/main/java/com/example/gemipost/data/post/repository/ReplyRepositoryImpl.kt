@@ -1,10 +1,12 @@
 package com.example.gemipost.data.post.repository
 
+import android.graphics.BitmapFactory
 import com.example.gemipost.data.post.source.remote.ReplyRemoteDataSource
 import com.example.gemipost.data.post.source.remote.model.Reply
 import com.gp.socialapp.util.ReplyError
 import com.gp.socialapp.util.Result
 import kotlinx.coroutines.flow.Flow
+import java.io.File
 
 class ReplyRepositoryImpl(
     private val remoteSource: ReplyRemoteDataSource,

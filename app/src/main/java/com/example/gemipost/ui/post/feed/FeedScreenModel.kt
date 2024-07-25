@@ -1,11 +1,14 @@
 package com.example.gemipost.ui.post.feed
 
+import android.content.Context
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gemipost.data.auth.repository.AuthenticationRepository
 import com.example.gemipost.data.post.repository.PostRepository
 import com.example.gemipost.data.post.source.remote.model.Post
+import com.example.gemipost.utils.urlToBitmap
 import kotlinx.coroutines.Dispatchers
 
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,15 +50,28 @@ class FeedScreenModel(
         when(postEvent) {
             is PostEvent.OnPostDeleted -> deletePost(postEvent.post)
             is PostEvent.OnPostDownVoted -> downVotePost(postEvent.post)
-            is PostEvent.OnPostReported ->  reportPost(postEvent.post)
+            is PostEvent.OnPostReported ->  reportPost(postEvent.post, postEvent.context)
             is PostEvent.OnPostShareClicked -> TODO()
             is PostEvent.OnPostUpVoted ->  upvotedPost(postEvent.post)
             else->Unit
         }
     }
-    private fun reportPost(post: Post){
+    private fun reportPost(post: Post, context: Context){
         viewModelScope.launch(Dispatchers.IO) {
-            postRepo.reportPost(post.id, post.title, post.body, post.attachments).onSuccess {
+            val images = mutableListOf<Bitmap>().apply{
+                post.attachments.forEach { url->
+                    urlToBitmap(
+                        scope = this@launch,
+                        imageURL = url,
+                        context = context,
+                        onSuccess = { bitmap ->
+                            add(bitmap)
+                        },
+                        onError = { Log.d("seerde", "Error loading image") }
+                    )
+                }
+            }
+            postRepo.reportPost(post.id, post.title, post.body, images).onSuccess {
                 Log.d("seerde", "Post reported")
             }.onFailure {
                 Log.d("seerde", "Post not reported")

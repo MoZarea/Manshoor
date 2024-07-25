@@ -94,10 +94,10 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
     implementation(libs.korge.foundation)
-    implementation("io.insert-koin:koin-androidx-compose:3.5.6")
-    implementation("com.google.android.gms:play-services-auth:21.2.0")
-
-    implementation("com.google.ai.client.generativeai:generativeai:0.7.0")
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.play.services.auth)
+    implementation(libs.coil.compose)
+    implementation(libs.generativeai)
 }
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {

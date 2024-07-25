@@ -1,5 +1,7 @@
 package com.example.gemipost.ui.post.postDetails
 
+import android.content.Context
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,7 +14,9 @@ import com.example.gemipost.data.post.source.remote.model.Reply
 import com.example.gemipost.data.post.util.ToNestedReplies.toNestedReplies
 import com.example.gemipost.ui.post.feed.PostEvent
 import com.example.gemipost.ui.post.feed.ReplyEvent
+import com.example.gemipost.utils.urlToBitmap
 import com.gp.socialapp.util.Result
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -371,16 +375,29 @@ class PostDetailsViewModel(
             }
 
             is PostEvent.OnPostReported -> {
-                reportPost(event.post)
+                reportPost(event.post, event.context)
             }
 
             else -> {}
         }
     }
 
-    private fun reportPost(post: Post) {
+    private fun reportPost(post: Post, context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
-            postRepo.reportPost(post.id, post.title, post.body, post.attachments).onSuccess {
+            val images = mutableListOf<Bitmap>().apply{
+                post.attachments.forEach { url->
+                    urlToBitmap(
+                        scope = this@launch,
+                        imageURL = url,
+                        context = context,
+                        onSuccess = { bitmap ->
+                            add(bitmap)
+                        },
+                        onError = { Log.d("seerde", "Error loading image") }
+                    )
+                }
+            }
+            postRepo.reportPost(post.id, post.title, post.body, images).onSuccess {
                 Log.d("seerde", "Post reported")
             }.onFailure {
                 Log.d("seerde", "Post not reported")
