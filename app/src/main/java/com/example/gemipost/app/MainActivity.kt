@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp() {
     val navController = rememberNavController()
-    NavHost(navController, startDestination = Search) {
+    NavHost(navController, startDestination = Splash) {
         composable<Splash> {
             Log.d("seerde", "Splash screen")
             SplashScreen(

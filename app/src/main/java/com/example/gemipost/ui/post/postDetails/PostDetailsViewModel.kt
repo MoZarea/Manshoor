@@ -235,31 +235,6 @@ private fun deletePost(post: Post) {
     }
 }
 
-private fun updatePost(post: Post) {
-    viewModelScope.launch(Dispatchers.IO) {
-        val result = postRepo.updatePost(post)
-        when (result) {
-            is Result.Success -> {
-                updatePost()
-                _uiState.update { it.copy(actionResult = PostDetailsActionResult.PostUpdated) }
-            }
-
-            is Result.Error -> {
-                _uiState.update {
-                    it.copy(
-                        actionResult = PostDetailsActionResult.NetworkError(
-                            result.message.userMessage
-                        )
-                    )
-                }
-            }
-
-            Result.Loading -> {
-                // TODO
-            }
-        }
-    }
-}
 
 private fun upvoteReply(reply: Reply) {
     viewModelScope.launch(Dispatchers.IO) {

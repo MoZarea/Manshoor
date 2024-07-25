@@ -15,27 +15,49 @@ import kotlinx.coroutines.launch
 class FeedScreenModel(
     private val postRepo: PostRepository,
     private val authRepo: AuthenticationRepository,
-): ViewModel() {
+) : ViewModel() {
     private val _state = MutableStateFlow(FeedUiState())
     val state = _state.asStateFlow()
-    val userid = "123456789"
+
 
     init {
         fetchPosts()
+        getSignedInUser()
+    }
+
+    private fun getSignedInUser() {
+        viewModelScope.launch(Dispatchers.IO) {
+            authRepo.getSignedInUser().let { result ->
+                result.onSuccessWithData { data ->
+                    _state.update { it.copy(user = data) }
+                }
+            }
+        }
     }
 
     private fun fetchPosts() {
-        viewModelScope.launch (Dispatchers.IO){
-            postRepo.getPosts().collect {result->
+        viewModelScope.launch(Dispatchers.IO) {
+            postRepo.getPosts().collect { result ->
                 result.onLoading {
                     println("zarea:Loading")
                 }
                     .onFailure {
                         println("zarea:Error")
                     }
-                    .onSuccessWithData { data->
+                    .onSuccessWithData { data ->
                         println("zarea:Success")
-                        _state.update { it.copy(posts = data.sortedByDescending { it.createdAt }) }
+                        _state.update {
+                            it.copy(
+                                posts = data
+                                    .sortedByDescending { it.createdAt }
+                                    .map { post->
+                                        post.copy(
+                                            upvoted = if(state.value.user.id in post.upvoted) listOf("") else emptyList(),
+                                            downvoted = if(state.value.user.id in post.downvoted) listOf("") else emptyList()
+                                        )
+                                    }
+                            )
+                        }
                     }
 
             }
@@ -43,19 +65,19 @@ class FeedScreenModel(
     }
 
     fun handleEvent(postEvent: PostEvent) {
-        when(postEvent) {
+        when (postEvent) {
             is PostEvent.OnPostDeleted -> deletePost(postEvent.post)
             is PostEvent.OnPostDownVoted -> downVotePost(postEvent.post)
-            is PostEvent.OnPostReported ->  TODO()
+            is PostEvent.OnPostReported -> TODO()
             is PostEvent.OnPostShareClicked -> TODO()
-            is PostEvent.OnPostUpVoted ->  upvotedPost(postEvent.post)
-            else->Unit
+            is PostEvent.OnPostUpVoted -> upvotedPost(postEvent.post)
+            else -> Unit
         }
     }
 
     private fun upvotedPost(post: Post) {
         viewModelScope.launch(Dispatchers.IO) {
-            postRepo.upvotePost(post, userid).onSuccess {
+            postRepo.upvotePost(post, state.value.user.id).onSuccess {
                 println("zarea:Post upvoted")
             }.onFailure {
                 println("zarea:Post not upvoted")
@@ -65,7 +87,7 @@ class FeedScreenModel(
 
     private fun downVotePost(post: Post) {
         viewModelScope.launch(Dispatchers.IO) {
-            postRepo.downvotePost(post, userid).onSuccess {
+            postRepo.downvotePost(post, state.value.user.id).onSuccess {
                 println("zarea:Post downvoted")
             }.onFailure {
                 println("zarea:Post not downvoted")
