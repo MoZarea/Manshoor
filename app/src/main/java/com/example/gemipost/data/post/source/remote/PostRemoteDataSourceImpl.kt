@@ -42,7 +42,7 @@ class PostRemoteDataSourceImpl(
                     }
                 )
                 docRef.set(post.copy(id = docRef.id))
-                val listener = docRef.addSnapshotListener { value, error ->
+                docRef.addSnapshotListener { value, error ->
                     if (error != null) {
                         trySend(Result.Error(PostError.SERVER_ERROR))
                     } else {
@@ -61,7 +61,7 @@ class PostRemoteDataSourceImpl(
             trySend(Result.Loading)
             try {
                 Result.Loading
-                val listener = db.collection(AppConstants.DB_Constants.POSTS.name)
+                db.collection(AppConstants.DB_Constants.POSTS.name)
                     .addSnapshotListener { value, error ->
                         if (error != null) {
                             trySend(Result.Error(PostError.SERVER_ERROR))
@@ -94,9 +94,6 @@ class PostRemoteDataSourceImpl(
                     trySend(Result.Success(value.toObject(Post::class.java)!!))
                 }
             }
-            awaitClose {
-                listener.remove()
-            }
         } catch (e: Exception) {
             Result.Error(PostError.SERVER_ERROR)
             e.printStackTrace()
@@ -121,9 +118,7 @@ class PostRemoteDataSourceImpl(
                     trySend(Result.Success(posts))
                 }
             }
-            awaitClose {
-                listener.remove()
-            }
+
         } catch (e: Exception) {
             trySend(Result.Error(PostError.SERVER_ERROR))
             e.printStackTrace()
@@ -148,9 +143,6 @@ class PostRemoteDataSourceImpl(
                     }
                     trySend(Result.Success(posts))
                 }
-            }
-            awaitClose {
-                listener.remove()
             }
         } catch (e: Exception) {
             trySend(Result.Error(PostError.SERVER_ERROR))
