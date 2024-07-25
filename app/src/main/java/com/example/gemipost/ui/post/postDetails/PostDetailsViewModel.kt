@@ -55,6 +55,16 @@ class PostDetailsViewModel(
                         println("zarea:Error")
                     }.onSuccessWithData { post ->
                         _uiState.update { it.copy(post = post) }
+                    }
+                    .onSuccessWithData { post ->
+                        _uiState.update {
+                            it.copy(
+                                post = post.copy(
+                                    upvoted = if (it.currentUser.id in post.upvoted) listOf("") else emptyList(),
+                                    downvoted = if (it.currentUser.id in post.downvoted) listOf("") else emptyList()
+                                )
+                            )
+                        }
                         getRepliesById(postId)
                     }
             }
@@ -95,7 +105,10 @@ class PostDetailsViewModel(
 
     private fun createReply(reply: Reply) {
         viewModelScope.launch(Dispatchers.IO) {
-            replyRepo.createReply(reply).let { result ->
+            replyRepo.createReply(reply.copy(
+                authorName = _uiState.value.currentUser.name,
+                authorImageLink = _uiState.value.currentUser.profilePictureURL
+            )).let { result ->
                 when (result) {
                     is Result.Success -> {
                         getRepliesById(reply.postId)
@@ -111,33 +124,22 @@ class PostDetailsViewModel(
 
     }
 
-    private fun updatePost() {
+
+
+
+    private fun upvotePost(post: Post) {
         viewModelScope.launch(Dispatchers.IO) {
-            postRepo.updatePost(_uiState.value.post).let { result ->
-                when (result) {
-                    is Result.Success -> {
-                        _uiState.update { it.copy(actionResult = PostDetailsActionResult.PostUpdated) }
-                    }
-
-                    is Result.Error -> {
-                        _uiState.update {
-                            it.copy(
-                                actionResult = PostDetailsActionResult.NetworkError(
-                                    result.message.userMessage
-                                )
+            val result = postRepo.upvotePost(post, _uiState.value.currentUser.id)
+            when (result) {
+                is Result.Error -> {
+                    _uiState.update {
+                        it.copy(
+                            actionResult = PostDetailsActionResult.NetworkError(
+                                result.message.userMessage
                             )
-                        }
-                    }
-
-                    Result.Loading -> {
-                        // TODO
+                        )
                     }
                 }
-            }
-        }
-    }
-
-
     private fun upvotePost(post: Post) {
         viewModelScope.launch(Dispatchers.IO) {
             val result = postRepo.upvotePost(post, _uiState.value.currentUser.id)
@@ -157,7 +159,7 @@ class PostDetailsViewModel(
                 }
 
                 is Result.Success -> {
-                    updatePost()
+                    getPost(post.id)
                 }
             }
         }
@@ -168,7 +170,7 @@ class PostDetailsViewModel(
             val result = postRepo.downvotePost(post, _uiState.value.currentUser.id)
             when (result) {
                 is Result.Success -> {
-                    updatePost()
+                    getPost(post.id)
                 }
 
                 is Result.Error -> {
@@ -194,6 +196,7 @@ class PostDetailsViewModel(
             when (result) {
                 is Result.Success -> {
                     _uiState.update { it.copy(actionResult = PostDetailsActionResult.PostDeleted) }
+                    getPost(post.id)
                 }
 
                 is Result.Error -> {
@@ -214,31 +217,6 @@ class PostDetailsViewModel(
         }
     }
 
-    private fun updatePost(post: Post) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val result = postRepo.updatePost(post)
-            when (result) {
-                is Result.Success -> {
-                    updatePost()
-                    _uiState.update { it.copy(actionResult = PostDetailsActionResult.PostUpdated) }
-                }
-
-                is Result.Error -> {
-                    _uiState.update {
-                        it.copy(
-                            actionResult = PostDetailsActionResult.NetworkError(
-                                result.message.userMessage
-                            )
-                        )
-                    }
-                }
-
-                Result.Loading -> {
-                    // TODO
-                }
-            }
-        }
-    }
 
     private fun upvoteReply(reply: Reply) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -374,6 +352,9 @@ class PostDetailsViewModel(
                 openAttachment(event.attachment)
             }
 
+            else -> {}
+        }
+    }
             is PostEvent.OnPostReported -> {
                 reportPost(event.post, event.context)
             }
@@ -382,6 +363,10 @@ class PostDetailsViewModel(
         }
     }
 
+    private fun openAttachment(attachment: PostAttachment) {
+        viewModelScope.launch(Dispatchers.IO) {
+            //todo
+            //            val mimeType = MimeType.getMimeTypeFromFileName(attachment.name)
     private fun reportPost(post: Post, context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             val images = mutableListOf<Bitmap>().apply{

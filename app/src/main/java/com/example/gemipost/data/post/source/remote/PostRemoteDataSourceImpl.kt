@@ -10,6 +10,8 @@ import com.example.gemipost.data.post.source.remote.model.PostRequest
 import com.example.gemipost.data.post.source.remote.model.PostRequest.DeleteRequest
 import com.example.gemipost.data.post.source.remote.model.PostRequest.DownvoteRequest
 import com.example.gemipost.data.post.source.remote.model.PostRequest.UpvoteRequest
+import com.example.gemipost.data.post.source.remote.model.downvote
+import com.example.gemipost.data.post.source.remote.model.upvote
 import com.example.gemipost.utils.AppConstants
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -113,19 +115,7 @@ class PostRemoteDataSourceImpl(
         trySend(Result.Loading)
         try {
             Result.Loading
-            val query = colRef.whereEqualTo("title", title)
-            val listener = query.addSnapshotListener { value, error ->
-                if (error != null) {
-                    trySend(Result.Error(PostError.SERVER_ERROR))
-                } else {
-                    val posts = mutableListOf<Post>()
-                    for (doc in value!!) {
-                        posts.add(doc.toObject(Post::class.java))
-                    }
-                    trySend(Result.Success(posts))
-                }
-            }
-
+            //TODO: Implement search by title :Next Feature
         } catch (e: Exception) {
             trySend(Result.Error(PostError.SERVER_ERROR))
             e.printStackTrace()
@@ -139,18 +129,7 @@ class PostRemoteDataSourceImpl(
         trySend(Result.Loading)
         try {
             Result.Loading
-            val query = colRef.whereArrayContains("tags", tag)
-            val listener = query.addSnapshotListener { value, error ->
-                if (error != null) {
-                    trySend(Result.Error(PostError.SERVER_ERROR))
-                } else {
-                    val posts = mutableListOf<Post>()
-                    for (doc in value!!) {
-                        posts.add(doc.toObject(Post::class.java))
-                    }
-                    trySend(Result.Success(posts))
-                }
-            }
+            //TODO: Implement search by tag :Next Feature
         } catch (e: Exception) {
             trySend(Result.Error(PostError.SERVER_ERROR))
             e.printStackTrace()
@@ -205,9 +184,9 @@ class PostRemoteDataSourceImpl(
     override suspend fun upvotePost(request: UpvoteRequest): Result<Unit, PostError> =
         try {
             val docRef = colRef.document(request.postId)
-            val post = docRef.get().await().toObject(Post::class.java)
-            val updatedPost = post!!.copy(upvoted = post.upvoted + request.userId, downvoted = post.downvoted - request.userId, votes = post.votes + 1)
-            docRef.set(updatedPost)
+            docRef.get().await().toObject(Post::class.java)?.let {
+                docRef.set(it.upvote(request.userId))
+            }
             Result.Success(Unit)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -218,9 +197,9 @@ class PostRemoteDataSourceImpl(
     override suspend fun downvotePost(request: DownvoteRequest): Result<Unit, PostError> =
         try {
             val docRef = colRef.document(request.postId)
-            val post = docRef.get().await().toObject(Post::class.java)
-            val updatedPost = post!!.copy(downvoted = post.downvoted + request.userId, upvoted = post.upvoted - request.userId, votes = post.votes - 1)
-            docRef.set(updatedPost)
+            docRef.get().await().toObject(Post::class.java)?.let {
+                docRef.set(it.downvote(request.userId))
+            }
             Result.Success(Unit)
         } catch (e: Exception) {
             e.printStackTrace()
