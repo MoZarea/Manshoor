@@ -1,5 +1,6 @@
 package com.example.gemipost.ui.post.feed
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gemipost.data.auth.repository.AuthenticationRepository
@@ -46,13 +47,21 @@ class FeedScreenModel(
         when(postEvent) {
             is PostEvent.OnPostDeleted -> deletePost(postEvent.post)
             is PostEvent.OnPostDownVoted -> downVotePost(postEvent.post)
-            is PostEvent.OnPostReported ->  TODO()
+            is PostEvent.OnPostReported ->  reportPost(postEvent.post)
             is PostEvent.OnPostShareClicked -> TODO()
             is PostEvent.OnPostUpVoted ->  upvotedPost(postEvent.post)
             else->Unit
         }
     }
-
+    private fun reportPost(post: Post){
+        viewModelScope.launch(Dispatchers.IO) {
+            postRepo.reportPost(post.id, post.title, post.body, post.attachments).onSuccess {
+                Log.d("seerde", "Post reported")
+            }.onFailure {
+                Log.d("seerde", "Post not reported")
+            }
+        }
+    }
     private fun upvotedPost(post: Post) {
         viewModelScope.launch(Dispatchers.IO) {
             postRepo.upvotePost(post, userid).onSuccess {

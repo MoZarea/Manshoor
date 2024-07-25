@@ -1,7 +1,6 @@
 package com.example.gemipost.data.post.source.remote
 
 import com.example.gemipost.data.post.source.remote.model.Reply
-import com.example.gemipost.data.post.source.remote.model.ReplyRequest
 import com.gp.socialapp.util.ReplyError
 import com.gp.socialapp.util.Result
 import kotlinx.coroutines.flow.Flow
@@ -16,6 +15,6 @@ interface ReplyRemoteDataSource {
         currentUserId: String): Result<Unit, ReplyError>
     suspend fun downvoteReply(replyId: String, currentUserId: String): Result<Unit, ReplyError>
     suspend fun reportReply(
-        replyId: String, replyContent: String, reporterId: String
+        replyId: String, replyContent: String
     ): Result<Unit, ReplyError>
 }

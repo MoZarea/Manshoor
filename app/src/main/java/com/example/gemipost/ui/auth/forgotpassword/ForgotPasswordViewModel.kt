@@ -17,7 +17,6 @@ class ForgotPasswordViewModel(
                 uiState.value = uiState.value.copy(sentState = it)
             }
         }
-
     }
 
     fun onEmailChange(email: String) {

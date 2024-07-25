@@ -7,11 +7,7 @@ import com.example.gemipost.data.post.source.remote.model.PostRequest
 import com.gp.socialapp.util.PostError
 import com.gp.socialapp.util.Result
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.transformLatest
 
 
 class PostRepositoryImpl(
@@ -23,12 +19,8 @@ class PostRepositoryImpl(
         return postRemoteSource.createPost(request)
     }
 
-    override suspend fun reportPost(
-        postId: String,
-        reporterId: String
-    ): Result<Unit, PostError> {
-        val request = PostRequest.ReportRequest(postId, reporterId)
-        return postRemoteSource.reportPost(request)
+    override suspend fun reportPost(postId: String, title: String, body: String, attachments: List<String>): Result<Unit, PostError> {
+        return postRemoteSource.reportPost(postId, title, body, attachments)
     }
 
     override fun searchByTitle(title: String): Flow<Result<List<Post>, PostError>> =

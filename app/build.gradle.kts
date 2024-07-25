@@ -97,7 +97,7 @@ dependencies {
     implementation("io.insert-koin:koin-androidx-compose:3.5.6")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
 
-
+    implementation("com.google.ai.client.generativeai:generativeai:0.7.0")
 }
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {

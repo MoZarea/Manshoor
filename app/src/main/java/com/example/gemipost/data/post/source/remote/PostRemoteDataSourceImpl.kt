@@ -1,6 +1,10 @@
 package com.example.gemipost.data.post.source.remote
 
+
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
+import androidx.compose.ui.platform.LocalContext
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.PostRequest
 import com.example.gemipost.data.post.source.remote.model.PostRequest.DeleteRequest
@@ -11,14 +15,18 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.gp.socialapp.util.PostError
 import com.gp.socialapp.util.Result
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+
 
 class PostRemoteDataSourceImpl(
     private val db: FirebaseFirestore,
-    private val storage: FirebaseStorage
+    private val storage: FirebaseStorage,
+    private val moderationSource: ModerationRemoteDataSource
 ) : PostRemoteDataSource {
     private val colRef = db.collection(AppConstants.DB_Constants.POSTS.name)
     override fun createPost(request: PostRequest.CreateRequest): Flow<Result<Unit, PostError>> =
@@ -84,7 +92,6 @@ class PostRemoteDataSourceImpl(
 
     override fun fetchPostById(id: String): Flow<Result<Post, PostError>> = callbackFlow {
         try {
-
             val docRef = colRef.document(id)
             val listener = docRef.addSnapshotListener { value, error ->
                 if (error != null) {
@@ -221,14 +228,30 @@ class PostRemoteDataSourceImpl(
         }
 
 
-    override suspend fun reportPost(request: PostRequest.ReportRequest): Result<Unit, PostError> =
-        try {
-            Result.Loading
-            //TODO: Implement report post :Next Feature
+    override suspend fun reportPost(postId: String, title: String, body: String, attachments: List<String>): Result<Unit, PostError> {
+        return try {
+            val shouldBeRemoved = if (attachments.isNotEmpty()) {
+                moderationSource.validateText(title, body)
+            } else {
+                val imageList = mutableListOf<Bitmap>().apply{
+                    attachments.forEach {
+
+                    }
+                }
+                moderationSource.validateTextWithImages(title, body, images = imageList)
+            }
+            if (shouldBeRemoved) {
+                removePost(postId)
+            }
+            Result.Success(Unit)
         } catch (e: Exception) {
             e.printStackTrace()
             Result.Error(PostError.SERVER_ERROR)
         }
+    }
+
+    private suspend fun removePost(postId: String) {
+        colRef.document(postId).delete().await()
+    }
 
 }
-

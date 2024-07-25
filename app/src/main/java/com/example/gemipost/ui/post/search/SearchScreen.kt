@@ -33,135 +33,135 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gemipost.ui.post.search.components.RecentSearchesSection
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-    fun SearchScreen(
+fun SearchScreen(
     viewModel: SearchViewModel = koinViewModel(),
     onNavigateToSearchResult: (String) -> Unit,
     onBackPressed: () -> Unit,
-    ) {
-        LaunchedEffect(key1 = true){
-            viewModel.init()
-        }
-        val state by viewModel.uiState.collectAsState()
-        SearchScreenContent(
-            recentSearches = state.recentSearches,
-            onSearchItemClick = {
-                viewModel.addRecentSearchItem(it)
-                onNavigateToSearchResult(it)
-            },
-            onDeleteRecentItem = viewModel::deleteRecentSearchItem,
-            onSearchQueryChanged = viewModel::onSearchQueryChanged,
-            suggestionItems = state.suggestionItems,
-            onBackPressed = onBackPressed
-        )
+) {
+    LaunchedEffect(key1 = true) {
+        viewModel.init()
     }
+    val state by viewModel.uiState.collectAsState()
+    SearchScreenContent(
+        recentSearches = state.recentSearches,
+        onSearchItemClick = {
+            viewModel.addRecentSearchItem(it)
+            onNavigateToSearchResult(it)
+        },
+        onDeleteRecentItem = viewModel::deleteRecentSearchItem,
+        onSearchQueryChanged = viewModel::onSearchQueryChanged,
+        suggestionItems = state.suggestionItems,
+        onBackPressed = onBackPressed
+    )
+}
 
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    private fun SearchScreenContent(
-        modifier: Modifier = Modifier,
-        recentSearches: List<String>,
-        onSearchItemClick: (String) -> Unit,
-        onDeleteRecentItem: (String) -> Unit,
-        onSearchQueryChanged: (String) -> Unit,
-        suggestionItems: List<String>,
-        onBackPressed: () -> Unit
-    ) {
-        var searchQuery by remember { mutableStateOf("") }
-        Scaffold(
-            modifier = modifier.fillMaxSize(),
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Row(
-                            modifier = Modifier
-                                .height(90.dp)
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            TextField(
-                                shape = RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp),
-                                value = searchQuery,
-                                onValueChange = {
-                                    searchQuery = it
-                                    onSearchQueryChanged(it)
-                                },
-                                label = { Text(text = "Search Query") },
-                                leadingIcon = {
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SearchScreenContent(
+    modifier: Modifier = Modifier,
+    recentSearches: List<String>,
+    onSearchItemClick: (String) -> Unit,
+    onDeleteRecentItem: (String) -> Unit,
+    onSearchQueryChanged: (String) -> Unit,
+    suggestionItems: List<String>,
+    onBackPressed: () -> Unit
+) {
+    var searchQuery by remember { mutableStateOf("") }
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = {
+                    Row(
+                        modifier = Modifier
+                            .height(90.dp)
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        TextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp),
+                            value = searchQuery,
+                            onValueChange = {
+                                searchQuery = it
+                                onSearchQueryChanged(it)
+                            },
+                            label = { Text(text = "Search Query") },
+                            leadingIcon = {
+                                IconButton(
+                                    onClick = onBackPressed
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = "Back"
+                                    )
+                                }
+                            },
+                            trailingIcon = {
+                                if (searchQuery.isNotBlank()) {
                                     IconButton(
-                                        onClick = onBackPressed
+                                        onClick = { searchQuery = "" }
                                     ) {
                                         Icon(
-                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                            contentDescription = "Back"
+                                            imageVector = Icons.Default.Close,
+                                            contentDescription = "Clear"
                                         )
                                     }
-                                },
-                                trailingIcon = {
-                                    if (searchQuery.isNotBlank()) {
-                                        IconButton(
-                                            onClick = { searchQuery = "" }
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Close,
-                                                contentDescription = "Clear"
-                                            )
-                                        }
-                                    }
-                                },
-                                maxLines = 1,
-                                keyboardOptions = KeyboardOptions.Default.copy(
-                                    imeAction = ImeAction.Done
-                                ),
-                                keyboardActions = KeyboardActions(onDone = {
-                                    onSearchItemClick(searchQuery)
-                                }),
+                                }
+                            },
+                            maxLines = 1,
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(onDone = {
+                                onSearchItemClick(searchQuery)
+                            }),
 
-                                )
-                        }
-
-                    }
-                )
-
-            }
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(paddingValues)
-                    .padding(top = 8.dp)
-                    .padding(horizontal = 16.dp)
-            ) {
-                if (searchQuery.isBlank()) {
-                    RecentSearchesSection(
-                        items = recentSearches,
-                        onItemClick = onSearchItemClick,
-                        onDeleteItem = onDeleteRecentItem
-                    )
-                } else {
-                    LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                        items(suggestionItems.size) { index ->
-                            Text(
-                                text = suggestionItems[index],
-                                modifier = Modifier
-                                    .padding(
-                                        horizontal = 8.dp,
-                                        vertical = 4.dp
-                                    )
-                                    .clickable { onSearchItemClick(suggestionItems[index]) }
-                                    .fillMaxWidth()
                             )
-                            HorizontalDivider()
-                                        }
+                    }
+
+                }
+            )
+
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(paddingValues)
+                .padding(top = 8.dp)
+                .padding(horizontal = 16.dp)
+        ) {
+            if (searchQuery.isBlank()) {
+                RecentSearchesSection(
+                    items = recentSearches,
+                    onItemClick = onSearchItemClick,
+                    onDeleteItem = onDeleteRecentItem
+                )
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                    items(suggestionItems.size) { index ->
+                        Text(
+                            text = suggestionItems[index],
+                            modifier = Modifier
+                                .padding(
+                                    horizontal = 8.dp,
+                                    vertical = 4.dp
+                                )
+                                .clickable { onSearchItemClick(suggestionItems[index]) }
+                                .fillMaxWidth()
+                        )
+                        HorizontalDivider()
                     }
                 }
             }
         }
-
     }
+
+}
