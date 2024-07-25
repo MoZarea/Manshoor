@@ -121,25 +121,18 @@ class PostDetailsViewModel(
     }
 
     private fun reportReply(reply: Reply) {
-
+        viewModelScope.launch(Dispatchers.IO) {
+            replyRepo.reportReply(reply.id, reply.content).onSuccess {
+                Log.d("seerde", "Reply reported")
+            }.onFailure {
+                Log.d("seerde", "Reply not reported")
+            }
+        }
     }
 
 
 
 
-    private fun upvotePost(post: Post) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val result = postRepo.upvotePost(post, _uiState.value.currentUser.id)
-            when (result) {
-                is Result.Error -> {
-                    _uiState.update {
-                        it.copy(
-                            actionResult = PostDetailsActionResult.NetworkError(
-                                result.message.userMessage
-                            )
-                        )
-                    }
-                }
     private fun upvotePost(post: Post) {
         viewModelScope.launch(Dispatchers.IO) {
             val result = postRepo.upvotePost(post, _uiState.value.currentUser.id)
@@ -348,13 +341,6 @@ class PostDetailsViewModel(
                 createReply(reply)
             }
 
-            is PostEvent.OnAttachmentClicked -> {
-                openAttachment(event.attachment)
-            }
-
-            else -> {}
-        }
-    }
             is PostEvent.OnPostReported -> {
                 reportPost(event.post, event.context)
             }
@@ -363,10 +349,6 @@ class PostDetailsViewModel(
         }
     }
 
-    private fun openAttachment(attachment: PostAttachment) {
-        viewModelScope.launch(Dispatchers.IO) {
-            //todo
-            //            val mimeType = MimeType.getMimeTypeFromFileName(attachment.name)
     private fun reportPost(post: Post, context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             val images = mutableListOf<Bitmap>().apply{
@@ -390,14 +372,6 @@ class PostDetailsViewModel(
         }
     }
 
-    private fun openAttachment(attachment: PostAttachment) {
-        viewModelScope.launch(Dispatchers.IO) {
-            //todo
-            //            val mimeType = MimeType.getMimeTypeFromFileName(attachment.name)
-//            val fullMimeType = MimeType.getFullMimeType(mimeType)
-//            postRepo.openAttachment(attachment.url, fullMimeType)
-        }
-    }
 
     fun handleReplyEvent(event: ReplyEvent) {
         when (event) {
