@@ -30,11 +30,8 @@ class LoginViewModel(
     val uiState = _uiState.asStateFlow()
 
     init {
-        getSignedInUser()
+//        getSignedInUser()
     }
-
-
-
     private fun getSignedInUser() {
         viewModelScope.launch(Dispatchers.IO) {
             authRepo.getSignedInUser().let { result ->
@@ -162,12 +159,16 @@ class LoginViewModel(
         }
     }
 
-    fun dispose() {
+    override fun onCleared() {
+        super.onCleared()
         _uiState.update {
             it.copy(
                 signedInUser = null,
             )
         }
+    }
+    fun onDispose(){
+        onCleared()
     }
     fun onGoogleSignedIn(result: Result<AuthResult, UserError>) {
         result.onSuccessWithData { authResult ->

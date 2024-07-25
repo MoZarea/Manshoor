@@ -32,13 +32,11 @@ import com.example.gemipost.ui.auth.login.components.AuthPasswordField
 import com.example.gemipost.ui.auth.login.components.AuthTextButton
 import com.example.gemipost.ui.auth.login.components.LoginHeader
 import com.example.gemipost.ui.auth.login.components.LoginSignUpSection
-import com.example.gemipost.ui.auth.login.components.SplashScreen
 import com.example.gemipost.ui.auth.login.components.googleSignInOption
 import com.example.gemipost.ui.auth.login.components.imagevectors.OAuthProviderIcons
 import com.example.gemipost.ui.auth.login.components.imagevectors.oauthprovidericons.Google
 import com.example.gemipost.ui.auth.login.components.rememberFirebaseAuthLauncher
 import com.example.gemipost.ui.auth.util.AuthError
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -50,45 +48,30 @@ fun LoginScreen(
     onNavigateToForgotPassword: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
-    var isSplashVisible by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-    LaunchedEffect(key1 = true) {
-        isSplashVisible = true
-    }
-
-    if (isSplashVisible) {
-        SplashScreen()
-        LaunchedEffect(key1 = true) {
-            scope.launch {
-                delay(3000)
-                isSplashVisible = false
-            }
-        }
-    } else {
+    LaunchedEffect(state.signedInUser) {
         if (state.signedInUser != null) {
             onNavigateToFeed()
-            viewModel.dispose()
-        } else {
-            val context = LocalContext.current
-            val launcher = rememberFirebaseAuthLauncher(
-                result = { result ->
-                    viewModel.onGoogleSignedIn(result)
-                },
-            )
-            val googleSignInClient = googleSignInOption(context)
-            LoginContent(
-                onContinueWithGoogle = {  launcher.launch(googleSignInClient.signInIntent) },
-                onSignIn = { viewModel.onSignIn() },
-                error = state.error,
-                email = state.email,
-                password = state.password,
-                onSignUpClicked = { onNavigateToSignUp() },
-                onForgotPasswordClicked = { onNavigateToForgotPassword() },
-                onEmailChanged = { viewModel.updateEmail(it) },
-                onPasswordChanged = { viewModel.updatePassword(it) },
-            )
+            viewModel.onDispose()
         }
     }
+    val context = LocalContext.current
+    val launcher = rememberFirebaseAuthLauncher(
+        result = { result ->
+            viewModel.onGoogleSignedIn(result)
+        },
+    )
+    val googleSignInClient = googleSignInOption(context)
+    LoginContent(
+        onContinueWithGoogle = { launcher.launch(googleSignInClient.signInIntent) },
+        onSignIn = { viewModel.onSignIn() },
+        error = state.error,
+        email = state.email,
+        password = state.password,
+        onSignUpClicked = { onNavigateToSignUp() },
+        onForgotPasswordClicked = { onNavigateToForgotPassword() },
+        onEmailChanged = { viewModel.updateEmail(it) },
+        onPasswordChanged = { viewModel.updatePassword(it) },
+    )
 }
 
 
@@ -141,9 +124,7 @@ private fun LoginContent(
             }
             AuthButton(R.string.login_str, onSignIn)
             AuthButton(
-                R.string.continue_with_google,
-                onContinueWithGoogle,
-                OAuthProviderIcons.Google
+                R.string.continue_with_google, onContinueWithGoogle, OAuthProviderIcons.Google
             )
             LoginSignUpSection(onSignUpClicked)
         }

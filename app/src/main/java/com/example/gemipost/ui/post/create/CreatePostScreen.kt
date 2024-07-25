@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,23 +44,24 @@ fun CreatePostScreen(
 ) {
     val viewModel: CreatePostViewModel = koinViewModel()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    if (state.status == Status.SUCCESS) {
-        onNavigateBack()
+    LaunchedEffect(key1 = state.status) {
+        if (state.status == Status.SUCCESS) {
+            onNavigateBack()
+        }
     }
-    else {
-        CreatePostContent(
-            action = viewModel::handleEvent,
-            state = state,
-            onNavigateBack = onNavigateBack,
-        )
-    }
+    CreatePostContent(
+        action = viewModel::handleEvent,
+        state = state,
+        onNavigateBack = onNavigateBack,
+    )
 }
+
 @Composable
 fun CreatePostContent(
     action: (CreatePostEvents) -> Unit,
     state: CreatePostUIState,
     onNavigateBack: () -> Unit,
-    ) {
+) {
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -71,14 +73,12 @@ fun CreatePostContent(
 
     )
     var newTagDialogState by remember { mutableStateOf(false) }
-    Scaffold(
-        topBar = {
-            CreatePostTopBar(
-                onBackClick = onNavigateBack,
-                stringResource(id = R.string.create_post),
-            )
-        }
-    ) {
+    Scaffold(topBar = {
+        CreatePostTopBar(
+            onBackClick = onNavigateBack,
+            stringResource(id = R.string.create_post),
+        )
+    }) {
         Column(
             modifier = Modifier
                 .padding(it)
@@ -86,12 +86,9 @@ fun CreatePostContent(
         ) {
             Spacer(modifier = Modifier.height(8.dp))
             MyTextFieldTitle(
-                value = state.title,
-                label = "Title",
-                onValueChange = { newTitle ->
+                value = state.title, label = "Title", onValueChange = { newTitle ->
                     action(CreatePostEvents.OnTitleChanged(newTitle))
-                },
-                modifier = Modifier
+                }, modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             )
@@ -109,10 +106,9 @@ fun CreatePostContent(
                     .padding(horizontal = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
-            FilesRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+            FilesRow(modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
                 state.files,
                 onFileDelete = { file ->
                     action(CreatePostEvents.OnRemoveFile(file))
@@ -123,18 +119,13 @@ fun CreatePostContent(
                             mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
                         )
                     )
-                }
-            )
+                })
             Spacer(modifier = Modifier.weight(1f))
-            TagsRow(
-                selectedTags = state.tags,
-                onTagClick = { tag ->
-                    action(CreatePostEvents.OnRemoveTag(tag))
-                },
-                onAddNewTagClick = {
-                    newTagDialogState = true
-                }
-            )
+            TagsRow(selectedTags = state.tags, onTagClick = { tag ->
+                action(CreatePostEvents.OnRemoveTag(tag))
+            }, onAddNewTagClick = {
+                newTagDialogState = true
+            })
             Button(
                 onClick = {
                     action(CreatePostEvents.OnCreatePostClicked)
@@ -171,11 +162,7 @@ fun CreatePostContent(
 @Preview
 fun CreatePostContentPreview() {
     GemiPostTheme {
-        CreatePostContent(
-            action = {},
-            state = CreatePostUIState(),
-            onNavigateBack = {}
-        )
+        CreatePostContent(action = {}, state = CreatePostUIState(), onNavigateBack = {})
     }
 }
 
