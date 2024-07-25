@@ -23,7 +23,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -44,7 +43,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.ui.post.feed.components.FeedPostItem
 import com.example.gemipost.ui.post.feed.components.isUnsafe
-import com.gp.socialapp.util.PostError
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -57,11 +55,6 @@ fun FeedScreen(
     navigateToLogin: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    LaunchedEffect(key1 = state.isLoggedIn) {
-        if (!state.isLoggedIn) {
-            navigateToLogin()
-        }
-    }
     FeedContent(
         action = { action ->
             when (action) {
@@ -73,6 +66,7 @@ fun FeedScreen(
             }
         },
         state = state,
+        navigateToLogin = navigateToLogin
     )
 }
 
@@ -81,13 +75,18 @@ fun FeedScreen(
 fun FeedContent(
     action: (PostEvent) -> Unit,
     state: FeedUiState,
+    navigateToLogin: () -> Unit
 ) {
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val scrollBehavior =
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val snackbarHostState = remember { SnackbarHostState() }
     var menuVisibility by remember { mutableStateOf(false) }
-    LaunchedEffect(key1 = state.error) {
-        if (state.error != PostError.NO_ERROR) {
-            snackbarHostState.showSnackbar(state.error.userMessage, withDismissAction = true)
+    LaunchedEffect(key1 = state.userMessage) {
+        if(state.userMessage.isNotBlank()) {
+            if (state.userMessage == "Logged out successfully") {
+                navigateToLogin()
+            }
+            snackbarHostState.showSnackbar(state.userMessage, withDismissAction = true)
         }
     }
     Scaffold(

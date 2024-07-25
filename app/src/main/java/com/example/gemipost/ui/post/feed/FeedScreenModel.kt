@@ -32,7 +32,7 @@ class FeedScreenModel(
                 result.onSuccessWithData { data ->
                         _state.update { it.copy(user = data) }
                     }.onFailure {
-                        _state.update { it.copy(error = PostError.USER_NOT_FOUND) }
+                        _state.update { it.copy(userMessage = PostError.USER_NOT_FOUND.userMessage) }
                 }
             }
         }
@@ -46,7 +46,7 @@ class FeedScreenModel(
                 }
                     .onFailure {
                         println("zarea:Failure")
-                        _state.update { it.copy(error = PostError.SERVER_ERROR) }
+                        _state.update { it.copy(userMessage = PostError.SERVER_ERROR.userMessage) }
                     }
                     .onSuccessWithData { data ->
                         println("zarea:Success")
@@ -77,7 +77,7 @@ class FeedScreenModel(
             is PostEvent.OnPostDeleted -> deletePost(postEvent.post)
             is PostEvent.OnPostDownVoted -> downVotePost(postEvent.post)
             is PostEvent.OnPostReported -> TODO()
-            is PostEvent.OnPostShareClicked -> _state.update { it.copy(error = PostError.SHARE_POST_IS_NOT_AVAILABLE) }
+            is PostEvent.OnPostShareClicked -> _state.update { it.copy(userMessage = PostError.SHARE_POST_IS_NOT_AVAILABLE.userMessage) }
             is PostEvent.OnPostUpVoted -> upvotedPost(postEvent.post)
             is PostEvent.OnLogoutClicked -> logout()
             else -> Unit
@@ -87,10 +87,10 @@ class FeedScreenModel(
     private fun logout() {
         viewModelScope.launch(Dispatchers.IO) {
             authRepo.logout().onSuccess {
-                _state.update { it.copy(isLoggedIn = false) }
+                _state.update { it.copy(userMessage = "Logged out successfully") }
             }.onFailure {
                 println("zarea:Logout failed")
-                _state.update { it.copy(error = PostError.LOGOUT_FAILED) }
+                _state.update { it.copy(userMessage = PostError.LOGOUT_FAILED.userMessage) }
             }
         }
     }
@@ -100,7 +100,7 @@ class FeedScreenModel(
             postRepo.upvotePost(post, state.value.user.id).onSuccess {
                 println("zarea:Post upvoted")
             }.onFailure {
-                _state.update { it.copy(error = PostError.UPVOATE_FAILED) }
+                _state.update { it.copy(userMessage = PostError.UPVOATE_FAILED.userMessage) }
             }
         }
     }
@@ -110,7 +110,7 @@ class FeedScreenModel(
             postRepo.downvotePost(post, state.value.user.id).onSuccess {
                 println("zarea:Post downvoted")
             }.onFailure {
-                _state.update { it.copy(error = PostError.DOWNVOTE_FAILED)}
+                _state.update { it.copy(userMessage = PostError.DOWNVOTE_FAILED.userMessage)}
             }
         }
     }
@@ -118,9 +118,9 @@ class FeedScreenModel(
     private fun deletePost(post: Post) {
         viewModelScope.launch(Dispatchers.IO) {
             postRepo.deletePost(post).onSuccess {
-                _state.update { it.copy(error = PostError.DELETE_POST_SUCCESS) }
+                _state.update { it.copy(userMessage = "Post deleted successfully") }
             }.onFailure {
-                _state.update { it.copy(error = PostError.DELETE_POST_FAILED)}
+                _state.update { it.copy(userMessage = PostError.DELETE_POST_FAILED.userMessage)}
             }
         }
     }

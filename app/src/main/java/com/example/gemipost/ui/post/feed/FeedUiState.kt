@@ -9,8 +9,7 @@ import com.gp.socialapp.util.Result
 data class FeedUiState(
     val posts: List<Post> = emptyList(),
     val user: User = User(),
-    val isLoggedIn: Boolean = true,
-    val error: PostError = PostError.NO_ERROR
+    val userMessage: String = ""
 )
 
 
