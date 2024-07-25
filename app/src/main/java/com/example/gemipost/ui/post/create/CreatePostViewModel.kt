@@ -6,7 +6,6 @@ import com.example.gemipost.data.auth.repository.AuthenticationRepository
 import com.example.gemipost.data.post.repository.PostRepository
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.utils.LocalDateTimeUtil.now
-import com.example.gemipost.utils.Status
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,6 +21,7 @@ class CreatePostViewModel(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CreatePostUIState())
     val uiState = _uiState.asStateFlow()
+
     init {
         getCurrentUser()
     }
@@ -29,8 +29,8 @@ class CreatePostViewModel(
     private fun getCurrentUser() {
         viewModelScope.launch(Dispatchers.IO) {
             authRepository.getSignedInUser().let { result ->
-                result.onSuccessWithData {data->
-                    _uiState.update { it.copy(user =data ) }
+                result.onSuccessWithData { data ->
+                    _uiState.update { it.copy(user = data) }
                 }
             }
         }
@@ -87,16 +87,27 @@ class CreatePostViewModel(
                 ).collect { result ->
                     result
                         .onSuccess {
-                            _uiState.update { it.copy(status = Status.SUCCESS) }
+                            updateUserMessage("Post Created Successfully")
                         }
                         .onFailure { message ->
-                            _uiState.update { it.copy(status = Status.ERROR(message.userMessage)) }
+                            updateUserMessage(message.userMessage)
                         }
                         .onLoading {
-                            _uiState.update { it.copy(status = Status.LOADING) }
+                            updateLoading(true)
                         }
                 }
             }
         }
+    }
+
+    private fun updateUserMessage(message: String) {
+        println("updateUserMessage: $message")
+        _uiState.update { it.copy(userMessage = message) }
+        updateLoading(false)
+    }
+
+    private fun updateLoading(isLoading: Boolean) {
+        println("updateLoading: $isLoading")
+        _uiState.update { it.copy(isLoading = isLoading) }
     }
 }

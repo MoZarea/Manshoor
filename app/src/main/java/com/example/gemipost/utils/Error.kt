@@ -48,9 +48,7 @@ enum class PostError(val userMessage: String) : Error {
     UPVOATE_FAILED("Upvote failed"),
     DOWNVOTE_FAILED("Downvote failed"),
     DELETE_POST_FAILED("Delete post failed"),
-    DELETE_POST_SUCCESS("Post deleted successfully"),
     REPORT_POST_FAILED("Report post failed"),
-    REPORT_POST_SUCCESS("Post reported successfully"),
     SHARE_POST_IS_NOT_AVAILABLE("Share post is not available"),
 }
 
