@@ -51,9 +51,11 @@ fun SignUpScreen(
     onBackPressed: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
-    if (state.signedUpUser != null) {
-        onNavigateToFeed()
-        viewModel.despose()
+    LaunchedEffect(key1 = state.signedUpUser){
+        if (state.signedUpUser != null) {
+            onNavigateToFeed()
+            viewModel.despose()
+        }
     }
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -62,7 +64,6 @@ fun SignUpScreen(
                 viewModel.onImageChange(selectedUri)
             }
         }
-
     )
     SignUpContent(
         error = state.error,

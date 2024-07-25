@@ -35,7 +35,7 @@ class FeedScreenModel(
                     }
                     .onSuccessWithData { data->
                         println("zarea:Success")
-                        _state.update { it.copy(posts = data) }
+                        _state.update { it.copy(posts = data.sortedByDescending { it.createdAt }) }
                     }
 
             }

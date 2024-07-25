@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,8 +45,10 @@ fun EditPostScreen(
 ) {
     viewModel.init(postId)
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    if(state.status== Status.SUCCESS){
-        onNavigateBack()
+    LaunchedEffect(state.status){
+        if(state.status== Status.SUCCESS){
+            onNavigateBack()
+        }
     }
     EditPostContent(
         action = viewModel::handleActions,

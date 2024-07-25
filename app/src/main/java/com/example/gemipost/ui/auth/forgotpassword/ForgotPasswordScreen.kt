@@ -26,6 +26,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -44,15 +45,17 @@ fun ForgotPasswordScreen(
     onBackPressed: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
-    if(state.sentState is Result.Success){
-        onNavigateToLogin()
+    LaunchedEffect(state.sentState){
+        if(state.sentState is Result.Success){
+            onNavigateToLogin()
+        }
     }
-        ForgetPasswordContent(
-            state = state,
-            onEmailChange = { viewModel.onEmailChange(it) },
-            onSendResetEmail = { viewModel.onSendResetEmail() },
-            onBackPressed = onBackPressed
-        )
+    ForgetPasswordContent(
+        state = state,
+        onEmailChange = { viewModel.onEmailChange(it) },
+        onSendResetEmail = { viewModel.onSendResetEmail() },
+        onBackPressed = onBackPressed
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

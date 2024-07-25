@@ -18,6 +18,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,9 +40,10 @@ import org.koin.androidx.compose.koinViewModel
     onBackPressed: () -> Unit
     ) {
         val state by viewModel.uiState.collectAsState()
-        val isScreenModelInitialized by remember { mutableStateOf(false) }
+        var isScreenModelInitialized by remember { mutableStateOf(false) }
         if (!isScreenModelInitialized) {
             viewModel.init(searchLabel, searchTagIntColor, isTag)
+            isScreenModelInitialized = true
         }
         SearchResultContent(
             posts = state.posts,

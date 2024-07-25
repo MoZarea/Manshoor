@@ -10,6 +10,7 @@ import com.example.gemipost.ui.post.feed.FeedScreenModel
 import com.example.gemipost.ui.post.postDetails.PostDetailsViewModel
 import com.example.gemipost.ui.post.search.SearchViewModel
 import com.example.gemipost.ui.post.searchResult.SearchResultViewModel
+import com.example.gemipost.ui.splash.SplashViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -30,6 +31,6 @@ val screenModelModuleK = module{
     viewModel{ LoginViewModel(get()) }
     viewModel{ SignUpViewModel(get()) }
     viewModel{ ForgotPasswordViewModel(get()) }
-
+    viewModel{ SplashViewModel(get()) }
 }
 
