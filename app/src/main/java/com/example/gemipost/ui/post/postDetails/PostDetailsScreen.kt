@@ -125,7 +125,7 @@ fun PostDetailsScreen(
                 else -> viewModel.handleReplyEvent(replyEvent)
             }
         },
-        currentUserID = state.currentUserId,
+        currentUserID = state.currentUser.id,
         clickedReply = clickedReply,
         bottomSheetState = bottomSheetState,
         onDismissAddReplyBottomSheet = {

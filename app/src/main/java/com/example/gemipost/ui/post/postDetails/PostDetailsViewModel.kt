@@ -27,11 +27,10 @@ class PostDetailsViewModel(
     val uiState = _uiState.asStateFlow()
     fun initScreenModel(postId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            //todo
             authRepo.getSignedInUser().let { result ->
                 when (result) {
                     is Result.Success -> {
-                        _uiState.update { it.copy(currentUserId = result.data.id) }
+                        _uiState.update { it.copy(currentUser = result.data) }
                         getPost(postId)
                     }
 
@@ -162,7 +161,7 @@ class PostDetailsViewModel(
 
 private fun upvotePost(post: Post) {
     viewModelScope.launch(Dispatchers.IO) {
-        val result = postRepo.upvotePost(post, _uiState.value.currentUserId)
+        val result = postRepo.upvotePost(post, _uiState.value.currentUser.id)
         when (result) {
             is Result.Error -> {
                 _uiState.update {
@@ -187,7 +186,7 @@ private fun upvotePost(post: Post) {
 
 private fun downvotePost(post: Post) {
     viewModelScope.launch(Dispatchers.IO) {
-        val result = postRepo.downvotePost(post, _uiState.value.currentUserId)
+        val result = postRepo.downvotePost(post, _uiState.value.currentUser.id)
         when (result) {
             is Result.Success -> {
                 updatePost()
@@ -264,7 +263,7 @@ private fun updatePost(post: Post) {
 
 private fun upvoteReply(reply: Reply) {
     viewModelScope.launch(Dispatchers.IO) {
-        replyRepo.upvoteReply(reply.id, currentUserId = _uiState.value.currentUserId)
+        replyRepo.upvoteReply(reply.id, currentUserId = _uiState.value.currentUser.id)
             .let { result ->
                 when (result) {
                     is Result.Success -> {
@@ -291,7 +290,7 @@ private fun upvoteReply(reply: Reply) {
 
 private fun downvoteReply(reply: Reply) {
     viewModelScope.launch(Dispatchers.IO) {
-        replyRepo.downvoteReply(reply.id, _uiState.value.currentUserId).let { result ->
+        replyRepo.downvoteReply(reply.id, _uiState.value.currentUser.id).let { result ->
             when (result) {
                 is Result.Success -> {
                     getRepliesById(reply.postId)
@@ -386,7 +385,7 @@ fun handlePostEvent(event: PostEvent) {
                 parentReplyId = "-1",
                 depth = 0,
                 content = event.text,
-                authorID = _uiState.value.currentUserId,
+                authorID = _uiState.value.currentUser.id,
             )
             println("reply in screen model: $reply")
             createReply(reply)
@@ -420,7 +419,9 @@ fun handleReplyEvent(event: ReplyEvent) {
                 parentReplyId = event.reply.id,
                 depth = event.reply.depth + 1,
                 content = event.text,
-                authorID = _uiState.value.currentUserId,
+                authorID = _uiState.value.currentUser.id,
+                authorName =_uiState.value.currentUser.name,
+                authorImageLink = _uiState.value.currentUser.profilePictureURL
             )
             println("nested reply in screen model: $reply")
             createReply(reply)
