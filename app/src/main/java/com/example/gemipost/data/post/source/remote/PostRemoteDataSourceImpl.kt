@@ -209,7 +209,7 @@ class PostRemoteDataSourceImpl(
 
     override suspend fun reportPost(postId: String, title: String, body: String, images: List<Bitmap>): Result<Unit, PostError> {
         return try {
-            val shouldBeRemoved = if (images.isNotEmpty()) {
+            val shouldBeRemoved = if (images.isEmpty()) {
                 moderationSource.validateText(title, body)
             } else {
                 moderationSource.validateTextWithImages(title, body, images = images)

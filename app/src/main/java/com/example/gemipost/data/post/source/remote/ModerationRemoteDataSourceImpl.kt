@@ -17,7 +17,7 @@ class ModerationRemoteDataSourceImpl(
         }
         val response = model.generateContent(inputContent)
         Log.d("seerde", "validateText: ${response.text}")
-        return response.text == "1"
+        return response.text?.trim() == "1"
     }
 
     override suspend fun validateTextWithImages(vararg texts: String, images: List<Bitmap>): Boolean {
@@ -32,7 +32,7 @@ class ModerationRemoteDataSourceImpl(
         }
         val response = model.generateContent(inputContent)
         Log.d("seerde", "validateTextWithImages: ${response.text}")
-        return response.text == "1"
+        return response.text?.trim() == "1"
     }
 
 }
