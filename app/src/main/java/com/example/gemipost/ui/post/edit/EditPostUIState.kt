@@ -3,7 +3,7 @@ package com.example.gemipost.ui.post.edit
 import android.net.Uri
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.Tag
-import com.example.gemipost.utils.Status
+import com.gp.socialapp.util.PostError
 
 data class EditPostUIState(
     val post: Post = Post(),
@@ -11,6 +11,6 @@ data class EditPostUIState(
     val body: String = "",
     val postTags: Set<Tag> = emptySet(),
     val postAttachments: List<Uri> = emptyList(),
-    val status: Status = Status.IDLE
-
+    val userMessage :String = "",
+    val isLoading :Boolean = false,
 )

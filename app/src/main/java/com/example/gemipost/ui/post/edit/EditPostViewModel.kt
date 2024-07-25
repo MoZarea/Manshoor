@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.gemipost.data.post.repository.PostRepository
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.utils.LocalDateTimeUtil.now
-import com.example.gemipost.utils.Status
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -63,13 +62,11 @@ class EditPostViewModel(
                 ).let {
                     it
                         .onSuccess {
-                            _uiState.update { it.copy(status = Status.SUCCESS) }
+                            updateUserMessage("Post Updated Successfully")
                         }.onFailure { error ->
-                            _uiState.update { it.copy(status = Status.ERROR(error.userMessage)) }
+                            updateUserMessage(error.userMessage)
                         }.onLoading {
-                            _uiState.update {
-                                it.copy(status = Status.LOADING)
-                            }
+                            updateLoading(true)
                         }
                 }
             }
@@ -93,13 +90,22 @@ class EditPostViewModel(
                         }
                     }
                     .onFailure { error->
-                        _uiState.update { it.copy(status = Status.ERROR(error.userMessage)) }
+                        updateUserMessage(error.userMessage)
                     }
                     .onLoading {
-                        _uiState.update { it.copy(status = Status.LOADING) }
+                        updateLoading(true)
                     }
             }
         }
+    }
+    private fun updateUserMessage(message: String) {
+        println("updateUserMessage: $message")
+        _uiState.update { it.copy(userMessage = message) }
+        updateLoading(false)
+    }
+    private fun updateLoading(isLoading: Boolean) {
+        println("updateLoading: $isLoading")
+        _uiState.update { it.copy(isLoading = isLoading) }
     }
 
 }
