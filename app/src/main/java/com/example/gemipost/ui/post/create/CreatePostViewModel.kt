@@ -22,6 +22,19 @@ class CreatePostViewModel(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CreatePostUIState())
     val uiState = _uiState.asStateFlow()
+    init {
+        getCurrentUser()
+    }
+
+    private fun getCurrentUser() {
+        viewModelScope.launch(Dispatchers.IO) {
+            authRepository.getSignedInUser().let { result ->
+                result.onSuccessWithData {data->
+                    _uiState.update { it.copy(user =data ) }
+                }
+            }
+        }
+    }
 
     fun handleEvent(createPostEvents: CreatePostEvents) =
         when (createPostEvents) {
@@ -61,6 +74,8 @@ class CreatePostViewModel(
             viewModelScope.launch(Dispatchers.IO) {
                 postRepository.createPost(
                     Post(
+                        authorName = user?.name ?: "",
+                        authorPfp = user?.profilePictureURL ?: "",
                         title = title,
                         body = body,
                         tags = tags.toList(),

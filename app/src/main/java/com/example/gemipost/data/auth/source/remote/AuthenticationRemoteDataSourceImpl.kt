@@ -3,6 +3,7 @@ package com.example.gemipost.data.auth.source.remote
 import android.net.Uri
 import com.example.gemipost.data.auth.source.remote.model.User
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.gp.socialapp.util.AuthError
@@ -93,7 +94,7 @@ class AuthenticationRemoteDataSourceImpl(
     }
 
     override suspend fun getSignedInUser(): Result<User, AuthError> {
-        if (auth.currentUser == null) {
+        if (Firebase.auth.currentUser == null) {
             return Result.Error(AuthError.SERVER_ERROR)
         } else {
             val user = auth.currentUser

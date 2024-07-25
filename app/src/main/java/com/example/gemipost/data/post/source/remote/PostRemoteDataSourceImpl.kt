@@ -49,12 +49,9 @@ class PostRemoteDataSourceImpl(
                         trySend(Result.Success(Unit))
                     }
                 }
-                awaitClose {
-                    listener.remove()
-                }
-
             } catch (e: Exception) {
                 e.printStackTrace()
+                Result.Error(PostError.SERVER_ERROR)
             }
             awaitClose()
         }
@@ -77,14 +74,12 @@ class PostRemoteDataSourceImpl(
 
                         }
                     }
-                awaitClose {
-                    listener.remove()
-                }
+
             } catch (e: Exception) {
                 e.printStackTrace()
                 trySend(Result.Error(PostError.SERVER_ERROR))
-
             }
+            awaitClose()
         }
 
     override fun fetchPostById(id: String): Flow<Result<Post, PostError>> = callbackFlow {
@@ -106,6 +101,7 @@ class PostRemoteDataSourceImpl(
             Result.Error(PostError.SERVER_ERROR)
             e.printStackTrace()
         }
+        awaitClose()
     }
 
 
@@ -132,6 +128,7 @@ class PostRemoteDataSourceImpl(
             trySend(Result.Error(PostError.SERVER_ERROR))
             e.printStackTrace()
         }
+        awaitClose()
 
 
     }
@@ -159,6 +156,7 @@ class PostRemoteDataSourceImpl(
             trySend(Result.Error(PostError.SERVER_ERROR))
             e.printStackTrace()
         }
+        awaitClose()
     }
 
     override suspend fun updatePost(request: PostRequest.UpdateRequest): Result<Unit, PostError> =
