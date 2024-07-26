@@ -24,6 +24,9 @@ object SignUp
 object ForgotPassword
 
 @Serializable
+object TestDest
+
+@Serializable
 object Feed
 @Serializable
 data class PostDetails(val postId: String)
