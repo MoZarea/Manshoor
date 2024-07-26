@@ -161,6 +161,7 @@ fun FeedContent(
             FeedPosts(
                 posts = state.posts,
                 onPostEvent = action,
+                currentUserId = state.user.id
             )
         }
     }
@@ -171,6 +172,7 @@ fun FeedContent(
 fun FeedPosts(
     posts: List<Post>,
     onPostEvent: (PostEvent) -> Unit,
+    currentUserId: String
 ) {
     println("FeedPosts: ${posts.size}")
     Column(modifier = Modifier.fillMaxSize()) {
@@ -180,7 +182,7 @@ fun FeedPosts(
             items(posts) { post ->
                 if (!post.moderationStatus.isUnsafe()) {
                     FeedPostItem(
-                        post = post, onPostEvent = onPostEvent
+                        post = post, onPostEvent = onPostEvent , currentUserId = currentUserId
                     )
                     Spacer(modifier = Modifier.size(2.dp))
                 }

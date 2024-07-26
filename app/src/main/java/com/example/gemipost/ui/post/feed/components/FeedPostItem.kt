@@ -26,7 +26,7 @@ import com.gp.socialapp.util.ModerationSafety
 
 @Composable
 fun FeedPostItem(
-    post: Post, onPostEvent: (PostEvent) -> Unit
+    post: Post, onPostEvent: (PostEvent) -> Unit , currentUserId: String
 ) {
     val context = LocalContext.current
     Column(
@@ -57,7 +57,7 @@ fun FeedPostItem(
                         onDeletePostClicked = { onPostEvent(PostEvent.OnPostDeleted(post)) },
                         onReportPostClicked = { onPostEvent(PostEvent.OnPostReported(post, context)) },
                         onUserClick = { onPostEvent(PostEvent.OnPostAuthorClicked(post.authorID)) },
-                        isAuthor = true
+                        isAuthor = post.authorID == currentUserId
 
                     )
                     TagsFlowRow(selectedTags = post.tags.toSet(),
@@ -78,7 +78,7 @@ fun FeedPostItem(
                         onCommentClicked = {
                             onPostEvent(PostEvent.OnCommentClicked(post))
                         },
-                        currentUserID = "currentUserID",
+                        currentUserID = currentUserId,
                         onShareClicked = { onPostEvent(PostEvent.OnPostShareClicked(post)) }
                     )
                 }
@@ -118,6 +118,8 @@ fun PreviewFeedPostItem() {
             id = "1",
             title = "Title",
             body = "Body",
-        )
-    ) {}
+        ),
+        onPostEvent = {},
+        currentUserId = "1"
+    )
 }}

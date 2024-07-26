@@ -71,17 +71,18 @@ fun OptionButton(
                         Text(text = stringResource(R.string.delete))
                     }
                 )
-                DropdownMenuItem(
-                    onClick = {
-                        onReportPostClicked()
-                        expanded = false
-                    },
-                    text = {
-                        Text(text = "Report")
-                    }
-                )
-
             }
+            DropdownMenuItem(
+                onClick = {
+                    onReportPostClicked()
+                    expanded = false
+                },
+                text = {
+                    Text(text = "Report")
+                }
+            )
+
+
         }
     }
 }
