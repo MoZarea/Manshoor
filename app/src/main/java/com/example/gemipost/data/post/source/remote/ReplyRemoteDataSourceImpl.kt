@@ -1,11 +1,11 @@
 package com.example.gemipost.data.post.source.remote
 
-import android.graphics.Bitmap
 import com.example.gemipost.data.post.source.remote.model.Reply
 import com.example.gemipost.data.post.source.remote.model.downvote
 import com.example.gemipost.data.post.source.remote.model.upvote
 import com.example.gemipost.utils.AppConstants
 import com.example.gemipost.utils.ReplyResults
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.gp.socialapp.util.Result
 import com.gp.socialapp.util.Result.Companion.failure
@@ -19,12 +19,15 @@ class ReplyRemoteDataSourceImpl(
     private val db: FirebaseFirestore,
     private val moderationSource: ModerationRemoteDataSource
 ) : ReplyRemoteDataSource {
-    private val colRef = db.collection(AppConstants.DB_Constants.REPLIES.name)
+    private val repColRef = db.collection(AppConstants.DB_Constants.REPLIES.name)
+    private val postColRef = db.collection(AppConstants.DB_Constants.POSTS.name)
+
     override suspend fun createReply(reply: Reply): Result<ReplyResults, ReplyResults> =
         try {
-            val docRef = colRef.document()
+            val docRef = repColRef.document()
             val reply = reply.copy(id = docRef.id)
             docRef.set(reply)
+            postColRef.document(reply.postId).update("replyCount", FieldValue.increment(1))
             success(ReplyResults.REPLY_CREATED)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -36,7 +39,7 @@ class ReplyRemoteDataSourceImpl(
         callbackFlow {
             trySend(Result.Loading)
             try {
-                colRef.whereEqualTo("postId", postId)
+                repColRef.whereEqualTo("postId", postId)
                     .addSnapshotListener { value, error ->
                         if (error != null) {
                             trySend(Result.Error(ReplyResults.REPLY_FETCHED_FAILED))
@@ -58,7 +61,7 @@ class ReplyRemoteDataSourceImpl(
         replyContent: String
     ): Result<ReplyResults, ReplyResults> =
         try {
-            val docRef = colRef.document(replyId)
+            val docRef = repColRef.document(replyId)
             val reply = docRef.get().await().toObject(Reply::class.java)
             docRef.set(reply!!.copy(content = replyContent))
             success(ReplyResults.REPLY_UPDATED)
@@ -68,10 +71,14 @@ class ReplyRemoteDataSourceImpl(
         }
 
 
-    override suspend fun deleteReply(replyId: String): Result<ReplyResults, ReplyResults> =
+    override suspend fun deleteReply(
+        replyId: String,
+        postId: String,
+    ): Result<ReplyResults, ReplyResults> =
         try {
-            val docRef = colRef.document(replyId)
+            val docRef = repColRef.document(replyId)
             docRef.delete().await()
+            postColRef.document(postId).update("replyCount", FieldValue.increment(-1))
             success(ReplyResults.REPLY_DELETED)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -81,7 +88,7 @@ class ReplyRemoteDataSourceImpl(
 
     override suspend fun upvoteReply(replyId: String, userId: String): Result<Unit, ReplyResults> =
         try {
-            val docRef = colRef.document(replyId)
+            val docRef = repColRef.document(replyId)
             docRef.get().await().toObject(Reply::class.java)?.let {
                 docRef.set(
                     it.upvote(userId)
@@ -94,9 +101,12 @@ class ReplyRemoteDataSourceImpl(
         }
 
 
-    override suspend fun downvoteReply(replyId: String, userId: String): Result<Unit, ReplyResults> =
+    override suspend fun downvoteReply(
+        replyId: String,
+        userId: String
+    ): Result<Unit, ReplyResults> =
         try {
-            val docRef = colRef.document(replyId)
+            val docRef = repColRef.document(replyId)
             docRef.get().await().toObject(Reply::class.java)?.let {
                 docRef.set(
                     it.downvote(userId)
@@ -123,7 +133,8 @@ class ReplyRemoteDataSourceImpl(
             Result.Error(ReplyResults.NETWORK_ERROR)
         }
     }
+
     private suspend fun removeReply(replyId: String) {
-        colRef.document(replyId).delete().await()
+        repColRef.document(replyId).delete().await()
     }
 }

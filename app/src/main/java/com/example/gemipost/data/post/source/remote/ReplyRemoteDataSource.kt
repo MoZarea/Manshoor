@@ -9,7 +9,7 @@ interface ReplyRemoteDataSource {
     suspend fun createReply(reply: Reply): Result<ReplyResults, ReplyResults>
     fun fetchReplies(postId: String): Flow<Result<List<Reply>, ReplyResults>>
     suspend fun updateReply(replyId: String, replyContent: String): Result<ReplyResults, ReplyResults>
-    suspend fun deleteReply(replyId: String): Result<ReplyResults, ReplyResults>
+    suspend fun deleteReply(replyId: String,postId: String): Result<ReplyResults, ReplyResults>
     suspend fun upvoteReply(
         replyId: String,
         currentUserId: String): Result<Unit, ReplyResults>
