@@ -3,11 +3,12 @@ package com.example.gemipost.ui.post.feed
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gemipost.data.auth.repository.AuthenticationRepository
+import com.example.gemipost.data.auth.source.remote.model.User
 import com.example.gemipost.data.post.repository.PostRepository
 import com.example.gemipost.data.post.source.remote.model.Post
-import com.gp.socialapp.util.PostError
+import com.example.gemipost.utils.Error
+import com.example.gemipost.utils.PostResults
 import kotlinx.coroutines.Dispatchers
-
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -30,9 +31,9 @@ class FeedScreenModel(
         viewModelScope.launch(Dispatchers.IO) {
             authRepo.getSignedInUser().let { result ->
                 result.onSuccessWithData { data ->
-                        _state.update { it.copy(user = data) }
-                    }.onFailure {
-                        _state.update { it.copy(userMessage = PostError.USER_NOT_FOUND.userMessage) }
+                    updateCurrentUser(data)
+                }.onFailure {
+                    updateUserMessage(it)
                 }
             }
         }
@@ -42,32 +43,24 @@ class FeedScreenModel(
         viewModelScope.launch(Dispatchers.IO) {
             postRepo.getPosts().collect { result ->
                 result.onLoading {
-                    println("zarea:Loading")
-                }
-                    .onFailure {
-                        println("zarea:Failure")
-                        _state.update { it.copy(userMessage = PostError.SERVER_ERROR.userMessage) }
-                    }
-                    .onSuccessWithData { data ->
-                        println("zarea:Success")
-                        _state.update {
-                            it.copy(
-                                posts = data
-                                    .sortedByDescending { it.createdAt }
-                                    .map { post ->
-                                        post.copy(
-                                            upvoted = if (state.value.user.id in post.upvoted) listOf(
-                                                ""
-                                            ) else emptyList(),
-                                            downvoted = if (state.value.user.id in post.downvoted) listOf(
-                                                ""
-                                            ) else emptyList()
-                                        )
-                                    }
+                    updateLoading(true)
+                }.onFailure {
+                    updateUserMessage(it)
+                }.onSuccessWithData { data ->
+                    updatePosts(data
+                        .sortedByDescending { it.createdAt }
+                        .map { post ->
+                            post.copy(
+                                upvoted = if (state.value.user.id in post.upvoted) listOf(
+                                    ""
+                                ) else emptyList(),
+                                downvoted = if (state.value.user.id in post.downvoted) listOf(
+                                    ""
+                                ) else emptyList()
                             )
                         }
-                    }
-
+                    )
+                }
             }
         }
     }
@@ -76,8 +69,8 @@ class FeedScreenModel(
         when (postEvent) {
             is PostEvent.OnPostDeleted -> deletePost(postEvent.post)
             is PostEvent.OnPostDownVoted -> downVotePost(postEvent.post)
-            is PostEvent.OnPostReported -> TODO()
-            is PostEvent.OnPostShareClicked -> _state.update { it.copy(userMessage = PostError.SHARE_POST_IS_NOT_AVAILABLE.userMessage) }
+            is PostEvent.OnPostReported -> updateUserMessage(PostResults.REPORT_POST_IS_NOT_AVAILABLE)
+            is PostEvent.OnPostShareClicked -> updateUserMessage(PostResults.SHARE_POST_IS_NOT_AVAILABLE)
             is PostEvent.OnPostUpVoted -> upvotedPost(postEvent.post)
             is PostEvent.OnLogoutClicked -> logout()
             else -> Unit
@@ -86,43 +79,57 @@ class FeedScreenModel(
 
     private fun logout() {
         viewModelScope.launch(Dispatchers.IO) {
-            authRepo.logout().onSuccess {
-                _state.update { it.copy(userMessage = "Logged out successfully") }
+            authRepo.logout().onSuccessWithData {
+                updateUserMessage(it)
             }.onFailure {
-                println("zarea:Logout failed")
-                _state.update { it.copy(userMessage = PostError.LOGOUT_FAILED.userMessage) }
+                updateUserMessage(it)
             }
         }
     }
 
     private fun upvotedPost(post: Post) {
         viewModelScope.launch(Dispatchers.IO) {
-            postRepo.upvotePost(post, state.value.user.id).onSuccess {
-                println("zarea:Post upvoted")
-            }.onFailure {
-                _state.update { it.copy(userMessage = PostError.UPVOATE_FAILED.userMessage) }
+            postRepo.upvotePost(post, state.value.user.id).onFailure {
+                updateUserMessage(it)
             }
         }
     }
 
     private fun downVotePost(post: Post) {
         viewModelScope.launch(Dispatchers.IO) {
-            postRepo.downvotePost(post, state.value.user.id).onSuccess {
-                println("zarea:Post downvoted")
-            }.onFailure {
-                _state.update { it.copy(userMessage = PostError.DOWNVOTE_FAILED.userMessage)}
+            postRepo.downvotePost(post, state.value.user.id).onFailure {
+                updateUserMessage(it)
             }
         }
     }
 
     private fun deletePost(post: Post) {
         viewModelScope.launch(Dispatchers.IO) {
-            postRepo.deletePost(post).onSuccess {
-                _state.update { it.copy(userMessage = "Post deleted successfully") }
+            postRepo.deletePost(post).onSuccessWithData {
+                updateUserMessage(it)
             }.onFailure {
-                _state.update { it.copy(userMessage = PostError.DELETE_POST_FAILED.userMessage)}
+                updateUserMessage(it)
             }
         }
     }
+
+    private fun updateUserMessage(message: Error) {
+        println("updateUserMessage: $message")
+        _state.update { it.copy(userMessage = message) }
+    }
+
+    private fun updateLoading(isLoading: Boolean) {
+        println("updateLoading: $isLoading")
+        _state.update { it.copy(isLoading = isLoading) }
+    }
+
+    private fun updatePosts(posts: List<Post>) {
+        _state.update { it.copy(posts = posts) }
+    }
+
+    private fun updateCurrentUser(user: User) {
+        _state.update { it.copy(user = user) }
+    }
+
 
 }

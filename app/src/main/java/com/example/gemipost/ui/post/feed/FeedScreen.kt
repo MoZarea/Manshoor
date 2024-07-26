@@ -43,6 +43,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.ui.post.feed.components.FeedPostItem
 import com.example.gemipost.ui.post.feed.components.isUnsafe
+import com.example.gemipost.utils.AuthResults
+import com.example.gemipost.utils.isNotIdle
+import com.example.gemipost.utils.userMessage
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -82,11 +85,11 @@ fun FeedContent(
     val snackbarHostState = remember { SnackbarHostState() }
     var menuVisibility by remember { mutableStateOf(false) }
     LaunchedEffect(key1 = state.userMessage) {
-        if(state.userMessage.isNotBlank()) {
-            if (state.userMessage == "Logged out successfully") {
+        if(state.userMessage.isNotIdle()) {
+            if (state.userMessage == AuthResults.LOGOUT_SUCCESS) {
                 navigateToLogin()
             }
-            snackbarHostState.showSnackbar(state.userMessage, withDismissAction = true)
+            snackbarHostState.showSnackbar(state.userMessage.userMessage(), withDismissAction = true)
         }
     }
     Scaffold(

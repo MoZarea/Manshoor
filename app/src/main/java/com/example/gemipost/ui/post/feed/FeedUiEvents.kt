@@ -1,7 +1,6 @@
 package com.example.gemipost.ui.post.feed
 
 import com.example.gemipost.data.post.source.remote.model.Post
-import com.example.gemipost.data.post.source.remote.model.PostAttachment
 import com.example.gemipost.data.post.source.remote.model.Reply
 import com.example.gemipost.data.post.source.remote.model.Tag
 
@@ -19,7 +18,6 @@ sealed class PostEvent {
     data object OnLogoutClicked : PostEvent()
     object OnAddPost : PostEvent()
     data class OnTagClicked(val tag: Tag) : PostEvent()
-    data class OnAttachmentClicked(val attachment: PostAttachment) : PostEvent()
     data class OnImageClicked(val image: String) : PostEvent()
     data class OnCommentClicked(val post: Post) : PostEvent()
     data class OnCommentAdded(
