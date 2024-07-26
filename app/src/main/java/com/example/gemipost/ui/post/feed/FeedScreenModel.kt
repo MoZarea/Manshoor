@@ -1,5 +1,7 @@
 package com.example.gemipost.ui.post.feed
 
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gemipost.data.auth.repository.AuthenticationRepository
@@ -69,6 +71,9 @@ class FeedScreenModel(
         when (postEvent) {
             is PostEvent.OnPostDeleted -> deletePost(postEvent.post)
             is PostEvent.OnPostDownVoted -> downVotePost(postEvent.post)
+            is PostEvent.OnPostReported -> reportPost(postEvent.post, postEvent.context)
+            is PostEvent.OnPostShareClicked -> TODO()
+            is PostEvent.OnPostUpVoted -> upvotedPost(postEvent.post)
             is PostEvent.OnPostReported -> updateUserMessage(PostResults.REPORT_POST_IS_NOT_AVAILABLE)
             is PostEvent.OnPostShareClicked -> updateUserMessage(PostResults.SHARE_POST_IS_NOT_AVAILABLE)
             is PostEvent.OnPostUpVoted -> upvotedPost(postEvent.post)
@@ -83,6 +88,22 @@ class FeedScreenModel(
                 updateUserMessage(it)
             }.onFailure {
                 updateUserMessage(it)
+            }
+        }
+    }
+
+    private fun reportPost(post: Post, context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val images =
+                urlToBitmap(
+                    scope = this@launch,
+                    imageURLs = post.attachments,
+                    context = context,
+                )
+            postRepo.reportPost(post.id, post.title, post.body, images).onSuccess {
+                Log.d("seerde", "Post reported")
+            }.onFailure {
+                Log.d("seerde", "Post not reported")
             }
         }
     }

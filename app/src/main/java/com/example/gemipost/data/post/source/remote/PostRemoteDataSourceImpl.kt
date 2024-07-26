@@ -1,6 +1,11 @@
 package com.example.gemipost.data.post.source.remote
 
+
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
+import android.util.Log
+import androidx.compose.ui.platform.LocalContext
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.PostRequest
 import com.example.gemipost.data.post.source.remote.model.PostRequest.DeleteRequest
@@ -10,17 +15,22 @@ import com.example.gemipost.data.post.source.remote.model.downvote
 import com.example.gemipost.data.post.source.remote.model.upvote
 import com.example.gemipost.utils.AppConstants
 import com.example.gemipost.utils.PostResults
+import com.google.ai.client.generativeai.type.PromptBlockedException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.gp.socialapp.util.Result
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+
 
 class PostRemoteDataSourceImpl(
     private val db: FirebaseFirestore,
-    private val storage: FirebaseStorage
+    private val storage: FirebaseStorage,
+    private val moderationSource: ModerationRemoteDataSource
 ) : PostRemoteDataSource {
     private val colRef = db.collection(AppConstants.DB_Constants.POSTS.name)
     override fun createPost(request: PostRequest.CreateRequest): Flow<Result<PostResults, PostResults>> =
@@ -203,14 +213,31 @@ class PostRemoteDataSourceImpl(
         }
 
 
-    override suspend fun reportPost(request: PostRequest.ReportRequest): Result<PostResults, PostResults> =
-        try {
-            Result.Loading
-            //TODO: Implement report post :Next Feature
+    override suspend fun reportPost(postId: String, title: String, body: String, images: List<Bitmap>): Result<Unit, PostError> {
+        return try {
+            val shouldBeRemoved = if (images.isEmpty()) {
+                moderationSource.validateText(title, body)
+            } else {
+                moderationSource.validateTextWithImages(title, body, images = images)
+            }
+            if (shouldBeRemoved) {
+                removePost(postId)
+            }
+            Result.Success(Unit)
         } catch (e: Exception) {
             e.printStackTrace()
-            Result.Error(PostResults.NETWORK_ERROR)
+            if(e is PromptBlockedException){
+                removePost(postId)
+                Result.Success(Unit)
+            } else {
+                Log.d("seerde","exception message: ${e.message}")
+                Result.Error(PostError.SERVER_ERROR)
+            }
         }
+    }
+
+    private suspend fun removePost(postId: String) {
+        colRef.document(postId).delete().await()
+    }
 
 }
-

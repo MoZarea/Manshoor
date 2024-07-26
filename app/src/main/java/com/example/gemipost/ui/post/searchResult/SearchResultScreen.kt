@@ -40,7 +40,7 @@ import org.koin.androidx.compose.koinViewModel
         val state by viewModel.uiState.collectAsState()
         var isScreenModelInitialized by remember { mutableStateOf(false) }
         if (!isScreenModelInitialized) {
-            viewModel.init(searchLabel, searchTagIntColor, isTag)
+            viewModel.init(searchLabel, isTag)
             isScreenModelInitialized = true
         }
         SearchResultContent(

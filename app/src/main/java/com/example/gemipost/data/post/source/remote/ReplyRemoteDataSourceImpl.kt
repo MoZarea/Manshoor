@@ -1,11 +1,14 @@
 package com.example.gemipost.data.post.source.remote
 
+import android.graphics.Bitmap
 import com.example.gemipost.data.post.source.remote.model.Reply
 import com.example.gemipost.data.post.source.remote.model.downvote
 import com.example.gemipost.data.post.source.remote.model.upvote
 import com.example.gemipost.utils.AppConstants
 import com.example.gemipost.utils.ReplyResults
 import com.google.firebase.firestore.FirebaseFirestore
+import com.gp.socialapp.util.PostError
+import com.gp.socialapp.util.ReplyError
 import com.gp.socialapp.util.Result
 import com.gp.socialapp.util.Result.Companion.failure
 import com.gp.socialapp.util.Result.Companion.success
@@ -15,7 +18,8 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
 class ReplyRemoteDataSourceImpl(
-    private val db: FirebaseFirestore
+    private val db: FirebaseFirestore,
+    private val moderationSource: ModerationRemoteDataSource
 ) : ReplyRemoteDataSource {
     private val colRef = db.collection(AppConstants.DB_Constants.REPLIES.name)
     override suspend fun createReply(reply: Reply): Result<ReplyResults, ReplyResults> =
@@ -108,10 +112,20 @@ class ReplyRemoteDataSourceImpl(
 
     override suspend fun reportReply(
         replyId: String,
-        replyContent: String,
-        reporterId: String
-    ): Result<ReplyResults, ReplyResults> {
-        TODO("Not yet implemented")
+        replyContent: String
+    ): Result<Unit, ReplyError> {
+        return try {
+            val shouldBeRemoved = moderationSource.validateText(replyContent)
+            if (shouldBeRemoved) {
+                removeReply(replyId)
+            }
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.Error(ReplyError.SERVER_ERROR)
+        }
     }
-
+    private suspend fun removeReply(replyId: String) {
+        colRef.document(replyId).delete().await()
+    }
 }

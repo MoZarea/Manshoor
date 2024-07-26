@@ -1,6 +1,7 @@
 package com.example.gemipost.data.auth.source.remote
 
 import android.net.Uri
+import android.util.Log
 import com.example.gemipost.data.auth.source.remote.model.User
 import com.example.gemipost.utils.AuthResults
 import com.google.firebase.auth.FirebaseAuth
@@ -11,14 +12,23 @@ import com.gp.socialapp.util.Result
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
 
 class AuthenticationRemoteDataSourceImpl(
     private val auth: FirebaseAuth,
 ) : AuthenticationRemoteDataSource {
-    override fun sendPasswordResetEmail(email: String): Flow<Result<AuthResults, AuthResults>> {
-        TODO("Not yet implemented")
+    override fun sendPasswordResetEmail(email: String): Flow<Result<Unit, AuthError>> = callbackFlow {
+        auth.sendPasswordResetEmail(email)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    trySend(Result.Success(Unit))
+                } else {
+                    trySend(Result.Error(AuthError.SERVER_ERROR))
+                }
+            }
+        awaitClose()
     }
 
     override fun signInWithEmail(

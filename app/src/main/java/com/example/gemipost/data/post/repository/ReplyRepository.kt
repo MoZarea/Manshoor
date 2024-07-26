@@ -19,6 +19,6 @@ interface ReplyRepository {
 
     suspend fun createReply(reply: Reply): Result<ReplyResults, ReplyResults>
     suspend fun reportReply(
-        replyId: String, replyContent: String, reporterId: String
-    ): Result<ReplyResults, ReplyResults>
+        replyId: String, replyContent: String
+    ): Result<Unit, ReplyError>
 }

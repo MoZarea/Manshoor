@@ -1,6 +1,7 @@
 package com.example.gemipost.data.post.repository
 
 
+import android.graphics.Bitmap
 import com.example.gemipost.data.post.source.remote.PostRemoteDataSource
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.PostRequest
@@ -19,12 +20,8 @@ class PostRepositoryImpl(
         return postRemoteSource.createPost(request)
     }
 
-    override suspend fun reportPost(
-        postId: String,
-        reporterId: String
-    ): Result<PostResults, PostResults> {
-        val request = PostRequest.ReportRequest(postId, reporterId)
-        return postRemoteSource.reportPost(request)
+    override suspend fun reportPost(postId: String, title: String, body: String, images: List<Bitmap>): Result<Unit, PostError> {
+        return postRemoteSource.reportPost(postId, title, body, images)
     }
 
     override fun searchByTitle(title: String): Flow<Result<List<Post>, PostResults>> =

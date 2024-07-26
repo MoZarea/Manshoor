@@ -1,5 +1,8 @@
 package com.example.gemipost.ui.post.postDetails
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gemipost.data.auth.repository.AuthenticationRepository
@@ -13,6 +16,7 @@ import com.example.gemipost.data.post.util.ToNestedReplies.toNestedReplies
 import com.example.gemipost.ui.post.feed.PostEvent
 import com.example.gemipost.ui.post.feed.ReplyEvent
 import com.example.gemipost.utils.Error
+import com.example.gemipost.utils.urlToBitmap
 import com.gp.socialapp.util.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -126,28 +130,13 @@ class PostDetailsViewModel(
     }
 
     private fun reportReply(reply: Reply) {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            val result = replyRepo.reportReply(reply.id, _uiState.value.currentUserId)
-//            when (result) {
-//                is Result.Success -> {
-//                    _uiState.update { it.copy(actionResult = PostDetailsActionResult.ReplyReported) }
-//                }
-//
-//                is Result.Error -> {
-//                    _uiState.update {
-//                        it.copy(
-//                            actionResult = PostDetailsActionResult.NetworkError(
-//                                result.message.userMessage
-//                            )
-//                        )
-//                    }
-//                }
-//
-//                Result.Loading -> {
-//                    // TODO
-//                }
-//            }
-//        }
+        viewModelScope.launch(Dispatchers.IO) {
+            replyRepo.reportReply(reply.id, reply.content).onSuccess {
+                Log.d("seerde", "Reply reported")
+            }.onFailure {
+                Log.d("seerde", "Reply not reported")
+            }
+        }
     }
 
 
@@ -277,6 +266,23 @@ class PostDetailsViewModel(
             }
 
             else -> {}
+        }
+    }
+
+    private fun reportPost(post: Post, context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val images =
+                urlToBitmap(
+                    scope = this@launch,
+                    imageURLs = post.attachments,
+                    context = context,
+                )
+
+            postRepo.reportPost(post.id, post.title, post.body, images).onSuccess {
+                Log.d("seerde", "Post reported")
+            }.onFailure {
+                Log.d("seerde", "Post not reported")
+            }
         }
     }
 
