@@ -57,15 +57,15 @@ fun MyApp() {
             Log.d("seerde", "Splash screen")
             SplashScreen(
                 onNavigateToFeed = {
-                    navController.navigate(Feed){
-                        popUpTo(Splash){
+                    navController.navigate(Feed) {
+                        popUpTo(Splash) {
                             inclusive = true
                         }
                     }
                 },
                 onNavigateToLogin = {
-                    navController.navigate(Login){
-                        popUpTo(Splash){
+                    navController.navigate(Login) {
+                        popUpTo(Splash) {
                             inclusive = true
                         }
                     }
@@ -76,23 +76,23 @@ fun MyApp() {
             Log.d("seerde", "login screen")
             LoginScreen(
                 onNavigateToFeed = {
-                navController.navigate(Feed){
-                    popUpTo(Login){
-                        inclusive = true
+                    navController.navigate(Feed) {
+                        popUpTo(Login) {
+                            inclusive = true
+                        }
                     }
-                }
-            }, onNavigateToSignUp = {
-                navController.navigate(SignUp)
-            }, onNavigateToForgotPassword = {
-                navController.navigate(ForgotPassword)
-            })
+                }, onNavigateToSignUp = {
+                    navController.navigate(SignUp)
+                }, onNavigateToForgotPassword = {
+                    navController.navigate(ForgotPassword)
+                })
         }
         composable<SignUp> {
             Log.d("seerde", "sign up screen")
             SignUpScreen(
                 onNavigateToFeed = {
-                    navController.navigate(Feed){
-                        popUpTo(SignUp){
+                    navController.navigate(Feed) {
+                        popUpTo(SignUp) {
                             inclusive = true
                         }
                     }
@@ -129,8 +129,8 @@ fun MyApp() {
                     navController.navigate(Search)
                 },
                 navigateToLogin = {
-                    navController.navigate(Login){
-                        popUpTo(Feed){
+                    navController.navigate(Login) {
+                        popUpTo(Feed) {
                             inclusive = true
                         }
                     }
@@ -155,22 +155,26 @@ fun MyApp() {
                 }
             )
         }
-        composable<PostDetails>{ backStackEntry ->
+        composable<PostDetails> { backStackEntry ->
             Log.d("seerde", "post details screen")
             val postId = backStackEntry.toRoute<PostDetails>().postId
             PostDetailsScreen(
                 postId = postId,
                 onBackPressed = {
-                navController.navigateUp()
-            }, onTagClicked = {tag->
-                navController.navigate(
-                    SearchResult(
-                        label = tag.label,
-                        isTag = true,
-                        tagIntColor = tag.intColor
+                    navController.navigateUp()
+                }, onTagClicked = { tag ->
+                    navController.navigate(
+                        SearchResult(
+                            label = tag.label,
+                            isTag = true,
+                            tagIntColor = tag.intColor
+                        )
                     )
-                )
-            })
+                },
+                navigateToEditPost = {
+                    navController.navigate(EditPost(it))
+                }
+            )
         }
         composable<Search> {
             Log.d("seerde", "search screen")

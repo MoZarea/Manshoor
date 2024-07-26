@@ -15,6 +15,7 @@ import com.example.gemipost.data.post.util.ToNestedReplies.toNestedReplies
 import com.example.gemipost.ui.post.feed.PostEvent
 import com.example.gemipost.ui.post.feed.ReplyEvent
 import com.example.gemipost.utils.Error
+import com.example.gemipost.utils.PostResults
 import com.example.gemipost.utils.urlToBitmap
 import com.gp.socialapp.util.Result
 import kotlinx.coroutines.Dispatchers
@@ -317,5 +318,9 @@ class PostDetailsViewModel(
 
             else -> {}
         }
+    }
+
+    fun resetState() {
+        _uiState.update { it.copy(actionResult = PostResults.IDLE) }
     }
 }
