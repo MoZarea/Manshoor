@@ -120,6 +120,7 @@ class PostDetailsViewModel(
                 when (result) {
                     is Result.Success -> {
                         getRepliesById(reply.postId)
+                        getPost(reply.postId)
                     }
 
                     else -> Unit
@@ -225,10 +226,11 @@ class PostDetailsViewModel(
 
     private fun deleteReply(reply: Reply) {
         viewModelScope.launch(Dispatchers.IO) {
-            replyRepo.deleteReply(reply.id).let { result ->
+            replyRepo.deleteReply(reply.id,reply.postId).let { result ->
                 result.onSuccessWithData {
                     updateLoading(false)
                     getRepliesById(reply.postId)
+                    getPost(reply.postId)
                 }.onFailure { updateUserMessage(it)
                 }.onLoading { updateLoading(true) }
             }

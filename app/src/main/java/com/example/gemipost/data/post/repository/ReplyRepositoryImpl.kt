@@ -19,8 +19,8 @@ class ReplyRepositoryImpl(
         return remoteSource.updateReply(replyId, replyContent)
     }
 
-    override suspend fun deleteReply(replyId: String): Result<ReplyResults, ReplyResults> {
-        return remoteSource.deleteReply(replyId)
+    override suspend fun deleteReply(replyId: String,postId: String): Result<ReplyResults, ReplyResults> {
+        return remoteSource.deleteReply(replyId, postId)
     }
 
     override suspend fun upvoteReply(
