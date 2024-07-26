@@ -125,4 +125,8 @@ class LoginViewModel(
             updateActionResult(error)
         }
     }
+
+    fun resetState() {
+        _uiState.update { it.copy(actionResult = AuthResults.IDLE) }
+    }
 }

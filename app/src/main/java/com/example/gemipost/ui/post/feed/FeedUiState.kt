@@ -8,7 +8,7 @@ import com.example.gemipost.utils.PostResults
 data class FeedUiState(
     val posts: List<Post> = emptyList(),
     val user: User = User(),
-    val userMessage: Error = PostResults.IDLE,
+    val actionResult: Error = PostResults.IDLE,
     val isLoading: Boolean = false
 )
 

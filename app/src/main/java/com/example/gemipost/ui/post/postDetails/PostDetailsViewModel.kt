@@ -1,7 +1,6 @@
 package com.example.gemipost.ui.post.postDetails
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -45,7 +44,7 @@ class PostDetailsViewModel(
     }
 
     private fun updateUserMessage(message: Error) {
-        _uiState.update { it.copy(userMessage = message) }
+        _uiState.update { it.copy(actionResult = message) }
     }
 
     private fun updateCurrentUser(user: User) {

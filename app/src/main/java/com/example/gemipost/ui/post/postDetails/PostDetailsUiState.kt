@@ -13,6 +13,5 @@ data class PostDetailsUiState(
     val isLoading: Boolean = false,
     val currentReplies: List<NestedReply> = emptyList(),
     val currentReply: Reply = Reply(),
-    val actionResult: PostDetailsActionResult = PostDetailsActionResult.NoActionResult,
-    val userMessage: Error = PostResults.IDLE
+    val actionResult: Error = PostResults.IDLE
 )

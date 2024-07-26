@@ -6,7 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gemipost.data.post.repository.PostRepository
 import com.example.gemipost.data.post.source.remote.model.Tag
+import com.example.gemipost.utils.Error
 import com.example.gemipost.utils.LocalDateTimeUtil.now
+import com.example.gemipost.utils.PostResults
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -66,12 +68,12 @@ class EditPostViewModel(
                             .toEpochMilliseconds()
                     )
                 ).let {
-                    it.onSuccess {
-                            updateUserMessage("Post Updated Successfully")
+                    it.onSuccessWithData {
+                            updateUserMessage(it)
                         }.onFailure { error ->
-                            updateUserMessage(error.userMessage)
+                            updateUserMessage(error)
                         }.onLoading {
-                            updateLoading(true)
+                            enableLoading()
                         }
                 }
             }
@@ -95,24 +97,22 @@ class EditPostViewModel(
                         }
                     }
                     .onFailure { error ->
-                        updateUserMessage(error.userMessage)
+                        updateUserMessage(error)
                     }
                     .onLoading {
-                        updateLoading(true)
+                        enableLoading()
                     }
             }
         }
     }
 
-    private fun updateUserMessage(message: String) {
+    private fun updateUserMessage(message: Error) {
         println("updateUserMessage: $message")
-        _uiState.update { it.copy(userMessage = message) }
-        updateLoading(false)
+        _uiState.update { it.copy(actionResult = message, isLoading = false) }
     }
 
-    private fun updateLoading(isLoading: Boolean) {
-        println("updateLoading: $isLoading")
-        _uiState.update { it.copy(isLoading = isLoading) }
+    private fun enableLoading() {
+        _uiState.update { it.copy(isLoading = true) }
     }
 
     private fun updateTags(tags: Set<Tag>) {
@@ -129,6 +129,9 @@ class EditPostViewModel(
 
     private fun updateBody(body: String) {
         _uiState.update { it.copy(body = body) }
+    }
+        fun resetState() {
+        _uiState.update { it.copy(actionResult = PostResults.IDLE)}
     }
 
 }

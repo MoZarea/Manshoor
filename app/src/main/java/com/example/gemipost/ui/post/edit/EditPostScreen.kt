@@ -37,6 +37,9 @@ import com.example.gemipost.ui.post.create.component.TagsRow
 import com.example.gemipost.ui.post.edit.EditPostAction
 import com.example.gemipost.ui.post.edit.EditPostUIState
 import com.example.gemipost.ui.post.edit.EditPostViewModel
+import com.example.gemipost.utils.PostResults
+import com.example.gemipost.utils.isNotIdle
+import com.example.gemipost.utils.userMessage
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -47,15 +50,13 @@ fun EditPostScreen(
 ) {
     viewModel.init(postId)
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(state.userMessage) {
-        if (state.userMessage == "Post Updated Successfully") {
-            onNavigateBack()
-        }
-    }
     EditPostContent(
         action = viewModel::handleActions,
         state = state,
-        navigationBack = onNavigateBack
+        navigationBack = {
+            onNavigateBack()
+            viewModel.resetState()
+        }
     )
 }
 
@@ -66,12 +67,12 @@ fun EditPostContent(
     navigationBack: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-    LaunchedEffect(key1 = state.userMessage) {
-        if (state.userMessage.isNotBlank()) {
-            if (state.userMessage == "Post Updated Successfully") {
+    LaunchedEffect(key1 = state.actionResult) {
+        if (state.actionResult.isNotIdle()) {
+            if (state.actionResult == PostResults.POST_UPDATED) {
                 navigationBack()
             }
-            snackbarHostState.showSnackbar(state.userMessage)
+            snackbarHostState.showSnackbar(state.actionResult.userMessage())
         }
     }
     var newTagDialogState by remember { mutableStateOf(false) }

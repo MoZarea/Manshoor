@@ -60,12 +60,21 @@ fun LoginScreen(
         onContinueWithGoogle = { launcher.launch(googleSignInClient.signInIntent) },
         onSignIn = { viewModel.onSignIn() },
         state = state,
-        onSignUpClicked = { onNavigateToSignUp() },
-        onForgotPasswordClicked = { onNavigateToForgotPassword() },
+        onSignUpClicked = {
+            onNavigateToSignUp()
+            viewModel.resetState()
+        },
+        onForgotPasswordClicked = {
+            onNavigateToForgotPassword()
+            viewModel.resetState()
+        },
         onEmailChanged = { viewModel.updateEmail(it) },
         onPasswordChanged = { viewModel.updatePassword(it) },
-        onNavigateToFeed = onNavigateToFeed,
-        )
+        onNavigateToFeed = {
+            onNavigateToFeed()
+            viewModel.resetState()
+        }
+    )
 }
 
 
@@ -83,7 +92,7 @@ private fun LoginContent(
     val snackbarHostState = remember { SnackbarHostState() }
     LaunchedEffect(state.actionResult) {
         if (state.actionResult == AuthResults.LOGIN_SUCCESS) {
-                onNavigateToFeed()
+            onNavigateToFeed()
         } else if (state.actionResult.isNotIdle()) {
             snackbarHostState.showSnackbar(
                 message = state.actionResult.userMessage(),
@@ -109,7 +118,12 @@ private fun LoginContent(
             }
             LoginHeader()
             AuthEmailField(state.email, onEmailChanged, state.actionResult)
-            AuthPasswordField(state.password, onPasswordChanged, passwordVisible, state.actionResult)
+            AuthPasswordField(
+                state.password,
+                onPasswordChanged,
+                passwordVisible,
+                state.actionResult
+            )
             AuthTextButton(R.string.forgot_password, onForgotPasswordClicked)
             Box(
                 Modifier

@@ -1,13 +1,16 @@
 package com.example.gemipost.ui.post.create
 
 import android.net.Uri
+import androidx.compose.ui.util.trace
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gemipost.data.auth.repository.AuthenticationRepository
 import com.example.gemipost.data.post.repository.PostRepository
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.Tag
+import com.example.gemipost.utils.Error
 import com.example.gemipost.utils.LocalDateTimeUtil.now
+import com.example.gemipost.utils.PostResults
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -87,28 +90,26 @@ class CreatePostViewModel(
                 ).collect { result ->
                     result
                         .onSuccessWithData {message->
-                            updateUserMessage(message.userMessage)
+                            updateUserMessage(message)
                         }
                         .onFailure { message ->
-                            updateUserMessage(message.userMessage)
+                            updateUserMessage(message)
                         }
                         .onLoading {
-                            updateLoading(true)
+                            enableLoading()
                         }
                 }
             }
         }
     }
 
-    private fun updateUserMessage(message: String) {
+    private fun updateUserMessage(message: Error) {
         println("updateUserMessage: $message")
-        _uiState.update { it.copy(userMessage = message) }
-        updateLoading(false)
+        _uiState.update { it.copy(actionResult = message, isLoading = false) }
     }
 
-    private fun updateLoading(isLoading: Boolean) {
-        println("updateLoading: $isLoading")
-        _uiState.update { it.copy(isLoading = isLoading) }
+    private fun enableLoading() {
+        _uiState.update { it.copy(isLoading = true) }
     }
 
     private fun updateTags(tags: List<Tag>) {
@@ -125,5 +126,9 @@ class CreatePostViewModel(
 
     private fun updateBody(body: String) {
         _uiState.update { it.copy(body = body) }
+    }
+
+    fun resetState() {
+        _uiState.update { it.copy(actionResult = PostResults.IDLE)}
     }
 }

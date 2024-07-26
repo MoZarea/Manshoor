@@ -23,7 +23,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -164,13 +163,13 @@ private fun PostDetailsContent(
     onBackPressed: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-    LaunchedEffect(key1 = state.userMessage) {
-        if (state.userMessage.isNotIdle()) {
-            if(state.userMessage == PostResults.POST_CREATED){
+    LaunchedEffect(key1 = state.actionResult) {
+        if (state.actionResult.isNotIdle()) {
+            if(state.actionResult == PostResults.POST_CREATED){
                 onBackPressed()
             }
             SnackbarHostState().showSnackbar(
-                message = state.userMessage.userMessage(),
+                message = state.actionResult.userMessage(),
             )
         }
     }

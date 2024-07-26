@@ -1,7 +1,6 @@
 package com.example.gemipost.ui.post.feed
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gemipost.data.auth.repository.AuthenticationRepository
@@ -73,14 +72,19 @@ class FeedScreenModel(
             is PostEvent.OnPostDeleted -> deletePost(postEvent.post)
             is PostEvent.OnPostDownVoted -> downVotePost(postEvent.post)
             is PostEvent.OnPostReported -> reportPost(postEvent.post, postEvent.context)
-            is PostEvent.OnPostShareClicked -> TODO()
             is PostEvent.OnPostUpVoted -> upvotedPost(postEvent.post)
-            is PostEvent.OnPostReported -> updateUserMessage(PostResults.REPORT_POST_IS_NOT_AVAILABLE)
             is PostEvent.OnPostShareClicked -> updateUserMessage(PostResults.SHARE_POST_IS_NOT_AVAILABLE)
-            is PostEvent.OnPostUpVoted -> upvotedPost(postEvent.post)
+            is PostEvent.OnPostClicked -> resetState()
+            is PostEvent.OnCreatePostClicked -> resetState()
+            is PostEvent.OnSearchClicked -> resetState()
+            is PostEvent.OnPostEdited -> resetState()
             is PostEvent.OnLogoutClicked -> logout()
             else -> Unit
         }
+    }
+
+    private fun resetState() {
+        _state.update { it.copy(actionResult = PostResults.IDLE) }
     }
 
     private fun logout() {
@@ -137,7 +141,7 @@ class FeedScreenModel(
 
     private fun updateUserMessage(message: Error) {
         println("updateUserMessage: $message")
-        _state.update { it.copy(userMessage = message) }
+        _state.update { it.copy(actionResult = message) }
     }
 
     private fun updateLoading(isLoading: Boolean) {

@@ -39,4 +39,8 @@ class ForgotPasswordViewModel(
     fun onEmailChange(email: String) {
         uiState.update { it.copy(email = email) }
     }
+
+    fun resetState() {
+        uiState.update { it.copy(actionResult = AuthResults.IDLE) }
+    }
 }

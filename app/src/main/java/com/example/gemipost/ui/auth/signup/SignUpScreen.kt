@@ -77,12 +77,19 @@ fun SignUpScreen(
         onEmailChanged = { viewModel.onEmailChange(it) },
         onPasswordChanged = { viewModel.onPasswordChange(it) },
         onRePasswordChanged = { viewModel.rePasswordChange(it) },
-        onNavigateToLoginScreen = { onBackPressed() },
+        onNavigateToLoginScreen = {
+            onBackPressed()
+            viewModel.resetState()
+                                  },
         onCreateAccount = { viewModel.onSignUp() },
         state = state,
-        onNavigateToFeed = onNavigateToFeed,
+        onNavigateToFeed = {
+            onNavigateToFeed()
+            viewModel.resetState()
+        },
     )
 }
+
 
 @Composable
 private fun SignUpContent(
@@ -125,7 +132,7 @@ private fun SignUpContent(
                 .padding(16.dp),
             verticalArrangement = Arrangement.Center,
         ) {
-            if(state.isLoading) {
+            if (state.isLoading) {
                 LinearProgressIndicator()
             }
             var passwordVisible by remember { mutableStateOf(false) }

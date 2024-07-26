@@ -57,8 +57,14 @@ fun ForgotPasswordScreen(
         state = state,
         onEmailChange = { viewModel.onEmailChange(it) },
         onSendResetEmail = { viewModel.onSendResetEmail() },
-        onBackPressed = onBackPressed,
-        onNavigateToLogin = onNavigateToLogin,
+        onBackPressed = {
+            onBackPressed()
+            viewModel.resetState()
+        },
+        onNavigateToLogin = {
+            onNavigateToLogin()
+            viewModel.resetState()
+        },
     )
 }
 
@@ -111,7 +117,7 @@ private fun ForgetPasswordContent(
                 .padding(16.dp),
             verticalArrangement = Arrangement.Center,
         ) {
-            if(state.isLoading) {
+            if (state.isLoading) {
                 LinearProgressIndicator()
             }
             Text(
