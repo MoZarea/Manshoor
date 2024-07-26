@@ -3,14 +3,10 @@ package com.example.gemipost.ui.auth.signup
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.gemipost.R
 import com.example.gemipost.data.auth.repository.AuthenticationRepository
-import com.example.gemipost.ui.auth.util.AuthError
-import com.example.gemipost.ui.auth.util.AuthError.EmailError
-import com.example.gemipost.ui.auth.util.AuthError.NoError
-import com.example.gemipost.ui.auth.util.AuthError.PasswordError
-import com.example.gemipost.ui.auth.util.AuthError.RePasswordError
+import com.example.gemipost.data.auth.source.remote.model.User
 import com.example.gemipost.ui.auth.util.Validator
+import com.example.gemipost.utils.AuthResults
 import com.gp.socialapp.util.Result
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,39 +22,35 @@ class SignUpViewModel(
         with(_uiState.value) {
             if (!Validator.EmailValidator.validateAll(email)) {
                 viewModelScope.launch {
-                    val error = EmailError(R.string.invalid_email)
-                    _uiState.value = _uiState.value.copy(error = error)
+                    updateActionResult(AuthResults.INVALID_EMAIL)
                 }
                 return
             } else {
-                _uiState.value = _uiState.value.copy(error = NoError)
+                updateActionResult(AuthResults.IDLE)
             }
             if (!Validator.PasswordValidator.validateAll(password)) {
                 viewModelScope.launch {
-                    val error = PasswordError(R.string.invalid_password)
-                    _uiState.value = _uiState.value.copy(error = error)
+                    updateActionResult(AuthResults.INVALID_PASSWORD)
                 }
                 return
             } else {
-                _uiState.value = _uiState.value.copy(error = NoError)
+                updateActionResult(AuthResults.IDLE)
             }
             if (rePassword != password) {
                 viewModelScope.launch {
-                    val error = RePasswordError(R.string.passwords_dont_match)
-                    _uiState.value = _uiState.value.copy(error = error)
+                    updateActionResult(AuthResults.PASSWORD_DOES_NOT_MATCH)
                 }
                 return
             } else {
-                _uiState.value = _uiState.value.copy(error = NoError)
+                updateActionResult(AuthResults.IDLE)
             }
             if (!Validator.NameValidator.validateAll(name)) {
                 viewModelScope.launch {
-                    val error = AuthError.FirstNameError(R.string.invalid_name)
-                    _uiState.value = _uiState.value.copy(error = error)
+                    updateActionResult(AuthResults.INVALID_NAME)
                 }
                 return
             } else {
-                _uiState.value = _uiState.value.copy(error = AuthError.NoError)
+                updateActionResult(AuthResults.IDLE)
             }
         }
         viewModelScope.launch {
@@ -66,24 +58,24 @@ class SignUpViewModel(
                 authRepo.signUpWithEmail(name, avatarByteArray, email, password).collect {
                     when (it) {
                         is Result.Success -> {
-                            _uiState.value = _uiState.value.copy(
-                                error = NoError,
-                                signedUpUser = it.data
-                            )
+                            updateUser(it.data)
+                            updateActionResult(AuthResults.SIGNUP_SUCCESS)
                         }
 
                         is Result.Error -> {
-                            _uiState.value = _uiState.value.copy(
-                                error = AuthError.ServerError(it.message.userMessage),
-                            )
+                            updateActionResult(it.message)
                         }
 
-                        else -> {}
+                        is Result.Loading -> {
+                            enableLoading()
+                        }
                     }
                 }
             }
         }
     }
+
+
     fun onNameChange(name: String) {
         _uiState.update { it.copy(name = name) }
     }
@@ -106,5 +98,27 @@ class SignUpViewModel(
 
     fun despose() {
         _uiState.value = SignUpUiState()
+    }
+
+    private fun updateActionResult(message: AuthResults) {
+        _uiState.update {
+            it.copy(
+                actionResult = message,
+                isLoading = false
+            )
+        }
+    }
+
+    private fun enableLoading() {
+        _uiState.update { it.copy(isLoading = true) }
+    }
+
+    private fun updateUser(data: User) {
+        _uiState.update {
+            it.copy(
+                signedUpUser = data,
+                isLoading = false
+            )
+        }
     }
 }

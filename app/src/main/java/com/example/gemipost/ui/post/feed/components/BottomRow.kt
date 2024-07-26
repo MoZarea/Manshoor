@@ -27,7 +27,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gp.socialapp.presentation.post.feed.components.icons.FeedIcons
-import com.gp.socialapp.presentation.post.feed.components.icons.feedicons.Attachment2
 import com.gp.socialapp.presentation.post.feed.components.icons.feedicons.Comment
 import com.gp.socialapp.presentation.post.feed.components.icons.feedicons.Dislikefilled
 import com.gp.socialapp.presentation.post.feed.components.icons.feedicons.Dislikeoutlined

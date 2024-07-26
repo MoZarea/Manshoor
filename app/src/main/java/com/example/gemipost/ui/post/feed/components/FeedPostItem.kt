@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.sp
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.ui.post.feed.PostEvent
 import com.example.gemipost.ui.theme.GemiPostTheme
-import com.example.gemipost.utils.MimeType
 import com.example.gemipost.utils.LocalDateTimeUtil.getPostDate
 import com.gp.socialapp.util.ModerationSafety
 

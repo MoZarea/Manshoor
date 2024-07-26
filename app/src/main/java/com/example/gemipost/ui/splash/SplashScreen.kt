@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.gemipost.R
+import com.example.gemipost.utils.AuthResults
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -28,14 +30,13 @@ fun SplashScreen(
     onNavigateToLogin: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
-    LaunchedEffect(key1 = state.isSignedIn){
-        if(state.isSignedIn == true) {
+    LaunchedEffect(key1 = state.actionResult){
+        if(state.actionResult == AuthResults.LOGIN_SUCCESS) {
             onNavigateToFeed()
-        } else if (state.isSignedIn == false) {
+        } else if (state.actionResult == AuthResults.LOGIN_FAILED) {
             onNavigateToLogin()
         }
     }
-    MaterialTheme {
     Column(
         Modifier
             .fillMaxSize()
@@ -45,10 +46,13 @@ fun SplashScreen(
     ) {
     val systemIsDark = isSystemInDarkTheme()
     val isDarkState by remember { mutableStateOf(systemIsDark) }
+        if (state.isLoading) {
+            LinearProgressIndicator()
+        }
         Image(
             painter = painterResource(id = if(isDarkState) R.drawable.ic_edulink_dark else R.drawable.ic_edulink_light),
             contentDescription = "Logo",
             modifier = Modifier.size(200.dp)
         )
     }
-}}
+}

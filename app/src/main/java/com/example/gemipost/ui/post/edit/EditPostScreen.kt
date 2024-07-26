@@ -11,8 +11,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,7 +37,6 @@ import com.example.gemipost.ui.post.create.component.TagsRow
 import com.example.gemipost.ui.post.edit.EditPostAction
 import com.example.gemipost.ui.post.edit.EditPostUIState
 import com.example.gemipost.ui.post.edit.EditPostViewModel
-import com.example.gemipost.utils.Status
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -45,8 +47,8 @@ fun EditPostScreen(
 ) {
     viewModel.init(postId)
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(state.status){
-        if(state.status== Status.SUCCESS){
+    LaunchedEffect(state.userMessage) {
+        if (state.userMessage == "Post Updated Successfully") {
             onNavigateBack()
         }
     }
@@ -63,6 +65,15 @@ fun EditPostContent(
     state: EditPostUIState,
     navigationBack: () -> Unit
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(key1 = state.userMessage) {
+        if (state.userMessage.isNotBlank()) {
+            if (state.userMessage == "Post Updated Successfully") {
+                navigationBack()
+            }
+            snackbarHostState.showSnackbar(state.userMessage)
+        }
+    }
     var newTagDialogState by remember { mutableStateOf(false) }
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -79,7 +90,10 @@ fun EditPostContent(
                 onBackClick = navigationBack,
                 stringResource(R.string.edit_post)
             )
-        }
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
     ) { it ->
 
         Column(
@@ -87,6 +101,11 @@ fun EditPostContent(
                 .padding(it)
                 .fillMaxSize()
         ) {
+            if (state.isLoading) {
+                LinearProgressIndicator(
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
             Spacer(modifier = Modifier.height(8.dp))
             MyTextFieldTitle(
                 value = state.title,

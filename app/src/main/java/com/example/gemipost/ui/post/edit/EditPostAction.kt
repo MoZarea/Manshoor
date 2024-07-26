@@ -1,7 +1,6 @@
 package com.example.gemipost.ui.post.edit
 
 import android.net.Uri
-import com.example.gemipost.data.post.source.remote.model.PostAttachment
 import com.example.gemipost.data.post.source.remote.model.Tag
 
 sealed interface EditPostAction {

@@ -3,7 +3,7 @@ package com.example.gemipost.ui.splash
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gemipost.data.auth.repository.AuthenticationRepository
-import com.example.gemipost.ui.auth.util.AuthError
+import com.example.gemipost.utils.AuthResults
 import com.gp.socialapp.util.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,36 +13,47 @@ import kotlinx.coroutines.launch
 
 class SplashViewModel(
     private val authRepo: AuthenticationRepository
-): ViewModel() {
+) : ViewModel() {
     private val _uiState = MutableStateFlow(SplashUiState())
     val uiState = _uiState.asStateFlow()
-    init{
+
+    init {
         getSignedInUser()
     }
+
     private fun getSignedInUser() {
         viewModelScope.launch(Dispatchers.IO) {
             authRepo.getSignedInUser().let { result ->
                 when (result) {
                     is Result.Success -> {
-                        println("getSignedInUser: ${result.data}")
-                        _uiState.update {
-                            it.copy(
-                                isSignedIn = true ,
-                            )
-                        }
+                        updateActionResult(AuthResults.LOGIN_SUCCESS)
                     }
-
                     is Result.Error -> {
-                        _uiState.update {
-                            it.copy(
-                                isSignedIn = false
-                            )
-                        }
+                        updateActionResult(result.message)
                     }
-
-                    else -> Unit
+                    is Result.Loading -> {
+                        enableLoading()
+                    }
                 }
             }
         }
+    }
+
+    private fun enableLoading() {
+        _uiState.update {
+            it.copy(
+                isLoading = true
+            )
+        }
+    }
+
+    private fun updateActionResult(loginSuccess: AuthResults) {
+        _uiState.update {
+            it.copy(
+                actionResult = loginSuccess,
+                isLoading = false
+            )
+        }
+
     }
 }

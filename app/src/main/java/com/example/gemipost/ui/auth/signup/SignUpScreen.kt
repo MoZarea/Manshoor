@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Button
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -25,7 +26,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,8 +39,12 @@ import com.example.gemipost.ui.auth.signup.components.SignUpAvatarSection
 import com.example.gemipost.ui.auth.signup.components.SignUpHeader
 import com.example.gemipost.ui.auth.signup.components.SignUpNameSection
 import com.example.gemipost.ui.auth.signup.components.SignUpRePasswordField
-import com.example.gemipost.ui.auth.util.AuthError
-import com.example.gemipost.ui.post.create.CreatePostEvents
+import com.example.gemipost.utils.AuthResults
+import com.example.gemipost.utils.Error
+import com.example.gemipost.utils.isNotIdle
+import com.example.gemipost.utils.userMessage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -51,12 +55,6 @@ fun SignUpScreen(
     onBackPressed: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
-    LaunchedEffect(key1 = state.signedUpUser){
-        if (state.signedUpUser != null) {
-            onNavigateToFeed()
-            viewModel.despose()
-        }
-    }
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
@@ -66,7 +64,7 @@ fun SignUpScreen(
         }
     )
     SignUpContent(
-        error = state.error,
+        error = state.actionResult,
         avatarByteArray = state.avatarByteArray,
         onChangeAvatarClicked = {
             galleryLauncher.launch(
@@ -75,48 +73,50 @@ fun SignUpScreen(
                 )
             )
         },
-        name = state.name,
         onNameChanged = { viewModel.onNameChange(it) },
-        email = state.email,
         onEmailChanged = { viewModel.onEmailChange(it) },
-        password = state.password,
         onPasswordChanged = { viewModel.onPasswordChange(it) },
-        rePassword = state.rePassword,
         onRePasswordChanged = { viewModel.rePasswordChange(it) },
         onNavigateToLoginScreen = { onBackPressed() },
-        onCreateAccount = { viewModel.onSignUp() }
+        onCreateAccount = { viewModel.onSignUp() },
+        state = state,
+        onNavigateToFeed = onNavigateToFeed,
     )
 }
 
 @Composable
 private fun SignUpContent(
-    error: AuthError,
+    error: Error,
     avatarByteArray: Uri,
     onChangeAvatarClicked: () -> Unit,
-    name: String,
     onNameChanged: (String) -> Unit,
-    email: String,
     onEmailChanged: (String) -> Unit,
-    password: String,
     onPasswordChanged: (String) -> Unit,
-    rePassword: String,
     onRePasswordChanged: (String) -> Unit,
     onNavigateToLoginScreen: () -> Unit,
     onCreateAccount: () -> Unit,
+    state: SignUpUiState,
+    onNavigateToFeed: () -> Unit,
 ) {
-    val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(state.actionResult) {
+        if (state.actionResult == AuthResults.SIGNUP_SUCCESS) {
+            launch(Dispatchers.IO) {
+                delay(1500)
+                onNavigateToFeed()
+            }
+        } else if (state.actionResult.isNotIdle()) {
+            snackbarHostState.showSnackbar(
+                message = state.actionResult.userMessage(),
+                withDismissAction = true,
+            )
+        }
+    }
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         modifier = Modifier.fillMaxSize(),
     ) {
-        if (error is AuthError.ServerError) {
-            LaunchedEffect(key1 = error) {
-                scope.launch {
-                    snackbarHostState.showSnackbar(error.message)
-                }
-            }
-        }
+
         Column(
             modifier = Modifier
                 .padding(it)
@@ -125,19 +125,22 @@ private fun SignUpContent(
                 .padding(16.dp),
             verticalArrangement = Arrangement.Center,
         ) {
+            if(state.isLoading) {
+                LinearProgressIndicator()
+            }
             var passwordVisible by remember { mutableStateOf(false) }
             SignUpHeader()
             Spacer(modifier = Modifier.height(16.dp))
             SignUpAvatarSection(avatarByteArray, onChangeAvatarClicked)
-            SignUpNameSection(name, onNameChanged, error)
-            AuthEmailField(email = email, onEmailChange = onEmailChanged, error = error)
+            SignUpNameSection(state.name, onNameChanged, error)
+            AuthEmailField(email = state.email, onEmailChange = onEmailChanged, error = error)
             AuthPasswordField(
-                password = password,
+                password = state.password,
                 onPasswordChange = onPasswordChanged,
                 passwordVisible = passwordVisible,
                 error = error
             )
-            SignUpRePasswordField(rePassword, onRePasswordChanged, error, passwordVisible)
+            SignUpRePasswordField(state.rePassword, onRePasswordChanged, error, passwordVisible)
             Button(
                 onClick = onCreateAccount,
                 modifier = Modifier

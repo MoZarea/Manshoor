@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.gemipost.data.post.source.remote.model.Post
-import com.example.gemipost.ui.post.searchResult.components.SearchResultItem
 
 @Composable
 fun SearchResultList(

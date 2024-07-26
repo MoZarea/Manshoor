@@ -23,7 +23,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -32,6 +31,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,10 +40,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.ui.post.feed.components.FeedPostItem
 import com.example.gemipost.ui.post.feed.components.isUnsafe
+import com.example.gemipost.utils.AuthResults
+import com.example.gemipost.utils.isNotIdle
+import com.example.gemipost.utils.userMessage
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -56,11 +63,6 @@ fun FeedScreen(
     navigateToLogin: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    LaunchedEffect(key1 = state.isLoggedIn) {
-        if (!state.isLoggedIn) {
-            navigateToLogin()
-        }
-    }
     FeedContent(
         action = { action ->
             when (action) {
@@ -72,6 +74,7 @@ fun FeedScreen(
             }
         },
         state = state,
+        navigateToLogin = navigateToLogin
     )
 }
 
@@ -80,10 +83,23 @@ fun FeedScreen(
 fun FeedContent(
     action: (PostEvent) -> Unit,
     state: FeedUiState,
+    navigateToLogin: () -> Unit
 ) {
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val scrollBehavior =
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val snackbarHostState = remember { SnackbarHostState() }
     var menuVisibility by remember { mutableStateOf(false) }
+    LaunchedEffect(key1 = state.userMessage) {
+        if (state.userMessage.isNotIdle()) {
+            if (state.userMessage == AuthResults.LOGOUT_SUCCESS) {
+                navigateToLogin()
+            }
+            snackbarHostState.showSnackbar(
+                state.userMessage.userMessage(),
+                withDismissAction = true
+            )
+        }
+    }
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {

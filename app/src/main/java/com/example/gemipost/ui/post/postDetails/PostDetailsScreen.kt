@@ -12,6 +12,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SnackbarHost
@@ -31,10 +32,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.gemipost.R
-import com.example.gemipost.data.post.source.remote.model.NestedReply
-import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.Reply
 import com.example.gemipost.data.post.source.remote.model.Tag
 import com.example.gemipost.ui.post.feed.PostEvent
@@ -42,8 +41,9 @@ import com.example.gemipost.ui.post.feed.ReplyEvent
 import com.example.gemipost.ui.post.feed.components.FeedPostItem
 import com.example.gemipost.ui.post.postDetails.components.AddReplySheet
 import com.example.gemipost.ui.post.postDetails.components.RepliesList
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
+import com.example.gemipost.utils.PostResults
+import com.example.gemipost.utils.isNotIdle
+import com.example.gemipost.utils.userMessage
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -55,17 +55,17 @@ fun PostDetailsScreen(
     onTagClicked: (Tag) -> Unit,
     viewModel: PostDetailsViewModel = koinViewModel()
 ) {
-    LaunchedEffect(true){
+    LaunchedEffect(true) {
         viewModel.initScreenModel(postId)
     }
-    val state by viewModel.uiState.collectAsState()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     var clickedReply by remember { mutableStateOf<Reply?>(null) }
     var isReportDialogVisible by remember { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState()
     var isEditingReply by remember { mutableStateOf(false) }
     PostDetailsContent(
-        replies = state.currentReplies,
+        state = state,
         onPostEvent = { postEvent ->
             when (postEvent) {
                 is PostEvent.OnCommentClicked -> {
@@ -125,7 +125,6 @@ fun PostDetailsScreen(
                 else -> viewModel.handleReplyEvent(replyEvent)
             }
         },
-        currentUserID = state.currentUser.id,
         clickedReply = clickedReply,
         bottomSheetState = bottomSheetState,
         onDismissAddReplyBottomSheet = {
@@ -142,25 +141,19 @@ fun PostDetailsScreen(
             viewModel.handleReplyEvent(ReplyEvent.OnReplyReported(reply = clickedReply!!))
             clickedReply = null
         },
-        onResetActionResult = viewModel::resetActionResult,
         onBackPressed = { onBackPressed() },
         isEditingReply = isEditingReply,
-        post = state.post
     )
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PostDetailsContent(
+    state: PostDetailsUiState,
     modifier: Modifier = Modifier,
-    post: Post,
-    replies: List<NestedReply>,
     onPostEvent: (PostEvent) -> Unit,
     onReplyEvent: (ReplyEvent) -> Unit,
-    currentUserID: String,
-    actionResult: PostDetailsActionResult = PostDetailsActionResult.NoActionResult,
-    scope: CoroutineScope = rememberCoroutineScope(),
-    onResetActionResult: () -> Unit,
     clickedReply: Reply?,
     isEditingReply: Boolean,
     bottomSheetState: SheetState,
@@ -171,6 +164,16 @@ private fun PostDetailsContent(
     onBackPressed: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(key1 = state.userMessage) {
+        if (state.userMessage.isNotIdle()) {
+            if(state.userMessage == PostResults.POST_CREATED){
+                onBackPressed()
+            }
+            SnackbarHostState().showSnackbar(
+                message = state.userMessage.userMessage(),
+            )
+        }
+    }
     Scaffold(snackbarHost = { SnackbarHost(hostState = snackbarHostState) }, topBar = {
         TopAppBar(title = { Text("Post Details") }, navigationIcon = {
             IconButton(onClick = {
@@ -181,27 +184,6 @@ private fun PostDetailsContent(
         })
     }, modifier = modifier
     ) {
-        if (actionResult !is PostDetailsActionResult.NoActionResult) {
-            val message = when (actionResult) {
-                is PostDetailsActionResult.NetworkError -> actionResult.message
-                is PostDetailsActionResult.ReplyDeleted -> stringResource(R.string.reply_delete_completed)
-                is PostDetailsActionResult.ReplyUpdated -> stringResource(R.string.reply_update_completed)
-                is PostDetailsActionResult.ReplyReported -> stringResource(R.string.reply_report_completed)
-                is PostDetailsActionResult.PostDeleted -> stringResource(R.string.post_delete_completed)
-                is PostDetailsActionResult.PostReported -> stringResource(R.string.post_report_completed)
-                is PostDetailsActionResult.PostUpdated -> stringResource(R.string.post_update_completed)
-                else -> stringResource(R.string.unknown_action_result)
-            }
-            LaunchedEffect(key1 = message){
-                scope.launch {
-                    snackbarHostState.showSnackbar(
-                        message = message
-                    )
-                    delay(1500)
-                    onResetActionResult()
-                }
-            }
-        }
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -212,16 +194,21 @@ private fun PostDetailsContent(
                     .systemBarsPadding()
                     .fillMaxSize()
             ) {
+                if(state.isLoading){
+                    item {
+                        LinearProgressIndicator()
+                    }
+                }
                 item {
                     FeedPostItem(
-                        post = post, onPostEvent = onPostEvent
+                        post = state.post, onPostEvent = onPostEvent
                     )
                     Spacer(modifier = Modifier.padding(4.dp))
                 }
                 RepliesList(
-                    replies = replies,
+                    replies = state.currentReplies,
                     onReplyEvent = onReplyEvent,
-                    currentUserId = currentUserID
+                    currentUserId = state.currentUser.id
                 )
             }
             if (isReportDialogVisible) {
@@ -254,7 +241,7 @@ private fun PostDetailsContent(
                             onReplyEvent(ReplyEvent.OnReplyEdited(clickedReply.copy(content = textReply)))
                             onReplyEvent(ReplyEvent.OnEditReply(clickedReply))
                         } else if (clickedReply == null) {
-                            onPostEvent(PostEvent.OnCommentAdded(textReply, post.id))
+                            onPostEvent(PostEvent.OnCommentAdded(textReply, state.post.id))
                         } else {
                             onReplyEvent(ReplyEvent.OnReplyAdded(textReply, clickedReply))
                             onReplyEvent(ReplyEvent.OnAddReply(clickedReply))

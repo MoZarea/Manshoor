@@ -23,9 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gemipost.data.post.source.remote.model.Post
-import com.example.gemipost.data.post.source.remote.model.Tag
 import com.example.gemipost.ui.post.searchResult.components.SearchResultHeader
 import com.example.gemipost.ui.post.searchResult.components.SearchResultList
 import org.koin.androidx.compose.koinViewModel

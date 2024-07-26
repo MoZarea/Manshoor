@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -17,7 +18,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,8 +36,9 @@ import com.example.gemipost.ui.auth.login.components.googleSignInOption
 import com.example.gemipost.ui.auth.login.components.imagevectors.OAuthProviderIcons
 import com.example.gemipost.ui.auth.login.components.imagevectors.oauthprovidericons.Google
 import com.example.gemipost.ui.auth.login.components.rememberFirebaseAuthLauncher
-import com.example.gemipost.ui.auth.util.AuthError
-import kotlinx.coroutines.launch
+import com.example.gemipost.utils.AuthResults
+import com.example.gemipost.utils.isNotIdle
+import com.example.gemipost.utils.userMessage
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -48,12 +49,6 @@ fun LoginScreen(
     onNavigateToForgotPassword: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
-    LaunchedEffect(state.signedInUser) {
-        if (state.signedInUser != null) {
-            onNavigateToFeed()
-            viewModel.onDispose()
-        }
-    }
     val context = LocalContext.current
     val launcher = rememberFirebaseAuthLauncher(
         result = { result ->
@@ -64,55 +59,57 @@ fun LoginScreen(
     LoginContent(
         onContinueWithGoogle = { launcher.launch(googleSignInClient.signInIntent) },
         onSignIn = { viewModel.onSignIn() },
-        error = state.error,
-        email = state.email,
-        password = state.password,
+        state = state,
         onSignUpClicked = { onNavigateToSignUp() },
         onForgotPasswordClicked = { onNavigateToForgotPassword() },
         onEmailChanged = { viewModel.updateEmail(it) },
         onPasswordChanged = { viewModel.updatePassword(it) },
-    )
+        onNavigateToFeed = onNavigateToFeed,
+        )
 }
 
 
 @Composable
 private fun LoginContent(
+    onNavigateToFeed: () -> Unit,
     onContinueWithGoogle: () -> Unit,
     onSignIn: () -> Unit,
-    error: AuthError,
+    state: LoginUiState,
     onSignUpClicked: () -> Unit,
     onForgotPasswordClicked: () -> Unit,
     onEmailChanged: (String) -> Unit,
     onPasswordChanged: (String) -> Unit,
-    email: String,
-    password: String,
 ) {
-
-    var passwordVisible by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(state.actionResult) {
+        if (state.actionResult == AuthResults.LOGIN_SUCCESS) {
+                onNavigateToFeed()
+        } else if (state.actionResult.isNotIdle()) {
+            snackbarHostState.showSnackbar(
+                message = state.actionResult.userMessage(),
+                withDismissAction = true,
+            )
+        }
+    }
+    var passwordVisible by remember { mutableStateOf(false) }
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
         },
         modifier = Modifier.fillMaxSize(),
     ) {
-        LaunchedEffect(error) {
-            scope.launch {
-                snackbarHostState.showSnackbar(
-                    message = (error).toString(),
-                )
-            }
-        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it),
             verticalArrangement = Arrangement.Center,
         ) {
+            if (state.isLoading) {
+                LinearProgressIndicator()
+            }
             LoginHeader()
-            AuthEmailField(email, onEmailChanged, error)
-            AuthPasswordField(password, onPasswordChanged, passwordVisible, error)
+            AuthEmailField(state.email, onEmailChanged, state.actionResult)
+            AuthPasswordField(state.password, onPasswordChanged, passwordVisible, state.actionResult)
             AuthTextButton(R.string.forgot_password, onForgotPasswordClicked)
             Box(
                 Modifier

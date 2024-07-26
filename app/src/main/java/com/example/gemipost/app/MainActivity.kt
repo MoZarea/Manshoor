@@ -14,7 +14,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.gemipost.R
-import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.navigation.CreatePost
 import com.example.gemipost.navigation.EditPost
 import com.example.gemipost.navigation.Feed
@@ -25,7 +24,6 @@ import com.example.gemipost.navigation.Search
 import com.example.gemipost.navigation.SearchResult
 import com.example.gemipost.navigation.SignUp
 import com.example.gemipost.navigation.Splash
-import com.example.gemipost.navigation.parcelableType
 import com.example.gemipost.ui.auth.forgotpassword.ForgotPasswordScreen
 import com.example.gemipost.ui.auth.login.LoginScreen
 import com.example.gemipost.ui.auth.signup.SignUpScreen
@@ -36,7 +34,6 @@ import com.example.gemipost.ui.post.search.SearchScreen
 import com.example.gemipost.ui.post.searchResult.SearchResultScreen
 import com.example.gemipost.ui.splash.SplashScreen
 import com.example.gemipost.ui.theme.GemiPostTheme
-import kotlin.reflect.typeOf
 
 class MainActivity : ComponentActivity() {
 
@@ -55,7 +52,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp() {
     val navController = rememberNavController()
-    NavHost(navController, startDestination = Login) {
+    NavHost(navController, startDestination = Splash) {
         composable<Splash> {
             Log.d("seerde", "Splash screen")
             SplashScreen(

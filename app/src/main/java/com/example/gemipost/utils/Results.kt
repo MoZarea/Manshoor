@@ -1,5 +1,6 @@
 package com.gp.socialapp.util
 
+import com.example.gemipost.utils.Error
 import kotlinx.serialization.Serializable
 
 typealias RootError = Error

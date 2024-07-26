@@ -13,8 +13,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,7 +38,6 @@ import com.example.gemipost.ui.post.create.component.MyTextFieldTitle
 import com.example.gemipost.ui.post.create.component.NewTagAlertDialog
 import com.example.gemipost.ui.post.create.component.TagsRow
 import com.example.gemipost.ui.theme.GemiPostTheme
-import com.example.gemipost.utils.Status
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -44,11 +46,8 @@ fun CreatePostScreen(
 ) {
     val viewModel: CreatePostViewModel = koinViewModel()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(key1 = state.status) {
-        if (state.status == Status.SUCCESS) {
-            onNavigateBack()
-        }
-    }
+
+
     CreatePostContent(
         action = viewModel::handleEvent,
         state = state,
@@ -63,108 +62,127 @@ fun CreatePostContent(
     onNavigateBack: () -> Unit,
 ) {
 
-    val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = { uri ->
-            uri?.let { selectedUri ->
-                action(CreatePostEvents.OnAddFile(selectedUri))
+    val snackbarHostState = remember { SnackbarHostState() }
+    if (state.userMessage.isNotBlank()) {
+        LaunchedEffect(key1 = state.userMessage) {
+            if (state.userMessage == "Post Created Successfully") {
+                onNavigateBack()
             }
+            snackbarHostState.showSnackbar(state.userMessage)
         }
+    }
+        val galleryLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.PickVisualMedia(),
+            onResult = { uri ->
+                uri?.let { selectedUri ->
+                    action(CreatePostEvents.OnAddFile(selectedUri))
+                }
+            }
 
-    )
-    var newTagDialogState by remember { mutableStateOf(false) }
-    Scaffold(topBar = {
-        CreatePostTopBar(
-            onBackClick = onNavigateBack,
-            stringResource(id = R.string.create_post),
         )
-    }) {
-        Column(
-            modifier = Modifier
-                .padding(it)
-                .fillMaxSize()
+        var newTagDialogState by remember { mutableStateOf(false) }
+        Scaffold(
+            topBar = {
+                CreatePostTopBar(
+                    onBackClick = onNavigateBack,
+                    stringResource(id = R.string.create_post),
+                )
+            },
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState)
+            },
         ) {
-            Spacer(modifier = Modifier.height(8.dp))
-            MyTextFieldTitle(
-                value = state.title, label = "Title", onValueChange = { newTitle ->
-                    action(CreatePostEvents.OnTitleChanged(newTitle))
-                }, modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            MyTextFieldBody(
-                value = state.body,
-                label = "Body",
-                onValueChange = { newBody ->
-                    action(CreatePostEvents.OnBodyChanged(newBody))
-                },
-                tags = state.tags,
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.5f)
-                    .padding(horizontal = 16.dp)
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            FilesRow(modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-                state.files,
-                onFileDelete = { file ->
-                    action(CreatePostEvents.OnRemoveFile(file))
-                },
-                onAddFile = {
-                    galleryLauncher.launch(
-                        PickVisualMediaRequest(
-                            mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
-                        )
-                    )
-                })
-            Spacer(modifier = Modifier.weight(1f))
-            TagsRow(selectedTags = state.tags, onTagClick = { tag ->
-                action(CreatePostEvents.OnRemoveTag(tag))
-            }, onAddNewTagClick = {
-                newTagDialogState = true
-            })
-            Button(
-                onClick = {
-                    action(CreatePostEvents.OnCreatePostClicked)
-                },
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                enabled = state.title.isNotBlank() && state.body.isNotBlank(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                    .padding(it)
+                    .fillMaxSize()
             ) {
-                Text(
-                    text = "+ Post"
+                if (state.isLoading) {
+                    LinearProgressIndicator(
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                MyTextFieldTitle(
+                    value = state.title, label = "Title", onValueChange = { newTitle ->
+                        action(CreatePostEvents.OnTitleChanged(newTitle))
+                    }, modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
                 )
+                Spacer(modifier = Modifier.height(8.dp))
+                MyTextFieldBody(
+                    value = state.body,
+                    label = "Body",
+                    onValueChange = { newBody ->
+                        action(CreatePostEvents.OnBodyChanged(newBody))
+                    },
+                    tags = state.tags,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.5f)
+                        .padding(horizontal = 16.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                FilesRow(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                    state.files,
+                    onFileDelete = { file ->
+                        action(CreatePostEvents.OnRemoveFile(file))
+                    },
+                    onAddFile = {
+                        galleryLauncher.launch(
+                            PickVisualMediaRequest(
+                                mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
+                            )
+                        )
+                    })
+                Spacer(modifier = Modifier.weight(1f))
+                TagsRow(selectedTags = state.tags, onTagClick = { tag ->
+                    action(CreatePostEvents.OnRemoveTag(tag))
+                }, onAddNewTagClick = {
+                    newTagDialogState = true
+                })
+                Button(
+                    onClick = {
+                        action(CreatePostEvents.OnCreatePostClicked)
+                    },
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    enabled = state.title.isNotBlank() && state.body.isNotBlank(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                ) {
+                    Text(
+                        text = "+ Post"
+                    )
+                }
+            }
+            if (newTagDialogState) {
+                NewTagAlertDialog(
+                    newTagDialogState = { value ->
+                        newTagDialogState = value
+                    },
+                    confirmNewTags = {
+                        action(CreatePostEvents.OnAddTag(it))
+                    },
+                )
+
             }
         }
-        if (newTagDialogState) {
-            NewTagAlertDialog(
-                newTagDialogState = { value ->
-                    newTagDialogState = value
-                },
-                confirmNewTags = {
-                    action(CreatePostEvents.OnAddTag(it))
-                },
-            )
+    }
 
+    @Composable
+    @Preview
+    fun CreatePostContentPreview() {
+        GemiPostTheme {
+            CreatePostContent(action = {}, state = CreatePostUIState(), onNavigateBack = {})
         }
     }
-}
-
-@Composable
-@Preview
-fun CreatePostContentPreview() {
-    GemiPostTheme {
-        CreatePostContent(action = {}, state = CreatePostUIState(), onNavigateBack = {})
-    }
-}
 
 
 

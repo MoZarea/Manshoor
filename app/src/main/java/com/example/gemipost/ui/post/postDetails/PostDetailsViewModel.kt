@@ -6,13 +6,16 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gemipost.data.auth.repository.AuthenticationRepository
+import com.example.gemipost.data.auth.source.remote.model.User
 import com.example.gemipost.data.post.repository.PostRepository
 import com.example.gemipost.data.post.repository.ReplyRepository
+import com.example.gemipost.data.post.source.remote.model.NestedReply
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.Reply
 import com.example.gemipost.data.post.util.ToNestedReplies.toNestedReplies
 import com.example.gemipost.ui.post.feed.PostEvent
 import com.example.gemipost.ui.post.feed.ReplyEvent
+import com.example.gemipost.utils.Error
 import com.example.gemipost.utils.urlToBitmap
 import com.gp.socialapp.util.Result
 import kotlinx.coroutines.Dispatchers
@@ -31,43 +34,57 @@ class PostDetailsViewModel(
     fun initScreenModel(postId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             authRepo.getSignedInUser().let { result ->
-                when (result) {
-                    is Result.Success -> {
-                        _uiState.update { it.copy(currentUser = result.data) }
-                        getPost(postId)
-                    }
-
-                    else -> Unit
+                result.onSuccessWithData { data ->
+                    updateCurrentUser(data)
+                    getPost(postId)
+                }.onFailure {
+                    updateUserMessage(it)
                 }
-
             }
         }
+    }
+
+    private fun updateUserMessage(message: Error) {
+        _uiState.update { it.copy(userMessage = message) }
+    }
+
+    private fun updateCurrentUser(user: User) {
+        _uiState.update { it.copy(currentUser = user) }
     }
 
     private fun getPost(postId: String) {
         viewModelScope.launch {
             postRepo.fetchPostById(postId).let { result ->
                 result.onLoading {
-                    println("zarea:Loading")
+                    updateLoading(true)
                 }.onFailure {
-                    println("zarea:Error")
+                    updateUserMessage(it)
                 }.onSuccessWithData { post ->
-                    _uiState.update { it.copy(post = post) }
+                    updatePost(
+                        post.copy(
+                            upvoted = if (uiState.value.currentUser.id in post.upvoted) listOf("") else emptyList(),
+                            downvoted = if (uiState.value.currentUser.id in post.downvoted) listOf("") else emptyList()
+                        )
+                    )
+
+                    getRepliesById(postId)
                 }
-                    .onSuccessWithData { post ->
-                        _uiState.update {
-                            it.copy(
-                                post = post.copy(
-                                    upvoted = if (it.currentUser.id in post.upvoted) listOf("") else emptyList(),
-                                    downvoted = if (it.currentUser.id in post.downvoted) listOf("") else emptyList()
-                                )
-                            )
-                        }
-                        getRepliesById(postId)
-                    }
             }
 
         }
+    }
+
+    private fun updatePost(post: Post) {
+        _uiState.update { it.copy(post = post) }
+    }
+
+    private fun updateLoading(state: Boolean) {
+        _uiState.update { it.copy(isLoading = state) }
+
+    }
+
+    private fun updateReplies(nestedReplies: List<NestedReply>) {
+        _uiState.update { it.copy(currentReplies = nestedReplies) }
     }
 
     private fun getRepliesById(id: String) {
@@ -76,28 +93,18 @@ class PostDetailsViewModel(
                 when (result) {
                     is Result.Success -> {
                         val nestedReplies = result.data.toNestedReplies()
-                        _uiState.update {
-                            it.copy(
-                                currentReplies = nestedReplies, isLoading = false
-                            )
-                        }
+                        updateReplies(nestedReplies)
+                        updateLoading(false)
                     }
 
                     is Result.Error -> {
-                        _uiState.update {
-                            it.copy(
-                                actionResult = PostDetailsActionResult.NetworkError(
-                                    result.message.userMessage
-                                ), isLoading = false
-                            )
-                        }
+                        updateLoading(false)
+                        updateUserMessage(result.message)
                     }
 
                     is Result.Loading -> {
-                        _uiState.update { it.copy(isLoading = true) }
+                        updateLoading(true)
                     }
-
-                    else -> {}
                 }
             }
         }
@@ -138,24 +145,16 @@ class PostDetailsViewModel(
             val result = postRepo.upvotePost(post, _uiState.value.currentUser.id)
             when (result) {
                 is Result.Error -> {
-                    _uiState.update {
-                        it.copy(
-                            actionResult = PostDetailsActionResult.NetworkError(
-                                result.message.userMessage
-                            )
-                        )
-                    }
+                    updateUserMessage(result.message)
                 }
 
                 Result.Loading -> {
-                    // TODO
+                    updateLoading(true)
                 }
 
                 is Result.Success -> {
                     getPost(post.id)
                 }
-
-                else -> {}
             }
         }
     }
@@ -165,24 +164,17 @@ class PostDetailsViewModel(
             val result = postRepo.downvotePost(post, _uiState.value.currentUser.id)
             when (result) {
                 is Result.Success -> {
+                    updateLoading(false)
                     getPost(post.id)
                 }
 
                 is Result.Error -> {
-                    _uiState.update {
-                        it.copy(
-                            actionResult = PostDetailsActionResult.NetworkError(
-                                result.message.userMessage
-                            )
-                        )
-                    }
+                    updateUserMessage(result.message)
                 }
 
                 Result.Loading -> {
-                    // TODO
+                    updateLoading(true)
                 }
-
-                else -> {}
             }
         }
     }
@@ -190,29 +182,15 @@ class PostDetailsViewModel(
     private fun deletePost(post: Post) {
         viewModelScope.launch(Dispatchers.IO) {
             val result = postRepo.deletePost(post)
-            when (result) {
-                is Result.Success -> {
-                    _uiState.update { it.copy(actionResult = PostDetailsActionResult.PostDeleted) }
-                    getPost(post.id)
-                }
-
-                is Result.Error -> {
-                    _uiState.update {
-                        it.copy(
-                            actionResult = PostDetailsActionResult.NetworkError(
-                                result.message.userMessage
-                            )
-                        )
-                    }
-                }
-
-                Result.Loading -> {
-                    // TODO
-
-                }
-
-                else -> {}
+            result.onSuccessWithData {
+                updateUserMessage(it)
             }
+                .onFailure {
+                    updateUserMessage(it)
+                }
+                .onLoading {
+                    updateLoading(true)
+                }
         }
     }
 
@@ -221,27 +199,14 @@ class PostDetailsViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             replyRepo.upvoteReply(reply.id, currentUserId = _uiState.value.currentUser.id)
                 .let { result ->
-                    when (result) {
-                        is Result.Success -> {
-                            getRepliesById(reply.postId)
-                        }
-
-                        is Result.Error -> {
-                            _uiState.update {
-                                it.copy(
-                                    actionResult = PostDetailsActionResult.NetworkError(
-                                        result.message.userMessage
-                                    )
-                                )
-                            }
-                        }
-
-                        Result.Loading -> {
-                            // TODO
-                        }
-
-                        else -> {}
+                    result.onSuccessWithData {
+                        updateLoading(false)
+                        getRepliesById(reply.postId)
                     }
+                        .onLoading {
+                            updateLoading(true)
+                        }
+                        .onFailure { updateUserMessage(it) }
                 }
         }
     }
@@ -249,27 +214,12 @@ class PostDetailsViewModel(
     private fun downvoteReply(reply: Reply) {
         viewModelScope.launch(Dispatchers.IO) {
             replyRepo.downvoteReply(reply.id, _uiState.value.currentUser.id).let { result ->
-                when (result) {
-                    is Result.Success -> {
-                        getRepliesById(reply.postId)
-                    }
-
-                    is Result.Error -> {
-                        _uiState.update {
-                            it.copy(
-                                actionResult = PostDetailsActionResult.NetworkError(
-                                    result.message.userMessage
-                                )
-                            )
-                        }
-                    }
-
-                    Result.Loading -> {
-                        // TODO
-                    }
-
-                    else -> {}
+                result.onSuccessWithData {
+                    updateLoading(false)
+                    getRepliesById(reply.postId)
                 }
+                    .onFailure { updateUserMessage(it) }
+                    .onLoading { updateLoading(true) }
             }
         }
     }
@@ -277,28 +227,11 @@ class PostDetailsViewModel(
     private fun deleteReply(reply: Reply) {
         viewModelScope.launch(Dispatchers.IO) {
             replyRepo.deleteReply(reply.id).let { result ->
-                when (result) {
-                    is Result.Success -> {
-                        getRepliesById(reply.postId)
-                        _uiState.update { it.copy(actionResult = PostDetailsActionResult.ReplyDeleted) }
-                    }
-
-                    is Result.Error -> {
-                        _uiState.update {
-                            it.copy(
-                                actionResult = PostDetailsActionResult.NetworkError(
-                                    result.message.userMessage
-                                )
-                            )
-                        }
-                    }
-
-                    Result.Loading -> {
-                        // TODO
-                    }
-
-                    else -> {}
-                }
+                result.onSuccessWithData {
+                    updateLoading(false)
+                    getRepliesById(reply.postId)
+                }.onFailure { updateUserMessage(it)
+                }.onLoading { updateLoading(true) }
             }
         }
     }
@@ -306,35 +239,12 @@ class PostDetailsViewModel(
     private fun updateReply(reply: Reply) {
         viewModelScope.launch(Dispatchers.IO) {
             replyRepo.updateReply(reply.id, reply.content).let { result ->
-                when (result) {
-                    is Result.Success -> {
-                        getRepliesById(reply.postId)
-                        _uiState.update { it.copy(actionResult = PostDetailsActionResult.ReplyUpdated) }
-                    }
-
-                    is Result.Error -> {
-                        _uiState.update {
-                            it.copy(
-                                actionResult = PostDetailsActionResult.NetworkError(
-                                    result.message.userMessage
-                                )
-                            )
-                        }
-                    }
-
-                    Result.Loading -> {
-                        // TODO
-                    }
-
-                    else -> {}
-                }
+                result.onSuccessWithData {
+                    updateLoading(false)
+                    getRepliesById(reply.postId)
+                }.onFailure { updateUserMessage(it)
+                }.onLoading { updateLoading(true)}
             }
-        }
-    }
-
-    fun resetActionResult() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(actionResult = PostDetailsActionResult.NoActionResult) }
         }
     }
 
@@ -353,10 +263,6 @@ class PostDetailsViewModel(
                 )
                 println("reply in screen model: $reply")
                 createReply(reply)
-            }
-
-            is PostEvent.OnPostReported -> {
-                reportPost(event.post, event.context)
             }
 
             else -> {}

@@ -3,9 +3,6 @@ package com.example.gemipost.ui.post.searchResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gemipost.data.post.repository.PostRepository
-import com.example.gemipost.data.post.source.remote.model.Tag
-import com.example.gemipost.ui.post.searchResult.SearchResultUiState
-
 import com.gp.socialapp.util.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

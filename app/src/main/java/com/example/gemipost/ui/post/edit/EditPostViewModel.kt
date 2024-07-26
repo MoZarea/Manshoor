@@ -1,12 +1,12 @@
 package com.example.gemipost.ui.post.edit
 
+import android.net.Uri
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gemipost.data.post.repository.PostRepository
-import com.example.gemipost.data.post.source.remote.model.Post
+import com.example.gemipost.data.post.source.remote.model.Tag
 import com.example.gemipost.utils.LocalDateTimeUtil.now
-import com.example.gemipost.utils.Status
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,22 +28,27 @@ class EditPostViewModel(
             }
 
             is EditPostAction.OnContentChanged -> {
-                _uiState.update { it.copy(body = action.content) }
+                updateBody(action.content)
             }
+
             is EditPostAction.OnFileAdded -> {
-                _uiState.update { it.copy(postAttachments = it.postAttachments + action.file) }
+                updateFiles(uiState.value.postAttachments + action.file)
             }
+
             is EditPostAction.OnFileRemoved -> {
-                _uiState.update { it.copy(postAttachments = it.postAttachments - action.file) }
+                updateFiles(uiState.value.postAttachments - action.file)
             }
+
             is EditPostAction.OnTagAdded -> {
-                _uiState.update { it.copy(postTags = it.postTags + action.tags) }
+                updateTags(uiState.value.postTags + action.tags)
             }
+
             is EditPostAction.OnTagRemoved -> {
-                _uiState.update { it.copy(postTags = it.postTags - action.tag) }
+                updateTags(uiState.value.postTags - action.tag)
             }
+
             is EditPostAction.OnTitleChanged -> {
-                _uiState.update { it.copy(title = action.title) }
+                updateTitle(action.title)
             }
         }
     }
@@ -61,15 +66,12 @@ class EditPostViewModel(
                             .toEpochMilliseconds()
                     )
                 ).let {
-                    it
-                        .onSuccess {
-                            _uiState.update { it.copy(status = Status.SUCCESS) }
+                    it.onSuccess {
+                            updateUserMessage("Post Updated Successfully")
                         }.onFailure { error ->
-                            _uiState.update { it.copy(status = Status.ERROR(error.userMessage)) }
+                            updateUserMessage(error.userMessage)
                         }.onLoading {
-                            _uiState.update {
-                                it.copy(status = Status.LOADING)
-                            }
+                            updateLoading(true)
                         }
                 }
             }
@@ -79,9 +81,9 @@ class EditPostViewModel(
     fun init(postId: String) {
         if (uiState.value.post.id.isNotBlank()) return
         viewModelScope.launch(Dispatchers.IO) {
-            postRepository.fetchPostById(postId).let {result->
+            postRepository.fetchPostById(postId).let { result ->
                 result
-                    .onSuccessWithData {post->
+                    .onSuccessWithData { post ->
                         _uiState.update {
                             it.copy(
                                 post = post,
@@ -92,14 +94,41 @@ class EditPostViewModel(
                             )
                         }
                     }
-                    .onFailure { error->
-                        _uiState.update { it.copy(status = Status.ERROR(error.userMessage)) }
+                    .onFailure { error ->
+                        updateUserMessage(error.userMessage)
                     }
                     .onLoading {
-                        _uiState.update { it.copy(status = Status.LOADING) }
+                        updateLoading(true)
                     }
             }
         }
+    }
+
+    private fun updateUserMessage(message: String) {
+        println("updateUserMessage: $message")
+        _uiState.update { it.copy(userMessage = message) }
+        updateLoading(false)
+    }
+
+    private fun updateLoading(isLoading: Boolean) {
+        println("updateLoading: $isLoading")
+        _uiState.update { it.copy(isLoading = isLoading) }
+    }
+
+    private fun updateTags(tags: Set<Tag>) {
+        _uiState.update { it.copy(postTags = tags) }
+    }
+
+    private fun updateFiles(files: List<Uri>) {
+        _uiState.update { it.copy(postAttachments = files) }
+    }
+
+    private fun updateTitle(title: String) {
+        _uiState.update { it.copy(title = title) }
+    }
+
+    private fun updateBody(body: String) {
+        _uiState.update { it.copy(body = body) }
     }
 
 }

@@ -5,9 +5,8 @@ import com.example.gemipost.data.post.source.remote.model.Reply
 import com.example.gemipost.data.post.source.remote.model.downvote
 import com.example.gemipost.data.post.source.remote.model.upvote
 import com.example.gemipost.utils.AppConstants
+import com.example.gemipost.utils.ReplyResults
 import com.google.firebase.firestore.FirebaseFirestore
-import com.gp.socialapp.util.PostError
-import com.gp.socialapp.util.ReplyError
 import com.gp.socialapp.util.Result
 import com.gp.socialapp.util.Result.Companion.failure
 import com.gp.socialapp.util.Result.Companion.success
@@ -21,26 +20,26 @@ class ReplyRemoteDataSourceImpl(
     private val moderationSource: ModerationRemoteDataSource
 ) : ReplyRemoteDataSource {
     private val colRef = db.collection(AppConstants.DB_Constants.REPLIES.name)
-    override suspend fun createReply(reply: Reply): Result<Unit, ReplyError> =
+    override suspend fun createReply(reply: Reply): Result<ReplyResults, ReplyResults> =
         try {
             val docRef = colRef.document()
             val reply = reply.copy(id = docRef.id)
             docRef.set(reply)
-            success(Unit)
+            success(ReplyResults.REPLY_CREATED)
         } catch (e: Exception) {
             e.printStackTrace()
-            failure(ReplyError.SERVER_ERROR)
+            failure(ReplyResults.NETWORK_ERROR)
         }
 
 
-    override fun fetchReplies(postId: String): Flow<Result<List<Reply>, ReplyError>> =
+    override fun fetchReplies(postId: String): Flow<Result<List<Reply>, ReplyResults>> =
         callbackFlow {
             trySend(Result.Loading)
             try {
-                val listener = colRef.whereEqualTo("postId", postId)
+                colRef.whereEqualTo("postId", postId)
                     .addSnapshotListener { value, error ->
                         if (error != null) {
-                            trySend(Result.Error(ReplyError.SERVER_ERROR))
+                            trySend(Result.Error(ReplyResults.REPLY_FETCHED_FAILED))
                         } else {
                             val replies = value?.toObjects(Reply::class.java) ?: emptyList()
                             trySend(Result.Success(replies))
@@ -49,7 +48,7 @@ class ReplyRemoteDataSourceImpl(
 
             } catch (e: Exception) {
                 e.printStackTrace()
-                trySend(Result.Error(ReplyError.SERVER_ERROR))
+                trySend(Result.Error(ReplyResults.NETWORK_ERROR))
             }
             awaitClose()
         }
@@ -57,30 +56,30 @@ class ReplyRemoteDataSourceImpl(
     override suspend fun updateReply(
         replyId: String,
         replyContent: String
-    ): Result<Unit, ReplyError> =
+    ): Result<ReplyResults, ReplyResults> =
         try {
             val docRef = colRef.document(replyId)
             val reply = docRef.get().await().toObject(Reply::class.java)
             docRef.set(reply!!.copy(content = replyContent))
-            success(Unit)
+            success(ReplyResults.REPLY_UPDATED)
         } catch (e: Exception) {
             e.printStackTrace()
-            Result.Error(ReplyError.SERVER_ERROR)
+            Result.Error(ReplyResults.NETWORK_ERROR)
         }
 
 
-    override suspend fun deleteReply(replyId: String): Result<Unit, ReplyError> =
+    override suspend fun deleteReply(replyId: String): Result<ReplyResults, ReplyResults> =
         try {
             val docRef = colRef.document(replyId)
             docRef.delete().await()
-            success(Unit)
+            success(ReplyResults.REPLY_DELETED)
         } catch (e: Exception) {
             e.printStackTrace()
-            Result.Error(ReplyError.SERVER_ERROR)
+            Result.Error(ReplyResults.NETWORK_ERROR)
         }
 
 
-    override suspend fun upvoteReply(replyId: String, userId: String): Result<Unit, ReplyError> =
+    override suspend fun upvoteReply(replyId: String, userId: String): Result<Unit, ReplyResults> =
         try {
             val docRef = colRef.document(replyId)
             docRef.get().await().toObject(Reply::class.java)?.let {
@@ -91,11 +90,11 @@ class ReplyRemoteDataSourceImpl(
             success(Unit)
         } catch (e: Exception) {
             e.printStackTrace()
-            Result.Error(ReplyError.SERVER_ERROR)
+            Result.Error(ReplyResults.NETWORK_ERROR)
         }
 
 
-    override suspend fun downvoteReply(replyId: String, userId: String): Result<Unit, ReplyError> =
+    override suspend fun downvoteReply(replyId: String, userId: String): Result<Unit, ReplyResults> =
         try {
             val docRef = colRef.document(replyId)
             docRef.get().await().toObject(Reply::class.java)?.let {
@@ -106,22 +105,22 @@ class ReplyRemoteDataSourceImpl(
             success(Unit)
         } catch (e: Exception) {
             e.printStackTrace()
-            Result.Error(ReplyError.SERVER_ERROR)
+            Result.Error(ReplyResults.NETWORK_ERROR)
         }
 
     override suspend fun reportReply(
         replyId: String,
         replyContent: String
-    ): Result<Unit, ReplyError> {
+    ): Result<ReplyResults, ReplyResults> {
         return try {
             val shouldBeRemoved = moderationSource.validateText(replyContent)
             if (shouldBeRemoved) {
                 removeReply(replyId)
             }
-            Result.Success(Unit)
+            Result.Success(ReplyResults.REPLY_REPORTED)
         } catch (e: Exception) {
             e.printStackTrace()
-            Result.Error(ReplyError.SERVER_ERROR)
+            Result.Error(ReplyResults.NETWORK_ERROR)
         }
     }
     private suspend fun removeReply(replyId: String) {

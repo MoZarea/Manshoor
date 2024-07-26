@@ -1,8 +1,8 @@
 package com.example.gemipost.utils
 
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.gp.socialapp.presentation.material.components.imageVectors.MaterialIcon
 import com.example.gemipost.ui.theme.imageVectors.materialicon.Ai
+import com.gp.socialapp.presentation.material.components.imageVectors.MaterialIcon
 import com.gp.socialapp.presentation.material.components.imageVectors.materialicon.Avi
 import com.gp.socialapp.presentation.material.components.imageVectors.materialicon.Bmp
 import com.gp.socialapp.presentation.material.components.imageVectors.materialicon.Csv

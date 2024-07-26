@@ -1,6 +1,5 @@
 package com.example.gemipost.app.di
 
-import androidx.lifecycle.ViewModelProvider.NewInstanceFactory.Companion.instance
 import com.example.gemipost.data.auth.source.remote.AuthenticationRemoteDataSource
 import com.example.gemipost.data.auth.source.remote.AuthenticationRemoteDataSourceImpl
 import com.example.gemipost.data.post.source.remote.ModerationRemoteDataSource
@@ -20,14 +19,6 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
-import io.ktor.client.HttpClient
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.json.Json
-import org.kodein.di.DI
-import org.kodein.di.bind
-import org.kodein.di.instance
-import org.kodein.di.singleton
 import org.koin.dsl.module
 
 
