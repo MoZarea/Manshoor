@@ -98,6 +98,7 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation(libs.coil.compose)
     implementation(libs.generativeai)
+    implementation(libs.androidx.core.splashscreen)
 }
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {

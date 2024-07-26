@@ -10,10 +10,10 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import com.example.gemipost.R
 import com.example.gemipost.navigation.CreatePost
@@ -25,7 +25,6 @@ import com.example.gemipost.navigation.PostDetails
 import com.example.gemipost.navigation.Search
 import com.example.gemipost.navigation.SearchResult
 import com.example.gemipost.navigation.SignUp
-import com.example.gemipost.navigation.Splash
 import com.example.gemipost.ui.auth.forgotpassword.ForgotPasswordScreen
 import com.example.gemipost.ui.auth.login.LoginScreen
 import com.example.gemipost.ui.auth.signup.SignUpScreen
@@ -34,7 +33,6 @@ import com.example.gemipost.ui.post.feed.FeedScreen
 import com.example.gemipost.ui.post.postDetails.PostDetailsScreen
 import com.example.gemipost.ui.post.search.SearchScreen
 import com.example.gemipost.ui.post.searchResult.SearchResultScreen
-import com.example.gemipost.ui.splash.SplashScreen
 import com.example.gemipost.ui.theme.GemiPostTheme
 import com.example.gemipost.utils.AppConstants.APP_URI
 
@@ -43,6 +41,7 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("ResourceAsColor")
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(R.color.transparent))
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         setContent {
             GemiPostTheme {
@@ -55,36 +54,8 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MyApp() {
         val navController = rememberNavController()
-        NavHost(navController, startDestination = Splash) {
-            composable<Splash>(deepLinks = listOf(navDeepLink {
-                uriPattern = "$APP_URI/p/{postId}"
-                action = Intent.ACTION_VIEW
-            })) { backStackEntry ->
-                Log.d("seerde", "Splash screen")
-                val postId: String? = backStackEntry.arguments?.getString("postId")
-                SplashScreen(onNavigateToFeed = {
-                    navController.navigate(Feed) {
-                        popUpTo(Splash) {
-                            inclusive = true
-                        }
-                    }
-                }, onNavigateToLogin = {
-                    navController.navigate(Login) {
-                        popUpTo(Splash) {
-                            inclusive = true
-                        }
-                    }
-                },
-                    onNavigateToPostDetails = { detailsPostId ->
-                        navController.navigate(PostDetails(detailsPostId)){
-                            popUpTo(Splash) {
-                                inclusive = true
-                            }
-                        }
-                    },
-                    postId = postId
-                )
-            }
+        NavHost(navController, startDestination = Feed) {
+
             composable<Login> {
                 Log.d("seerde", "login screen")
                 LoginScreen(onNavigateToFeed = {

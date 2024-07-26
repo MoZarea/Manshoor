@@ -13,13 +13,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="false"
-        android:theme="@style/Theme.GemiPost"
         tools:targetApi="31">
         <activity
             android:name=".app.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.GemiPost">
+            android:theme="@style/Theme.GemiPost.MySplash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

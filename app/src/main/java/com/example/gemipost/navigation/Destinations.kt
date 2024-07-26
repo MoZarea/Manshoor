@@ -15,16 +15,10 @@ import kotlinx.serialization.json.Json
 object Login
 
 @Serializable
-object Splash
-
-@Serializable
 object SignUp
 
 @Serializable
 object ForgotPassword
-
-@Serializable
-object TestDest
 
 @Serializable
 object Feed
