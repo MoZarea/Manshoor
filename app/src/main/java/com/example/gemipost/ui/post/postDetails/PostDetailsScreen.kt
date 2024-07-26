@@ -52,7 +52,8 @@ fun PostDetailsScreen(
     postId: String,
     onBackPressed: () -> Unit,
     onTagClicked: (Tag) -> Unit,
-    viewModel: PostDetailsViewModel = koinViewModel()
+    viewModel: PostDetailsViewModel = koinViewModel(),
+    navigateToEditPost: (String) -> Unit
 ) {
     LaunchedEffect(true) {
         viewModel.initScreenModel(postId)
@@ -82,6 +83,10 @@ fun PostDetailsScreen(
                 }
 
                 is PostEvent.OnPostAuthorClicked -> {}
+                is PostEvent.OnPostEdited -> {
+                    navigateToEditPost(postEvent.post.id)
+                    viewModel.resetState()
+                }
 
                 else -> viewModel.handlePostEvent(postEvent)
             }
