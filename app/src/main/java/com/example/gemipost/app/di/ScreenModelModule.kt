@@ -1,6 +1,5 @@
 package com.example.gemipost.app.di
 
-import androidx.lifecycle.ViewModelProvider.NewInstanceFactory.Companion.instance
 import com.example.gemipost.ui.auth.forgotpassword.ForgotPasswordViewModel
 import com.example.gemipost.ui.auth.login.LoginViewModel
 import com.example.gemipost.ui.auth.signup.SignUpViewModel

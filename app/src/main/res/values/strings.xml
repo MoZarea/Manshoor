@@ -62,4 +62,5 @@
     <string name="new_password">New Password</string>
     <string name="change_password">Change Password</string>
     <string name="default_web_client_id">165867862423-0mvn6mvnk3499m9t097db8mhmk5c9ca4.apps.googleusercontent.com</string>
+    <string name="ok">OK</string>
 </resources>

@@ -7,10 +7,6 @@ import androidx.annotation.ColorInt
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.navigation.NavType
-import com.example.gemipost.data.post.source.remote.model.Post
-import com.example.gemipost.data.post.source.remote.model.Tag
-import kotlinx.parcelize.Parcelize
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

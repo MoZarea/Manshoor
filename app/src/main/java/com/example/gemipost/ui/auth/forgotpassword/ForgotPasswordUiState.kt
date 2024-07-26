@@ -1,9 +1,10 @@
 package com.example.gemipost.ui.auth.forgotpassword
 
-import com.gp.socialapp.util.AuthError
-import com.gp.socialapp.util.Result
+import com.example.gemipost.utils.AuthResults
+import com.example.gemipost.utils.Error
 
 data class ForgotPasswordUiState(
     var email: String = "",
-    var sentState: Result<Unit,AuthError> = Result.idle()
+    var actionResult :Error = AuthResults.IDLE,
+    var isLoading: Boolean = false
 )

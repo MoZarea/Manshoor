@@ -1,9 +1,7 @@
 package com.example.gemipost.ui.post.create
 
 import android.net.Uri
-import com.example.gemipost.data.post.source.remote.model.PostAttachment
 import com.example.gemipost.data.post.source.remote.model.Tag
-import com.example.gemipost.ui.post.create.component.ImageMetadata
 
 sealed interface CreatePostEvents {
 

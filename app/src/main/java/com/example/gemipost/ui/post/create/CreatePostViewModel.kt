@@ -1,10 +1,12 @@
 package com.example.gemipost.ui.post.create
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gemipost.data.auth.repository.AuthenticationRepository
 import com.example.gemipost.data.post.repository.PostRepository
 import com.example.gemipost.data.post.source.remote.model.Post
+import com.example.gemipost.data.post.source.remote.model.Tag
 import com.example.gemipost.utils.LocalDateTimeUtil.now
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,19 +41,19 @@ class CreatePostViewModel(
     fun handleEvent(createPostEvents: CreatePostEvents) =
         when (createPostEvents) {
             is CreatePostEvents.OnBodyChanged -> {
-                _uiState.update { it.copy(body = createPostEvents.newBody) }
+                updateBody(createPostEvents.newBody)
             }
 
             is CreatePostEvents.OnTitleChanged -> {
-                _uiState.update { it.copy(title = createPostEvents.newTitle) }
+                updateTitle(createPostEvents.newTitle)
             }
 
             is CreatePostEvents.OnAddFile -> {
-                _uiState.update { it.copy(files = it.files + createPostEvents.uri) }
+                updateFiles(uiState.value.files + createPostEvents.uri)
             }
 
             is CreatePostEvents.OnAddTag -> {
-                _uiState.update { it.copy(tags = it.tags + createPostEvents.tag) }
+                updateTags(uiState.value.tags + createPostEvents.tag)
             }
 
             CreatePostEvents.OnCreatePostClicked -> {
@@ -59,13 +61,11 @@ class CreatePostViewModel(
             }
 
             is CreatePostEvents.OnRemoveFile -> {
-                _uiState.update { it.copy(files = it.files - createPostEvents.uri) }
+                updateFiles(uiState.value.files - createPostEvents.uri)
             }
 
             is CreatePostEvents.OnRemoveTag -> {
-                _uiState.update {
-                    it.copy(tags = it.tags - createPostEvents.tag)
-                }
+                updateTags(uiState.value.tags - createPostEvents.tag)
             }
         }
 
@@ -86,8 +86,8 @@ class CreatePostViewModel(
                     )
                 ).collect { result ->
                     result
-                        .onSuccess {
-                            updateUserMessage("Post Created Successfully")
+                        .onSuccessWithData {message->
+                            updateUserMessage(message.userMessage)
                         }
                         .onFailure { message ->
                             updateUserMessage(message.userMessage)
@@ -109,5 +109,21 @@ class CreatePostViewModel(
     private fun updateLoading(isLoading: Boolean) {
         println("updateLoading: $isLoading")
         _uiState.update { it.copy(isLoading = isLoading) }
+    }
+
+    private fun updateTags(tags: List<Tag>) {
+        _uiState.update { it.copy(tags = tags) }
+    }
+
+    private fun updateFiles(files: List<Uri>) {
+        _uiState.update { it.copy(files = files) }
+    }
+
+    private fun updateTitle(title: String) {
+        _uiState.update { it.copy(title = title) }
+    }
+
+    private fun updateBody(body: String) {
+        _uiState.update { it.copy(body = body) }
     }
 }

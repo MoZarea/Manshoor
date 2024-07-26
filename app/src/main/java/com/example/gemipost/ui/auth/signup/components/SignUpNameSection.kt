@@ -11,23 +11,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gemipost.R
-import com.example.gemipost.ui.auth.util.AuthError
+import com.example.gemipost.utils.AuthResults
+import com.example.gemipost.utils.Error
+import com.example.gemipost.utils.userMessage
 
 @Composable
 fun SignUpNameSection(
     name: String,
     onNameChanged: (String) -> Unit,
-    error: AuthError
+    error: Error
 ) {
     OutlinedTextField(
         value = name,
         onValueChange = onNameChanged,
         label = { Text(text = stringResource(R.string.name)) },
-        isError = error is AuthError.FirstNameError,
+        isError = error == AuthResults.INVALID_NAME,
         supportingText = {
-            if (error is AuthError.FirstNameError) {
+            if (error == AuthResults.INVALID_NAME) {
                 Text(
-                    text = stringResource((error as AuthError.FirstNameError).messageId),
+                    text = error.userMessage(),
                     color = MaterialTheme.colorScheme.error,
                     fontSize = 12.sp
                 )

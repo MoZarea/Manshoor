@@ -1,6 +1,5 @@
 package com.example.gemipost.ui.theme
 
-import android.app.Activity
 import android.graphics.Color
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

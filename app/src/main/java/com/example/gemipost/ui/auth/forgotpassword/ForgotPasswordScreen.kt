@@ -20,15 +20,18 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -36,7 +39,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gemipost.R
-import com.gp.socialapp.util.Result
+import com.example.gemipost.utils.AuthResults
+import com.example.gemipost.utils.isNotIdle
+import com.example.gemipost.utils.userMessage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun ForgotPasswordScreen(
@@ -45,16 +53,12 @@ fun ForgotPasswordScreen(
     onBackPressed: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
-    LaunchedEffect(state.sentState){
-        if(state.sentState is Result.Success){
-            onNavigateToLogin()
-        }
-    }
     ForgetPasswordContent(
         state = state,
         onEmailChange = { viewModel.onEmailChange(it) },
         onSendResetEmail = { viewModel.onSendResetEmail() },
-        onBackPressed = onBackPressed
+        onBackPressed = onBackPressed,
+        onNavigateToLogin = onNavigateToLogin,
     )
 }
 
@@ -65,9 +69,25 @@ private fun ForgetPasswordContent(
     state: ForgotPasswordUiState = ForgotPasswordUiState(),
     onEmailChange: (String) -> Unit = {},
     onSendResetEmail: () -> Unit = {},
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onNavigateToLogin: () -> Unit,
 ) {
-    Scaffold (
+    val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(state.actionResult) {
+        if (state.actionResult == AuthResults.RESET_EMAIL_SENT) {
+            launch(Dispatchers.IO) {
+                delay(1500)
+                onNavigateToLogin()
+            }
+        } else if (state.actionResult.isNotIdle()) {
+            snackbarHostState.showSnackbar(
+                message = state.actionResult.userMessage(),
+                withDismissAction = true,
+            )
+        }
+    }
+    Scaffold(
+        snackbarHost = { snackbarHostState },
         topBar = {
             TopAppBar(
                 title = {},
@@ -82,7 +102,7 @@ private fun ForgetPasswordContent(
             )
         },
         modifier = modifier
-    ){ paddingValues ->
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -91,6 +111,9 @@ private fun ForgetPasswordContent(
                 .padding(16.dp),
             verticalArrangement = Arrangement.Center,
         ) {
+            if(state.isLoading) {
+                LinearProgressIndicator()
+            }
             Text(
                 text = stringResource(R.string.reset_your_password),
                 modifier = Modifier

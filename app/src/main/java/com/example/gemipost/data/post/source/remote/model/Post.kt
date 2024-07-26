@@ -1,8 +1,6 @@
 package com.example.gemipost.data.post.source.remote.model
 
-import android.net.Uri
 import android.os.Parcelable
-import com.example.gemipost.data.post.source.remote.model.PostAttachment.Companion
 import com.example.gemipost.data.post.util.PostPopularityUtils
 import com.example.gemipost.utils.LocalDateTimeUtil.now
 import kotlinx.datetime.LocalDateTime
@@ -10,7 +8,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
-import org.kodein.di.bindings.ErasedContext.type
 
 @Parcelize
 @Serializable
