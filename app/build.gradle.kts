@@ -93,6 +93,7 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
+    implementation(libs.firebase.messaging)
     implementation(libs.korge.foundation)
     implementation(libs.koin.androidx.compose)
     implementation(libs.play.services.auth)
