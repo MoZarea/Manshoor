@@ -40,6 +40,7 @@ import com.example.gemipost.ui.post.feed.ReplyEvent
 import com.example.gemipost.ui.post.feed.components.FeedPostItem
 import com.example.gemipost.ui.post.postDetails.components.AddReplySheet
 import com.example.gemipost.ui.post.postDetails.components.RepliesList
+import com.example.gemipost.utils.AuthResults
 import com.example.gemipost.utils.PostResults
 import com.example.gemipost.utils.isNotIdle
 import com.example.gemipost.utils.userMessage
@@ -54,7 +55,8 @@ fun PostDetailsScreen(
     onTagClicked: (Tag) -> Unit,
     onSharePost: (String) -> Unit,
     viewModel: PostDetailsViewModel = koinViewModel(),
-    navigateToEditPost: (String) -> Unit
+    navigateToEditPost: (String) -> Unit,
+    navigateToLogin: () -> Unit
 ) {
     LaunchedEffect(true) {
         viewModel.initScreenModel(postId)
@@ -150,6 +152,7 @@ fun PostDetailsScreen(
         },
         onBackPressed = { onBackPressed() },
         isEditingReply = isEditingReply,
+        navigateToLogin = navigateToLogin
     )
 }
 
@@ -168,12 +171,13 @@ private fun PostDetailsContent(
     onDismissReportDialog: () -> Unit,
     onConfirmReport: () -> Unit,
     onDismissAddReplyBottomSheet: () -> Unit,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    navigateToLogin: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     LaunchedEffect(key1 = state.actionResult) {
         if (state.actionResult.isNotIdle()) {
-            if(state.actionResult == PostResults.POST_CREATED){
+            if(state.actionResult == PostResults.POST_DELETED){
                 onBackPressed()
             }
             SnackbarHostState().showSnackbar(

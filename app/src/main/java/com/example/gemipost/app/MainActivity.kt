@@ -9,13 +9,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.navigation.NavDeepLink
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -32,7 +26,6 @@ import com.example.gemipost.navigation.Search
 import com.example.gemipost.navigation.SearchResult
 import com.example.gemipost.navigation.SignUp
 import com.example.gemipost.navigation.Splash
-import com.example.gemipost.navigation.TestDest
 import com.example.gemipost.ui.auth.forgotpassword.ForgotPasswordScreen
 import com.example.gemipost.ui.auth.login.LoginScreen
 import com.example.gemipost.ui.auth.signup.SignUpScreen
@@ -43,7 +36,6 @@ import com.example.gemipost.ui.post.search.SearchScreen
 import com.example.gemipost.ui.post.searchResult.SearchResultScreen
 import com.example.gemipost.ui.splash.SplashScreen
 import com.example.gemipost.ui.theme.GemiPostTheme
-import com.example.gemipost.utils.AppConstants
 import com.example.gemipost.utils.AppConstants.APP_URI
 
 class MainActivity : ComponentActivity() {
@@ -64,153 +56,136 @@ class MainActivity : ComponentActivity() {
     fun MyApp() {
         val navController = rememberNavController()
         NavHost(navController, startDestination = Splash) {
-            composable<Splash> {
+            composable<Splash>(deepLinks = listOf(navDeepLink {
+                uriPattern = "$APP_URI/p/{postId}"
+                action = Intent.ACTION_VIEW
+            })) { backStackEntry ->
                 Log.d("seerde", "Splash screen")
-                SplashScreen(
-                    onNavigateToFeed = {
-                        navController.navigate(Feed) {
+                val postId: String? = backStackEntry.arguments?.getString("postId")
+                SplashScreen(onNavigateToFeed = {
+                    navController.navigate(Feed) {
+                        popUpTo(Splash) {
+                            inclusive = true
+                        }
+                    }
+                }, onNavigateToLogin = {
+                    navController.navigate(Login) {
+                        popUpTo(Splash) {
+                            inclusive = true
+                        }
+                    }
+                },
+                    onNavigateToPostDetails = { detailsPostId ->
+                        navController.navigate(PostDetails(detailsPostId)){
                             popUpTo(Splash) {
                                 inclusive = true
                             }
                         }
                     },
-                    onNavigateToLogin = {
-                        navController.navigate(Login) {
-                            popUpTo(Splash) {
-                                inclusive = true
-                            }
-                        }
-                    }
+                    postId = postId
                 )
             }
             composable<Login> {
                 Log.d("seerde", "login screen")
-                LoginScreen(
-                    onNavigateToFeed = {
-                        navController.navigate(Feed) {
-                            popUpTo(Login) {
-                                inclusive = true
-                            }
+                LoginScreen(onNavigateToFeed = {
+                    navController.navigate(Feed) {
+                        popUpTo(Login) {
+                            inclusive = true
                         }
-                    }, onNavigateToSignUp = {
-                        navController.navigate(SignUp)
-                    }, onNavigateToForgotPassword = {
-                        navController.navigate(ForgotPassword)
-                    })
+                    }
+                }, onNavigateToSignUp = {
+                    navController.navigate(SignUp)
+                }, onNavigateToForgotPassword = {
+                    navController.navigate(ForgotPassword)
+                })
             }
             composable<SignUp> {
                 Log.d("seerde", "sign up screen")
-                SignUpScreen(
-                    onNavigateToFeed = {
-                        navController.navigate(Feed) {
-                            popUpTo(SignUp) {
-                                inclusive = true
-                            }
+                SignUpScreen(onNavigateToFeed = {
+                    navController.navigate(Feed) {
+                        popUpTo(SignUp) {
+                            inclusive = true
                         }
-                    },
-                    onBackPressed = {
-                        navController.popBackStack()
                     }
-                )
+                }, onBackPressed = {
+                    navController.popBackStack()
+                })
             }
             composable<ForgotPassword> {
                 Log.d("seerde", "forgot password screen")
-                ForgotPasswordScreen(
-                    onNavigateToLogin = {
-                        navController.navigate(Login)
-                    },
-                    onBackPressed = {
-                        navController.popBackStack()
-                    }
-                )
+                ForgotPasswordScreen(onNavigateToLogin = {
+                    navController.navigate(Login)
+                }, onBackPressed = {
+                    navController.popBackStack()
+                })
             }
             composable<Feed> {
                 Log.d("seerde", "feed screen")
-                FeedScreen(
-                    navigateToCreatePost = {
-                        navController.navigate(CreatePost)
-                    },
-                    navigateToEditPost = {
-                        navController.navigate(EditPost(it))
-                    },
-                    navigateToPostDetails = {
-                        navController.navigate(PostDetails(it))
-                    },
-                    navigateToSearch = {
-                        navController.navigate(Search)
-                    },
-                    navigateToLogin = {
-                        navController.navigate(Login) {
-                            popUpTo(Feed) {
-                                inclusive = true
-                            }
+                FeedScreen(navigateToCreatePost = {
+                    navController.navigate(CreatePost)
+                }, navigateToEditPost = {
+                    navController.navigate(EditPost(it))
+                }, navigateToPostDetails = {
+                    navController.navigate(PostDetails(it))
+                }, navigateToSearch = {
+                    navController.navigate(Search)
+                }, navigateToLogin = {
+                    navController.navigate(Login) {
+                        popUpTo(Feed) {
+                            inclusive = true
                         }
-                    },
-                    onSharePost = { postId ->
-                        val sendIntent: Intent = Intent().apply {
-                            action = Intent.ACTION_SEND
-                            putExtra(Intent.EXTRA_TEXT, "$APP_URI/p/$postId")
-                            type = "text/plain"
-                        }
-                        val shareIntent = Intent.createChooser(sendIntent, null)
-                        startActivity(shareIntent)
                     }
-                )
+                }, onSharePost = { postId ->
+                    val sendIntent: Intent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, "$APP_URI/p/$postId")
+                        type = "text/plain"
+                    }
+                    val shareIntent = Intent.createChooser(sendIntent, null)
+                    startActivity(shareIntent)
+                })
             }
             composable<CreatePost> {
                 Log.d("seerde", "create post screen")
-                CreatePostScreen(
-                    onNavigateBack = {
-                        navController.popBackStack()
-                    }
-                )
+                CreatePostScreen(onNavigateBack = {
+                    navController.popBackStack()
+                })
             }
             composable<EditPost> {
                 Log.d("seerde", "edit post screen")
                 val postId = it.toRoute<EditPost>().postId
-                EditPostScreen(
-                    postId = postId,
-                    onNavigateBack = {
-                        navController.navigateUp()
-                    }
-                )
+                EditPostScreen(postId = postId, onNavigateBack = {
+                    navController.navigateUp()
+                })
             }
-            composable<PostDetails> (
-                deepLinks = listOf(
-                    navDeepLink {
-                        uriPattern = "${AppConstants.APP_URI}/p/{postId}"
-                        action = Intent.ACTION_VIEW
-                    }
-                )
-            ) { backStackEntry ->
-                val postId = backStackEntry.arguments?.getString("postId")?:backStackEntry.toRoute<PostDetails>().postId
+            composable<PostDetails> { backStackEntry ->
+                val postId = backStackEntry.toRoute<PostDetails>().postId
                 Log.d("seerde", "post details screen: $postId")
-                PostDetailsScreen(
-                    postId = postId,
-                    onBackPressed = {
-                        navController.navigateUp()
-                    }, onTagClicked = { tag ->
-                        navController.navigate(
-                            SearchResult(
-                                label = tag.label,
-                                isTag = true,
-                                tagIntColor = tag.intColor
-                            )
+                PostDetailsScreen(postId = postId, onBackPressed = {
+                    navController.navigateUp()
+                }, onTagClicked = { tag ->
+                    navController.navigate(
+                        SearchResult(
+                            label = tag.label, isTag = true, tagIntColor = tag.intColor
                         )
-                    },
-                    navigateToEditPost = {
-                        navController.navigate(EditPost(it))
-                    },
-                    onSharePost = { sharedPostId ->
-                        val sendIntent: Intent = Intent().apply {
-                            action = Intent.ACTION_SEND
-                            putExtra(Intent.EXTRA_TEXT, "$APP_URI/p/$sharedPostId")
-                            type = "text/plain"
-                        }
-                        val shareIntent = Intent.createChooser(sendIntent, null)
-                        startActivity(shareIntent)
+                    )
+                }, navigateToEditPost = {
+                    navController.navigate(EditPost(it))
+                }, onSharePost = { sharedPostId ->
+                    val sendIntent: Intent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, "$APP_URI/p/$sharedPostId")
+                        type = "text/plain"
                     }
-                )
+                    val shareIntent = Intent.createChooser(sendIntent, null)
+                    startActivity(shareIntent)
+                }, navigateToLogin = {
+                    navController.navigate(Login) {
+                        popUpTo(PostDetails(postId)) {
+                            inclusive = true
+                        }
+                    }
+                })
             }
             composable<Search> {
                 Log.d("seerde", "search screen")
@@ -223,8 +198,7 @@ class MainActivity : ComponentActivity() {
             composable<SearchResult> { backStackEntry ->
                 Log.d("seerde", "Search Result screen")
                 val searchResult = backStackEntry.toRoute<SearchResult>()
-                SearchResultScreen(
-                    searchLabel = searchResult.label,
+                SearchResultScreen(searchLabel = searchResult.label,
                     searchTagIntColor = searchResult.tagIntColor,
                     isTag = searchResult.isTag,
                     onPostClicked = {
@@ -232,8 +206,7 @@ class MainActivity : ComponentActivity() {
                     },
                     onBackPressed = {
                         navController.popBackStack()
-                    }
-                )
+                    })
             }
         }
     }

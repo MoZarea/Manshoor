@@ -21,18 +21,26 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.gemipost.R
 import com.example.gemipost.utils.AuthResults
+import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SplashScreen(
+    postId: String? = null,
     viewModel: SplashViewModel = koinViewModel(),
     onNavigateToFeed: () -> Unit,
-    onNavigateToLogin: () -> Unit
+    onNavigateToLogin: () -> Unit,
+    onNavigateToPostDetails: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
     LaunchedEffect(key1 = state.actionResult){
+        delay(2000)
         if(state.actionResult == AuthResults.LOGIN_SUCCESS) {
-            onNavigateToFeed()
+            if(postId != null) {
+                onNavigateToPostDetails(postId)
+            } else {
+                onNavigateToFeed()
+            }
         } else if (state.actionResult == AuthResults.LOGIN_FAILED) {
             onNavigateToLogin()
         }
