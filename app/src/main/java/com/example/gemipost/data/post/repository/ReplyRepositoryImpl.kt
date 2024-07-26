@@ -3,7 +3,7 @@ package com.example.gemipost.data.post.repository
 import android.graphics.BitmapFactory
 import com.example.gemipost.data.post.source.remote.ReplyRemoteDataSource
 import com.example.gemipost.data.post.source.remote.model.Reply
-import com.gp.socialapp.util.ReplyError
+import com.example.gemipost.utils.ReplyResults
 import com.gp.socialapp.util.Result
 import kotlinx.coroutines.flow.Flow
 import java.io.File
@@ -44,7 +44,7 @@ class ReplyRepositoryImpl(
     override suspend fun reportReply(
         replyId: String,
         replyContent: String
-    ): Result<Unit, ReplyError> {
+    ): Result<ReplyResults, ReplyResults> {
         return remoteSource.reportReply(replyId, replyContent)
     }
 }

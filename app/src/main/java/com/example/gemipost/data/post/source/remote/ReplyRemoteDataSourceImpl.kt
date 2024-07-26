@@ -7,8 +7,6 @@ import com.example.gemipost.data.post.source.remote.model.upvote
 import com.example.gemipost.utils.AppConstants
 import com.example.gemipost.utils.ReplyResults
 import com.google.firebase.firestore.FirebaseFirestore
-import com.gp.socialapp.util.PostError
-import com.gp.socialapp.util.ReplyError
 import com.gp.socialapp.util.Result
 import com.gp.socialapp.util.Result.Companion.failure
 import com.gp.socialapp.util.Result.Companion.success
@@ -113,16 +111,16 @@ class ReplyRemoteDataSourceImpl(
     override suspend fun reportReply(
         replyId: String,
         replyContent: String
-    ): Result<Unit, ReplyError> {
+    ): Result<ReplyResults, ReplyResults> {
         return try {
             val shouldBeRemoved = moderationSource.validateText(replyContent)
             if (shouldBeRemoved) {
                 removeReply(replyId)
             }
-            Result.Success(Unit)
+            Result.Success(ReplyResults.REPLY_REPORTED)
         } catch (e: Exception) {
             e.printStackTrace()
-            Result.Error(ReplyError.SERVER_ERROR)
+            Result.Error(ReplyResults.NETWORK_ERROR)
         }
     }
     private suspend fun removeReply(replyId: String) {

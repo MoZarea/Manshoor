@@ -10,6 +10,7 @@ import com.example.gemipost.data.post.repository.PostRepository
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.utils.Error
 import com.example.gemipost.utils.PostResults
+import com.example.gemipost.utils.urlToBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -100,10 +101,10 @@ class FeedScreenModel(
                     imageURLs = post.attachments,
                     context = context,
                 )
-            postRepo.reportPost(post.id, post.title, post.body, images).onSuccess {
-                Log.d("seerde", "Post reported")
+            postRepo.reportPost(post.id, post.title, post.body, images).onSuccessWithData {
+                updateUserMessage(it)
             }.onFailure {
-                Log.d("seerde", "Post not reported")
+                updateUserMessage(it)
             }
         }
     }
@@ -150,6 +151,12 @@ class FeedScreenModel(
 
     private fun updateCurrentUser(user: User) {
         _state.update { it.copy(user = user) }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        println("onCleared")
+        updateUserMessage(PostResults.IDLE)
     }
 
 

@@ -11,16 +11,6 @@ import com.gp.socialapp.util.Result
 import kotlinx.coroutines.flow.Flow
 
 interface PostRemoteDataSource {
-    fun createPost(request: PostRequest.CreateRequest): Flow<Result<Unit, PostError>>
-    fun fetchPosts(): Flow<Result<List<Post>,PostError>>
-    fun fetchPostById(id: String): Flow<Result<Post,PostError>>
-    suspend fun updatePost(request: PostRequest.UpdateRequest): Result<Unit, PostError>
-    suspend fun deletePost(request: DeleteRequest): Result<Unit, PostError>
-    suspend fun upvotePost(request: UpvoteRequest): Result<Unit, PostError>
-    suspend fun downvotePost(request: DownvoteRequest): Result<Unit, PostError>
-    suspend fun reportPost(postId: String, title: String, body: String, images: List<Bitmap>): Result<Unit, PostError>
-    fun searchByTitle(title: String): Flow<Result<List<Post>, PostError>>
-    fun searchByTag(tag: String): Flow<Result<List<Post>, PostError>>
     fun createPost(request: PostRequest.CreateRequest): Flow<Result<PostResults, PostResults>>
     fun fetchPosts(): Flow<Result<List<Post>, PostResults>>
     fun fetchPostById(id: String): Flow<Result<Post, PostResults>>
@@ -28,7 +18,7 @@ interface PostRemoteDataSource {
     suspend fun deletePost(request: DeleteRequest): Result<PostResults, PostResults>
     suspend fun upvotePost(request: UpvoteRequest): Result<Unit, PostResults>
     suspend fun downvotePost(request: DownvoteRequest): Result<Unit, PostResults>
-    suspend fun reportPost(request: PostRequest.ReportRequest): Result<PostResults, PostResults>
+    suspend fun reportPost(postId: String, title: String, body: String, images: List<Bitmap>): Result<PostResults, PostResults>
     fun searchByTitle(title: String): Flow<Result<List<Post>, PostResults>>
     fun searchByTag(tag: String): Flow<Result<List<Post>, PostResults>>
 }

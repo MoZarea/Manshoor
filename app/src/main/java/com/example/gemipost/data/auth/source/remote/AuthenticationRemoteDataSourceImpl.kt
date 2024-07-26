@@ -3,6 +3,7 @@ package com.example.gemipost.data.auth.source.remote
 import android.net.Uri
 import android.util.Log
 import com.example.gemipost.data.auth.source.remote.model.User
+import com.example.gemipost.ui.auth.util.AuthError
 import com.example.gemipost.utils.AuthResults
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -19,13 +20,13 @@ import kotlinx.coroutines.tasks.await
 class AuthenticationRemoteDataSourceImpl(
     private val auth: FirebaseAuth,
 ) : AuthenticationRemoteDataSource {
-    override fun sendPasswordResetEmail(email: String): Flow<Result<Unit, AuthError>> = callbackFlow {
+    override fun sendPasswordResetEmail(email: String): Flow<Result<AuthResults, AuthResults>> = callbackFlow {
         auth.sendPasswordResetEmail(email)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    trySend(Result.Success(Unit))
+                    trySend(Result.Success(AuthResults.RESET_EMAIL_SENT))
                 } else {
-                    trySend(Result.Error(AuthError.SERVER_ERROR))
+                    trySend(Result.Error(AuthResults.NETWORK_ERROR))
                 }
             }
         awaitClose()

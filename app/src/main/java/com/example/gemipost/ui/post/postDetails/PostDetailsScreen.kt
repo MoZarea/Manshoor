@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.gemipost.R
 import com.example.gemipost.data.post.source.remote.model.Reply
 import com.example.gemipost.data.post.source.remote.model.Tag
@@ -57,7 +58,7 @@ fun PostDetailsScreen(
     LaunchedEffect(true) {
         viewModel.initScreenModel(postId)
     }
-    val state by viewModel.uiState.collectAsState()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     var clickedReply by remember { mutableStateOf<Reply?>(null) }
     var isReportDialogVisible by remember { mutableStateOf(false) }

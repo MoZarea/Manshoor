@@ -1,6 +1,7 @@
 package com.example.gemipost.data.post.repository
 
 import com.example.gemipost.data.post.source.remote.model.Reply
+import com.example.gemipost.utils.PostResults
 import com.example.gemipost.utils.ReplyResults
 import com.gp.socialapp.util.Result
 import kotlinx.coroutines.flow.Flow
@@ -20,5 +21,5 @@ interface ReplyRepository {
     suspend fun createReply(reply: Reply): Result<ReplyResults, ReplyResults>
     suspend fun reportReply(
         replyId: String, replyContent: String
-    ): Result<Unit, ReplyError>
+    ): Result<ReplyResults, ReplyResults>
 }

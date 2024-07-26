@@ -101,7 +101,9 @@ class PostRemoteDataSourceImpl(
                     trySend(Result.Error(PostResults.POST_NOT_FOUND))
                 } else {
                     println("Value: ${value!!.toObject(Post::class.java)}")
-                    trySend(Result.Success(value.toObject(Post::class.java)!!))
+                    value.toObject(Post::class.java)?.let{
+                        trySend(Result.Success(it))
+                    }
                 }
             }
         } catch (e: Exception) {
@@ -213,7 +215,7 @@ class PostRemoteDataSourceImpl(
         }
 
 
-    override suspend fun reportPost(postId: String, title: String, body: String, images: List<Bitmap>): Result<Unit, PostError> {
+    override suspend fun reportPost(postId: String, title: String, body: String, images: List<Bitmap>): Result<PostResults, PostResults> {
         return try {
             val shouldBeRemoved = if (images.isEmpty()) {
                 moderationSource.validateText(title, body)
@@ -223,15 +225,15 @@ class PostRemoteDataSourceImpl(
             if (shouldBeRemoved) {
                 removePost(postId)
             }
-            Result.Success(Unit)
+            Result.Success(PostResults.POST_REPORTED)
         } catch (e: Exception) {
             e.printStackTrace()
             if(e is PromptBlockedException){
                 removePost(postId)
-                Result.Success(Unit)
+                Result.Success(PostResults.POST_REPORTED)
             } else {
                 Log.d("seerde","exception message: ${e.message}")
-                Result.Error(PostError.SERVER_ERROR)
+                Result.Error(PostResults.NETWORK_ERROR)
             }
         }
     }

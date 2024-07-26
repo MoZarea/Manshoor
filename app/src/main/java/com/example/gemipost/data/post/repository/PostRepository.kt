@@ -14,7 +14,7 @@ interface PostRepository {
     suspend fun downvotePost(post: Post, userId: String): Result<Unit, PostResults>
     suspend fun  fetchPostById(id: String): Result<Post, PostResults>
     suspend fun createPost(post: Post): Flow<Result<PostResults, PostResults>>
-    suspend fun reportPost(postId: String, title: String, body: String, images: List<Bitmap>): Result<Unit, PostError>
+    suspend fun reportPost(postId: String, title: String, body: String, images: List<Bitmap>): Result<PostResults, PostResults>
     fun searchByTitle(title: String): Flow<Result<List<Post>, PostResults>>
     suspend fun getRecentSearches(): List<String>
     suspend fun deleteRecentSearch(search: String)

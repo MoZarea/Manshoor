@@ -20,7 +20,7 @@ class PostRepositoryImpl(
         return postRemoteSource.createPost(request)
     }
 
-    override suspend fun reportPost(postId: String, title: String, body: String, images: List<Bitmap>): Result<Unit, PostError> {
+    override suspend fun reportPost(postId: String, title: String, body: String, images: List<Bitmap>): Result<PostResults, PostResults> {
         return postRemoteSource.reportPost(postId, title, body, images)
     }
 
