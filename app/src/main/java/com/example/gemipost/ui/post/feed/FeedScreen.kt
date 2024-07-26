@@ -1,5 +1,6 @@
 package com.example.gemipost.ui.post.feed
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -39,18 +40,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.ui.post.feed.components.FeedPostItem
 import com.example.gemipost.ui.post.feed.components.isUnsafe
 import com.example.gemipost.utils.AuthResults
+import com.example.gemipost.utils.PostResults
 import com.example.gemipost.utils.isNotIdle
 import com.example.gemipost.utils.userMessage
+import org.kodein.di.bindings.ErasedContext.type
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun FeedScreen(
     viewModel: FeedScreenModel = koinViewModel(),
+    onSharePost: (String) -> Unit,
     navigateToEditPost: (String) -> Unit,
     navigateToPostDetails: (String) -> Unit,
     navigateToCreatePost: () -> Unit,
@@ -65,6 +70,9 @@ fun FeedScreen(
                 is PostEvent.OnPostClicked -> navigateToPostDetails(action.post.id)
                 is PostEvent.OnCreatePostClicked -> navigateToCreatePost()
                 is PostEvent.OnSearchClicked -> navigateToSearch()
+                is PostEvent.OnPostShareClicked -> {
+                    onSharePost(action.post.id)
+                }
                 else -> Unit
             }
             viewModel.handleEvent(action)

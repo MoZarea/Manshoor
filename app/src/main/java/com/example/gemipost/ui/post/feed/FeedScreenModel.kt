@@ -73,7 +73,6 @@ class FeedScreenModel(
             is PostEvent.OnPostDownVoted -> downVotePost(postEvent.post)
             is PostEvent.OnPostReported -> reportPost(postEvent.post, postEvent.context)
             is PostEvent.OnPostUpVoted -> upvotedPost(postEvent.post)
-            is PostEvent.OnPostShareClicked -> updateUserMessage(PostResults.SHARE_POST_IS_NOT_AVAILABLE)
             is PostEvent.OnPostClicked -> resetState()
             is PostEvent.OnCreatePostClicked -> resetState()
             is PostEvent.OnSearchClicked -> resetState()

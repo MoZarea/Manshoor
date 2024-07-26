@@ -52,6 +52,7 @@ fun PostDetailsScreen(
     postId: String,
     onBackPressed: () -> Unit,
     onTagClicked: (Tag) -> Unit,
+    onSharePost: (String) -> Unit,
     viewModel: PostDetailsViewModel = koinViewModel(),
     navigateToEditPost: (String) -> Unit
 ) {
@@ -87,7 +88,9 @@ fun PostDetailsScreen(
                     navigateToEditPost(postEvent.post.id)
                     viewModel.resetState()
                 }
-
+                is PostEvent.OnPostShareClicked -> {
+                    onSharePost(postEvent.post.id)
+                }
                 else -> viewModel.handlePostEvent(postEvent)
             }
         },
