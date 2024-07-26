@@ -2,12 +2,11 @@ package com.example.gemipost.data.auth.source.remote
 
 import android.net.Uri
 import com.example.gemipost.data.auth.source.remote.model.User
+import com.example.gemipost.utils.AuthResults
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import com.gp.socialapp.util.AuthError
-import com.gp.socialapp.util.ErrorMessage
 import com.gp.socialapp.util.Result
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -18,14 +17,14 @@ import kotlinx.coroutines.tasks.await
 class AuthenticationRemoteDataSourceImpl(
     private val auth: FirebaseAuth,
 ) : AuthenticationRemoteDataSource {
-    override fun sendPasswordResetEmail(email: String): Flow<Result<Unit, AuthError>> {
+    override fun sendPasswordResetEmail(email: String): Flow<Result<AuthResults, AuthResults>> {
         TODO("Not yet implemented")
     }
 
     override fun signInWithEmail(
         email: String,
         password: String
-    ): Flow<Result<User, ErrorMessage>> =
+    ): Flow<Result<User, AuthResults>> =
         callbackFlow {
             auth.signInWithEmailAndPassword(
                 email,
@@ -47,7 +46,7 @@ class AuthenticationRemoteDataSourceImpl(
                         )
                     )
                 } else {
-                    trySend(Result.Error(ErrorMessage(task.exception?.localizedMessage ?: "error")))
+                    trySend(Result.Error(AuthResults.LOGIN_FAILED))
                 }
             }
             awaitClose()
@@ -58,7 +57,8 @@ class AuthenticationRemoteDataSourceImpl(
         avatarByteArray: Uri,
         email: String,
         password: String
-    ): Flow<Result<User, AuthError>> = callbackFlow {
+    ): Flow<Result<User, AuthResults>> = callbackFlow {
+        Result.Loading
         var uri = Uri.EMPTY
         if (avatarByteArray != Uri.EMPTY) {
             uri = Firebase.storage.reference.child("avatars").putFile(avatarByteArray)
@@ -86,16 +86,17 @@ class AuthenticationRemoteDataSourceImpl(
                         )
                     )
                 )
+
             } else {
-                trySend(Result.Error(AuthError.SERVER_ERROR))
+                trySend(Result.Error(AuthResults.SERVER_ERROR))
             }
         }
         awaitClose()
     }
 
-    override suspend fun getSignedInUser(): Result<User, AuthError> {
+    override suspend fun getSignedInUser(): Result<User, AuthResults> {
         if (Firebase.auth.currentUser == null) {
-            return Result.Error(AuthError.SERVER_ERROR)
+            return Result.Error(AuthResults.LOGIN_FAILED)
         } else {
             val user = auth.currentUser
             return Result.Success(
@@ -112,12 +113,12 @@ class AuthenticationRemoteDataSourceImpl(
         }
     }
 
-    override suspend fun logout(): Result<Unit, AuthError> {
+    override suspend fun logout(): Result<AuthResults, AuthResults> {
         auth.signOut()
-        return Result.Success(Unit)
+        return Result.Success(AuthResults.LOGOUT_SUCCESS)
     }
 
-    override suspend fun deleteAccount(userId: String): Result<Unit, AuthError> {
+    override suspend fun deleteAccount(userId: String): Result<Unit, AuthResults> {
         auth.currentUser?.delete()
         return Result.Success(Unit)
     }

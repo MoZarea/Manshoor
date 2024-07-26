@@ -2,7 +2,7 @@ package com.example.gemipost.ui.auth.util
 
 import androidx.annotation.StringRes
 
-sealed class AuthError {
+sealed class AuthError  {
     data class EmailError(@StringRes var messageId: Int) : AuthError()
     data class PasswordError(@StringRes var messageId: Int) : AuthError()
     data class RePasswordError(@StringRes var messageId: Int) : AuthError()

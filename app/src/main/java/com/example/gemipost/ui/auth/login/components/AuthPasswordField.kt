@@ -21,14 +21,16 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gemipost.R
-import com.example.gemipost.ui.auth.util.AuthError
+import com.example.gemipost.utils.AuthResults
+import com.example.gemipost.utils.Error
+import com.example.gemipost.utils.userMessage
 
 @Composable
 fun AuthPasswordField(
     password: String,
     onPasswordChange: (String) -> Unit,
     passwordVisible: Boolean,
-    error: AuthError
+    error: Error
 ) {
     var password1 = password
     var passwordVisible1 = passwordVisible
@@ -53,11 +55,11 @@ fun AuthPasswordField(
                 Icon(imageVector = image, description)
             }
         },
-        isError = error is AuthError.PasswordError,
+        isError = error == AuthResults.INVALID_PASSWORD,
         supportingText = {
-            if (error is AuthError.PasswordError) {
+            if (error == AuthResults.INVALID_PASSWORD) {
                 Text(
-                    text = stringResource(error.messageId),
+                    text = error.userMessage(),
                     color = MaterialTheme.colorScheme.error,
                     fontSize = 12.sp,
                     modifier = Modifier.padding(start = 16.dp),

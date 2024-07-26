@@ -16,13 +16,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gemipost.R
-import com.example.gemipost.ui.auth.util.AuthError
+import com.example.gemipost.utils.AuthResults
+import com.example.gemipost.utils.Error
+import com.example.gemipost.utils.userMessage
 
 @Composable
 fun AuthEmailField(
     email: String,
     onEmailChange: (String) -> Unit,
-    error: AuthError,
+    error: Error,
 ) {
     var email1 = email
     OutlinedTextField(value = email1,
@@ -36,11 +38,11 @@ fun AuthEmailField(
         label = { Text(text = stringResource(R.string.email)) },
         leadingIcon = { Icon(Icons.Filled.Email, contentDescription = null) },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-        isError = error is AuthError.EmailError,
+        isError = error == AuthResults.INVALID_EMAIL,
         supportingText = {
-            if (error is AuthError.EmailError) {
+            if (error == AuthResults.INVALID_EMAIL) {
                 Text(
-                    text = stringResource(error.messageId),
+                    text = error.userMessage(),
                     color = MaterialTheme.colorScheme.error,
                     fontSize = 12.sp,
                     modifier = Modifier.padding(start = 16.dp),

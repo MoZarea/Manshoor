@@ -19,13 +19,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.gemipost.R
-import com.example.gemipost.ui.auth.util.AuthError
+import com.example.gemipost.utils.AuthResults
+import com.example.gemipost.utils.Error
+import com.example.gemipost.utils.userMessage
 
 @Composable
 fun SignUpRePasswordField(
     rePassword: String,
     onRePasswordChange: (String) -> Unit,
-    error: AuthError,
+    error: Error,
     passwordVisible: Boolean
 ) {
     var passwordVisible1 = passwordVisible
@@ -42,10 +44,10 @@ fun SignUpRePasswordField(
                 contentDescription = null,
             )
         },
-        isError = error is AuthError.RePasswordError,
+        isError = error == AuthResults.PASSWORD_DOES_NOT_MATCH,
         supportingText = {
-            if (error is AuthError.RePasswordError) {
-                Text(text = stringResource((error as AuthError.RePasswordError).messageId))
+            if (error == AuthResults.PASSWORD_DOES_NOT_MATCH) {
+                Text(text = error.userMessage())
             }
         },
         singleLine = true,
