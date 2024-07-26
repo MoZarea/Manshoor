@@ -200,7 +200,7 @@ private fun PostDetailsContent(
                 }
                 item {
                     FeedPostItem(
-                        post = state.post, onPostEvent = onPostEvent
+                        post = state.post, onPostEvent = onPostEvent, currentUserId = state.currentUser.id
                     )
                     Spacer(modifier = Modifier.padding(4.dp))
                 }

@@ -77,6 +77,7 @@ class CreatePostViewModel(
             viewModelScope.launch(Dispatchers.IO) {
                 postRepository.createPost(
                     Post(
+                        authorID = user?.id ?: "",
                         authorName = user?.name ?: "",
                         authorPfp = user?.profilePictureURL ?: "",
                         title = title,
