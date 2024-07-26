@@ -19,7 +19,7 @@ class SearchResultViewModel(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SearchResultUiState())
     val uiState = _uiState.asStateFlow()
-    fun init(searchTerm: String, searchTagIntColor: Int, isTag: Boolean) {
+    fun init(searchTerm: String, isTag: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             if (isTag) {
                 postRepo.searchByTag(searchTerm).collect {

@@ -1,5 +1,6 @@
 package com.example.gemipost.ui.post.feed
 
+import android.content.Context
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.PostAttachment
 import com.example.gemipost.data.post.source.remote.model.Reply
@@ -13,7 +14,7 @@ sealed class PostEvent {
     data class OnPostEdited(val post: Post) : PostEvent()
     data class OnPostUpVoted(val post: Post) : PostEvent()
     data class OnPostDownVoted(val post: Post) : PostEvent()
-    data class OnPostReported(val post: Post) : PostEvent()
+    data class OnPostReported(val post: Post, val context: Context) : PostEvent()
     data class OnPostShareClicked(val post: Post) : PostEvent()
     data object OnSearchClicked : PostEvent()
     data object OnLogoutClicked : PostEvent()

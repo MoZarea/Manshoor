@@ -13,12 +13,10 @@ class ForgotPasswordViewModel(
     val uiState = MutableStateFlow(ForgotPasswordUiState())
     fun onSendResetEmail() {
         viewModelScope.launch {
-            val state = authRepo.sendPasswordResetEmail(uiState.value.email)
-            state.collect {
+            authRepo.sendPasswordResetEmail(uiState.value.email).collect {
                 uiState.value = uiState.value.copy(sentState = it)
             }
         }
-
     }
 
     fun onEmailChange(email: String) {

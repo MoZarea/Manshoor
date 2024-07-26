@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,6 +29,7 @@ import com.gp.socialapp.util.ModerationSafety
 fun FeedPostItem(
     post: Post, onPostEvent: (PostEvent) -> Unit
 ) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -54,7 +56,7 @@ fun FeedPostItem(
                         publishedAt = post.createdAt.getPostDate(),
                         onEditPostClicked = { onPostEvent(PostEvent.OnPostEdited(post)) },
                         onDeletePostClicked = { onPostEvent(PostEvent.OnPostDeleted(post)) },
-                        onReportPostClicked = { onPostEvent(PostEvent.OnPostReported(post)) },
+                        onReportPostClicked = { onPostEvent(PostEvent.OnPostReported(post, context)) },
                         onUserClick = { onPostEvent(PostEvent.OnPostAuthorClicked(post.authorID)) },
                         isAuthor = true
 

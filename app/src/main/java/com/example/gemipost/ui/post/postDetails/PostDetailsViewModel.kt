@@ -1,16 +1,19 @@
 package com.example.gemipost.ui.post.postDetails
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gemipost.data.auth.repository.AuthenticationRepository
 import com.example.gemipost.data.post.repository.PostRepository
 import com.example.gemipost.data.post.repository.ReplyRepository
 import com.example.gemipost.data.post.source.remote.model.Post
-import com.example.gemipost.data.post.source.remote.model.PostAttachment
 import com.example.gemipost.data.post.source.remote.model.Reply
 import com.example.gemipost.data.post.util.ToNestedReplies.toNestedReplies
 import com.example.gemipost.ui.post.feed.PostEvent
 import com.example.gemipost.ui.post.feed.ReplyEvent
+import com.example.gemipost.utils.urlToBitmap
 import com.gp.socialapp.util.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,13 +47,13 @@ class PostDetailsViewModel(
     private fun getPost(postId: String) {
         viewModelScope.launch {
             postRepo.fetchPostById(postId).let { result ->
-                result
-                    .onLoading {
-                        println("zarea:Loading")
-                    }
-                    .onFailure {
-                        println("zarea:Error")
-                    }
+                result.onLoading {
+                    println("zarea:Loading")
+                }.onFailure {
+                    println("zarea:Error")
+                }.onSuccessWithData { post ->
+                    _uiState.update { it.copy(post = post) }
+                }
                     .onSuccessWithData { post ->
                         _uiState.update {
                             it.copy(
@@ -75,8 +78,7 @@ class PostDetailsViewModel(
                         val nestedReplies = result.data.toNestedReplies()
                         _uiState.update {
                             it.copy(
-                                currentReplies = nestedReplies,
-                                isLoading = false
+                                currentReplies = nestedReplies, isLoading = false
                             )
                         }
                     }
@@ -94,6 +96,8 @@ class PostDetailsViewModel(
                     is Result.Loading -> {
                         _uiState.update { it.copy(isLoading = true) }
                     }
+
+                    else -> {}
                 }
             }
         }
@@ -101,10 +105,12 @@ class PostDetailsViewModel(
 
     private fun createReply(reply: Reply) {
         viewModelScope.launch(Dispatchers.IO) {
-            replyRepo.createReply(reply.copy(
-                authorName = _uiState.value.currentUser.name,
-                authorImageLink = _uiState.value.currentUser.profilePictureURL
-            )).let { result ->
+            replyRepo.createReply(
+                reply.copy(
+                    authorName = _uiState.value.currentUser.name,
+                    authorImageLink = _uiState.value.currentUser.profilePictureURL
+                )
+            ).let { result ->
                 when (result) {
                     is Result.Success -> {
                         getRepliesById(reply.postId)
@@ -117,31 +123,14 @@ class PostDetailsViewModel(
     }
 
     private fun reportReply(reply: Reply) {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            val result = replyRepo.reportReply(reply.id, _uiState.value.currentUserId)
-//            when (result) {
-//                is Result.Success -> {
-//                    _uiState.update { it.copy(actionResult = PostDetailsActionResult.ReplyReported) }
-//                }
-//
-//                is Result.Error -> {
-//                    _uiState.update {
-//                        it.copy(
-//                            actionResult = PostDetailsActionResult.NetworkError(
-//                                result.message.userMessage
-//                            )
-//                        )
-//                    }
-//                }
-//
-//                Result.Loading -> {
-//                    // TODO
-//                }
-//            }
-//        }
+        viewModelScope.launch(Dispatchers.IO) {
+            replyRepo.reportReply(reply.id, reply.content).onSuccess {
+                Log.d("seerde", "Reply reported")
+            }.onFailure {
+                Log.d("seerde", "Reply not reported")
+            }
+        }
     }
-
-
 
 
     private fun upvotePost(post: Post) {
@@ -165,6 +154,8 @@ class PostDetailsViewModel(
                 is Result.Success -> {
                     getPost(post.id)
                 }
+
+                else -> {}
             }
         }
     }
@@ -190,6 +181,8 @@ class PostDetailsViewModel(
                 Result.Loading -> {
                     // TODO
                 }
+
+                else -> {}
             }
         }
     }
@@ -217,6 +210,8 @@ class PostDetailsViewModel(
                     // TODO
 
                 }
+
+                else -> {}
             }
         }
     }
@@ -244,6 +239,8 @@ class PostDetailsViewModel(
                         Result.Loading -> {
                             // TODO
                         }
+
+                        else -> {}
                     }
                 }
         }
@@ -270,6 +267,8 @@ class PostDetailsViewModel(
                     Result.Loading -> {
                         // TODO
                     }
+
+                    else -> {}
                 }
             }
         }
@@ -297,6 +296,8 @@ class PostDetailsViewModel(
                     Result.Loading -> {
                         // TODO
                     }
+
+                    else -> {}
                 }
             }
         }
@@ -324,6 +325,8 @@ class PostDetailsViewModel(
                     Result.Loading -> {
                         // TODO
                     }
+
+                    else -> {}
                 }
             }
         }
@@ -352,22 +355,31 @@ class PostDetailsViewModel(
                 createReply(reply)
             }
 
-            is PostEvent.OnAttachmentClicked -> {
-                openAttachment(event.attachment)
+            is PostEvent.OnPostReported -> {
+                reportPost(event.post, event.context)
             }
 
             else -> {}
         }
     }
 
-    private fun openAttachment(attachment: PostAttachment) {
+    private fun reportPost(post: Post, context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
-            //todo
-            //            val mimeType = MimeType.getMimeTypeFromFileName(attachment.name)
-//            val fullMimeType = MimeType.getFullMimeType(mimeType)
-//            postRepo.openAttachment(attachment.url, fullMimeType)
+            val images =
+                urlToBitmap(
+                    scope = this@launch,
+                    imageURLs = post.attachments,
+                    context = context,
+                )
+
+            postRepo.reportPost(post.id, post.title, post.body, images).onSuccess {
+                Log.d("seerde", "Post reported")
+            }.onFailure {
+                Log.d("seerde", "Post not reported")
+            }
         }
     }
+
 
     fun handleReplyEvent(event: ReplyEvent) {
         when (event) {

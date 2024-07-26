@@ -1,11 +1,12 @@
 package com.example.gemipost.data.post.repository
 
+import android.graphics.BitmapFactory
 import com.example.gemipost.data.post.source.remote.ReplyRemoteDataSource
 import com.example.gemipost.data.post.source.remote.model.Reply
-import com.example.gemipost.data.post.source.remote.model.ReplyRequest
 import com.gp.socialapp.util.ReplyError
 import com.gp.socialapp.util.Result
 import kotlinx.coroutines.flow.Flow
+import java.io.File
 
 class ReplyRepositoryImpl(
     private val remoteSource: ReplyRemoteDataSource,
@@ -42,9 +43,8 @@ class ReplyRepositoryImpl(
 
     override suspend fun reportReply(
         replyId: String,
-        replyContent: String,
-        reporterId: String
+        replyContent: String
     ): Result<Unit, ReplyError> {
-        return remoteSource.reportReply(replyId, replyContent, reporterId)
+        return remoteSource.reportReply(replyId, replyContent)
     }
 }
