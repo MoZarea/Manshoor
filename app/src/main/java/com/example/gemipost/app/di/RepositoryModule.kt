@@ -13,7 +13,8 @@ val repositoryModuleK = module {
 
     single <PostRepository> {
         PostRepositoryImpl(
-            get()
+            get(),
+            get(),
         )
     }
     single<ReplyRepository> { ReplyRepositoryImpl(get()) }

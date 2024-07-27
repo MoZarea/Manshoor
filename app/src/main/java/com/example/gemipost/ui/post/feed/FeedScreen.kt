@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.gemipost.data.post.source.remote.model.Post
+import com.example.gemipost.data.post.source.remote.model.Tag
 import com.example.gemipost.ui.post.feed.components.FeedPostItem
 import com.example.gemipost.ui.post.feed.components.isUnsafe
 import com.example.gemipost.utils.AuthResults
@@ -56,6 +57,7 @@ fun FeedScreen(
     navigateToCreatePost: () -> Unit,
     navigateToSearch: () -> Unit,
     navigateToLogin: () -> Unit,
+    navigateToSearchResult: (Tag) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     FeedContent(
@@ -65,6 +67,7 @@ fun FeedScreen(
                 is PostEvent.OnPostClicked -> navigateToPostDetails(action.post.id)
                 is PostEvent.OnCreatePostClicked -> navigateToCreatePost()
                 is PostEvent.OnSearchClicked -> navigateToSearch()
+                is PostEvent.OnTagClicked -> navigateToSearchResult(action.tag)
                 else -> Unit
             }
             viewModel.handleEvent(action)

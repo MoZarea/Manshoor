@@ -134,6 +134,9 @@ fun MyApp() {
                             inclusive = true
                         }
                     }
+                },
+                navigateToSearchResult = {
+                    navController.navigate(SearchResult(label = it.label, isTag = true, tagIntColor = it.intColor))
                 }
             )
         }

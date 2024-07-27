@@ -3,7 +3,6 @@ package com.example.gemipost.ui.post.searchResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gemipost.data.post.repository.PostRepository
-import com.gp.socialapp.util.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,34 +18,14 @@ class SearchResultViewModel(
     fun init(searchTerm: String, isTag: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             if (isTag) {
-                postRepo.searchByTag(searchTerm).collect {
-                    when (it) {
-                        is com.gp.socialapp.util.Result.Success -> {
-                            val posts = it.data
-                            _uiState.update { it.copy(posts = posts) }
-                        }
+                postRepo.searchByTag(searchTerm).collect {data->
+                    println("searchByTag: $data")
+                    _uiState.update { it.copy(posts = data) }
 
-                        is com.gp.socialapp.util.Result.Error -> {
-                            // Handle error
-                        }
-
-                        Result.Loading -> Unit
-                    }
                 }
             } else {
-                postRepo.searchByTitle(searchTerm).collectLatest {
-                    when (it) {
-                        is Result.Success -> {
-                            val posts = it.data
-                            _uiState.update { it.copy(posts = posts) }
-                        }
-
-                        is Result.Error -> {
-                            // Handle error
-                        }
-
-                        Result.Loading -> Unit
-                    }
+                postRepo.searchByTitle(searchTerm).collectLatest { data ->
+                    _uiState.update { it.copy(posts = data) }
                 }
             }
         }

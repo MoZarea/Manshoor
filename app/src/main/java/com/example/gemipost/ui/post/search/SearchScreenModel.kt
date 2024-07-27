@@ -6,11 +6,13 @@ import com.example.gemipost.data.post.repository.PostRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val postRepo: PostRepository
-): ViewModel() {
+) : ViewModel() {
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState = _uiState.asStateFlow()
     fun init() {
@@ -29,12 +31,17 @@ class SearchViewModel(
     }
 
     fun onSearchQueryChanged(query: String) {
-//        TODO("Not yet implemented")
+        viewModelScope.launch(Dispatchers.IO) {
+            postRepo.searchByTitle(query).collectLatest { data ->
+                println("searchByTitle: $data")
+                _uiState.update { it.copy( suggestionItems = data.map { it.title }) }
+            }
+        }
     }
 
     fun addRecentSearchItem(item: String) {
-        viewModelScope.launch (Dispatchers.IO){
-            if(_uiState.value.recentSearches.contains(item)){
+        viewModelScope.launch(Dispatchers.IO) {
+            if (_uiState.value.recentSearches.contains(item)) {
                 return@launch
             }
             postRepo.addRecentSearch(item)
