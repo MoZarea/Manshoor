@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -132,10 +133,9 @@ private fun SignUpContent(
                 .padding(16.dp),
             verticalArrangement = Arrangement.Center,
         ) {
-            if (state.isLoading) {
+            AnimatedVisibility (state.isLoading) {
                 LinearProgressIndicator()
             }
-            var passwordVisible by remember { mutableStateOf(false) }
             SignUpHeader()
             Spacer(modifier = Modifier.height(16.dp))
             SignUpAvatarSection(avatarByteArray, onChangeAvatarClicked)
@@ -144,10 +144,9 @@ private fun SignUpContent(
             AuthPasswordField(
                 password = state.password,
                 onPasswordChange = onPasswordChanged,
-                passwordVisible = passwordVisible,
                 error = error
             )
-            SignUpRePasswordField(state.rePassword, onRePasswordChanged, error, passwordVisible)
+            SignUpRePasswordField(state.rePassword, onRePasswordChanged, error)
             Button(
                 onClick = onCreateAccount,
                 modifier = Modifier

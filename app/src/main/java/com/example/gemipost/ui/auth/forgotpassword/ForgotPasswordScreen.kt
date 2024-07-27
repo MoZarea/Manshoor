@@ -1,5 +1,6 @@
 package com.example.gemipost.ui.auth.forgotpassword
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -117,7 +118,7 @@ private fun ForgetPasswordContent(
                 .padding(16.dp),
             verticalArrangement = Arrangement.Center,
         ) {
-            if (state.isLoading) {
+            AnimatedVisibility (state.isLoading) {
                 LinearProgressIndicator()
             }
             Text(
