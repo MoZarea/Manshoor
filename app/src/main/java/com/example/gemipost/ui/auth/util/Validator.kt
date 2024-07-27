@@ -1,5 +1,6 @@
 package com.example.gemipost.ui.auth.util
 
+import android.util.Patterns
 import com.example.gemipost.utils.LocalDateTimeUtil.now
 import kotlinx.datetime.LocalDateTime
 
@@ -14,11 +15,15 @@ object Validator {
 
     object EmailValidator {
         fun validateAll(email: String) =
-            email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$".toRegex())
+            Patterns.EMAIL_ADDRESS.matcher(email).matches()
+//            email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$".toRegex())
+
     }
 
     object PhoneNumberValidator {
-        fun validateAll(phoneNumber: String) = phoneNumber.matches("^\\+[1-9]\\d{1,14}$".toRegex())
+        fun validateAll(phoneNumber: String) =
+            Patterns.PHONE.matcher(phoneNumber).matches()
+//            phoneNumber.matches("^\\+[1-9]\\d{1,14}$".toRegex())
     }
 
     object NameValidator {

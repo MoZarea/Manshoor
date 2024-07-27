@@ -1,6 +1,7 @@
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -102,7 +103,7 @@ fun EditPostContent(
                 .padding(it)
                 .fillMaxSize()
         ) {
-            if (state.isLoading) {
+            AnimatedVisibility (state.isLoading) {
                 LinearProgressIndicator(
                     modifier = Modifier.fillMaxWidth(),
                 )

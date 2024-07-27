@@ -1,5 +1,6 @@
 package com.example.gemipost.ui.auth.login
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -113,7 +114,7 @@ private fun LoginContent(
                 .padding(it),
             verticalArrangement = Arrangement.Center,
         ) {
-            if (state.isLoading) {
+            AnimatedVisibility (state.isLoading) {
                 LinearProgressIndicator()
             }
             LoginHeader()
@@ -121,7 +122,6 @@ private fun LoginContent(
             AuthPasswordField(
                 state.password,
                 onPasswordChanged,
-                passwordVisible,
                 state.actionResult
             )
             AuthTextButton(R.string.forgot_password, onForgotPasswordClicked)

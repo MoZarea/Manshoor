@@ -1,5 +1,6 @@
 package com.example.gemipost.ui.auth.login.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
@@ -8,11 +9,14 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -29,31 +33,34 @@ import com.example.gemipost.utils.userMessage
 fun AuthPasswordField(
     password: String,
     onPasswordChange: (String) -> Unit,
-    passwordVisible: Boolean,
     error: Error
 ) {
-    var password1 = password
-    var passwordVisible1 = passwordVisible
-    OutlinedTextField(value = password1,
+    var showPassword by remember { mutableStateOf(false) }
+    val passwordVisualTransformation = remember { PasswordVisualTransformation() }
+    OutlinedTextField(value = password,
         onValueChange = {
-            password1 = it
             onPasswordChange(it)
+        },
+        visualTransformation = if (showPassword) {
+            VisualTransformation.None
+        } else {
+            passwordVisualTransformation
         },
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp),
         label = { Text(text = stringResource(R.string.password)) },
         leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = null) },
-        visualTransformation = if (passwordVisible1) VisualTransformation.None else PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         trailingIcon = {
-            val image = if (passwordVisible1) Icons.Filled.Visibility
-            else Icons.Filled.VisibilityOff
-            val description =
-                stringResource(if (passwordVisible1) R.string.hide_password else R.string.show_password)
-            IconButton(onClick = { passwordVisible1 = !passwordVisible1 }) {
-                Icon(imageVector = image, description)
-            }
+            Icon(
+                if (showPassword) {
+                    Icons.Filled.Visibility
+                } else {
+                    Icons.Filled.VisibilityOff
+                },
+                contentDescription = "Toggle password visibility",
+                modifier = Modifier.clickable { showPassword = !showPassword })
         },
         isError = error == AuthResults.INVALID_PASSWORD,
         supportingText = {

@@ -1,5 +1,6 @@
 package com.example.gemipost.ui.post.postDetails
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -91,9 +92,11 @@ fun PostDetailsScreen(
                     navigateToEditPost(postEvent.post.id)
                     viewModel.resetState()
                 }
+
                 is PostEvent.OnPostShareClicked -> {
                     onSharePost(postEvent.post.id)
                 }
+
                 else -> viewModel.handlePostEvent(postEvent)
             }
         },
@@ -178,13 +181,13 @@ private fun PostDetailsContent(
     val snackbarHostState = remember { SnackbarHostState() }
     LaunchedEffect(key1 = state.actionResult, key2 = state.loginStatus) {
         if (state.actionResult.isNotIdle()) {
-            if(state.actionResult == PostResults.POST_DELETED){
+            if (state.actionResult == PostResults.POST_DELETED) {
                 onBackPressed()
             }
             SnackbarHostState().showSnackbar(
                 message = state.actionResult.userMessage(),
             )
-        }else if (state.loginStatus == AuthResults.LOGIN_FAILED) {
+        } else if (state.loginStatus == AuthResults.LOGIN_FAILED) {
             snackbarHostState.showSnackbar(
                 message = AuthResults.LOGIN_FIRST_TO_ACCESS_ALL_FEATURES.userMessage(),
                 actionLabel = "Back to Login",
@@ -216,14 +219,17 @@ private fun PostDetailsContent(
                     .systemBarsPadding()
                     .fillMaxSize()
             ) {
-                if(state.isLoading){
-                    item {
+                item {
+                    AnimatedVisibility(state.isLoading) {
                         LinearProgressIndicator()
+
                     }
                 }
                 item {
                     FeedPostItem(
-                        post = state.post, onPostEvent = onPostEvent, currentUserId = state.currentUser.id
+                        post = state.post,
+                        onPostEvent = onPostEvent,
+                        currentUserId = state.currentUser.id
                     )
                     Spacer(modifier = Modifier.padding(4.dp))
                 }
