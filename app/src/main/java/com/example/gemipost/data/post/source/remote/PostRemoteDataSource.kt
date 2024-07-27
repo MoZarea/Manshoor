@@ -19,6 +19,5 @@ interface PostRemoteDataSource {
     suspend fun upvotePost(request: UpvoteRequest): Result<Unit, PostResults>
     suspend fun downvotePost(request: DownvoteRequest): Result<Unit, PostResults>
     suspend fun reportPost(postId: String, title: String, body: String, images: List<Bitmap>): Result<PostResults, PostResults>
-    fun searchByTitle(title: String): Flow<Result<List<Post>, PostResults>>
-    fun searchByTag(tag: String): Flow<Result<List<Post>, PostResults>>
+
 }
