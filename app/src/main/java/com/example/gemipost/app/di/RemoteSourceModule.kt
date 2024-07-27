@@ -15,7 +15,10 @@ import com.google.ai.client.generativeai.type.SafetySetting
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestoreSettings
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.memoryCacheSettings
+import com.google.firebase.firestore.ktx.persistentCacheSettings
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
@@ -23,12 +26,20 @@ import org.koin.dsl.module
 
 
 val remoteDataSourceModuleK = module {
-    single<PostRemoteDataSource>{ PostRemoteDataSourceImpl(get(),get(), get()) }
-    single<ModerationRemoteDataSource>{ ModerationRemoteDataSourceImpl(get()) }
+    single<PostRemoteDataSource> { PostRemoteDataSourceImpl(get(), get(), get()) }
+    single<ModerationRemoteDataSource> { ModerationRemoteDataSourceImpl(get()) }
     single<ReplyRemoteDataSource> { ReplyRemoteDataSourceImpl(get(), get()) }
-    single <AuthenticationRemoteDataSource>{AuthenticationRemoteDataSourceImpl(get())  }
+    single<AuthenticationRemoteDataSource> { AuthenticationRemoteDataSourceImpl(get()) }
     single<FirebaseFirestore> {
-        Firebase.firestore
+        val settings = firestoreSettings {
+            // Use memory cache
+            setLocalCacheSettings(memoryCacheSettings {})
+            // Use persistent disk cache (default)
+            setLocalCacheSettings(persistentCacheSettings {})
+        }
+        val db = Firebase.firestore
+        db.firestoreSettings = settings
+        db
     }
     single<FirebaseStorage> {
         Firebase.storage
@@ -36,15 +47,21 @@ val remoteDataSourceModuleK = module {
     single<FirebaseAuth> {
         Firebase.auth
     }
-    single<GenerativeModel>{
+    single<GenerativeModel> {
         val harassmentSafety = SafetySetting(HarmCategory.HARASSMENT, BlockThreshold.NONE)
         val hateSpeechSafety = SafetySetting(HarmCategory.HATE_SPEECH, BlockThreshold.NONE)
         val dangerousSafety = SafetySetting(HarmCategory.DANGEROUS_CONTENT, BlockThreshold.NONE)
-        val sexuallyExplicitSafety = SafetySetting(HarmCategory.SEXUALLY_EXPLICIT, BlockThreshold.NONE)
+        val sexuallyExplicitSafety =
+            SafetySetting(HarmCategory.SEXUALLY_EXPLICIT, BlockThreshold.NONE)
         GenerativeModel(
             modelName = "gemini-1.5-flash",
             apiKey = "AIzaSyAk6pVifvbGe6ClXj-aJKNu2fouQpMR4Sw",
-            safetySettings = listOf(harassmentSafety, hateSpeechSafety, dangerousSafety, sexuallyExplicitSafety)
+            safetySettings = listOf(
+                harassmentSafety,
+                hateSpeechSafety,
+                dangerousSafety,
+                sexuallyExplicitSafety
+            )
         )
     }
 
