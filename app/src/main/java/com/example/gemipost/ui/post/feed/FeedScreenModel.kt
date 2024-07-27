@@ -44,6 +44,7 @@ class FeedScreenModel(
     private fun fetchPosts() {
         viewModelScope.launch(Dispatchers.IO) {
             postRepo.getPosts().collect { result ->
+                println("fetchPosts: $result")
                 result.onLoading {
                     updateLoading(true)
                 }.onFailure {

@@ -3,8 +3,8 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("org.jetbrains.kotlin.plugin.serialization")
     id("com.google.gms.google-services")
-
     id("kotlin-parcelize") // needed only for non-primitive classes
+       id ("io.realm.kotlin")
 
 }
 android {
@@ -98,6 +98,11 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation(libs.coil.compose)
     implementation(libs.generativeai)
+    implementation ("io.realm.kotlin:library-base:1.16.0")
+   // If using Device Sync
+   implementation ("io.realm.kotlin:library-sync:1.16.0")
+   // If using coroutines with the SDK
+   implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0")
     implementation(libs.androidx.core.splashscreen)
 }
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {

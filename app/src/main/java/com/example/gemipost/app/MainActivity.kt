@@ -106,6 +106,16 @@ class MainActivity : ComponentActivity() {
                             inclusive = true
                         }
                     }
+                },
+                navigateToSearchResult = {
+                    navController.navigate(SearchResult(label = it.label, isTag = true, tagIntColor = it.intColor))
+                }
+            )
+        }
+        composable<CreatePost> {
+            Log.d("seerde", "create post screen")
+            CreatePostScreen(
+                onNavigateBack = {
                 }, onSharePost = { postId ->
                     val sendIntent: Intent = Intent().apply {
                         action = Intent.ACTION_SEND
