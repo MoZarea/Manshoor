@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
@@ -37,10 +38,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.Tag
 import com.example.gemipost.ui.post.feed.components.FeedPostItem
@@ -95,7 +98,7 @@ fun FeedContent(
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val snackbarHostState = remember { SnackbarHostState() }
     var menuVisibility by remember { mutableStateOf(false) }
-    LaunchedEffect(key1 = state.actionResult , key2 = state.loginStatus) {
+    LaunchedEffect(key1 = state.actionResult, key2 = state.loginStatus) {
         println("FeedContent: ${state.actionResult.userMessage()}")
         if (state.actionResult.isNotIdle()) {
             if (state.actionResult == AuthResults.LOGOUT_SUCCESS) {
@@ -133,14 +136,7 @@ fun FeedContent(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { action(PostEvent.OnSearchClicked) }) {
-                        Icon(
-                            imageVector = Icons.Filled.Search,
-                            contentDescription = "Localized description"
-                        )
-                    }
-                },
-                actions = {
+
                     IconButton(onClick = { menuVisibility = !menuVisibility }) {
                         Icon(
                             imageVector = Icons.Filled.Menu,
@@ -157,6 +153,25 @@ fun FeedContent(
                         )
                     }
                 },
+                actions = {
+                    IconButton(onClick = { action(PostEvent.OnSearchClicked) }) {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = "Localized description"
+                        )
+                    }
+                    if (state.loginStatus != AuthResults.LOGIN_FAILED)
+                        AsyncImage(
+                            model = state.user.profilePictureURL,
+                            modifier = Modifier
+                                .clip(
+                                    CircleShape
+                                )
+                                .size(35.dp),
+                            contentDescription = "userImage"
+                        )
+
+                },
                 scrollBehavior = scrollBehavior
             )
         },
@@ -165,7 +180,7 @@ fun FeedContent(
             SnackbarHost(hostState = snackbarHostState)
         },
         floatingActionButton = {
-            if(state.loginStatus != AuthResults.LOGIN_FAILED) {
+            if (state.loginStatus != AuthResults.LOGIN_FAILED) {
                 FloatingActionButton(onClick = { action(PostEvent.OnCreatePostClicked) })
                 {
                     Icon(
