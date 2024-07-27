@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -52,6 +53,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun FeedScreen(
     viewModel: FeedScreenModel = koinViewModel(),
+    onSharePost: (String) -> Unit,
     navigateToEditPost: (String) -> Unit,
     navigateToPostDetails: (String) -> Unit,
     navigateToCreatePost: () -> Unit,
@@ -59,6 +61,7 @@ fun FeedScreen(
     navigateToLogin: () -> Unit,
     navigateToSearchResult: (Tag) -> Unit
 ) {
+
     val state by viewModel.state.collectAsStateWithLifecycle()
     FeedContent(
         action = { action ->
@@ -67,6 +70,10 @@ fun FeedScreen(
                 is PostEvent.OnPostClicked -> navigateToPostDetails(action.post.id)
                 is PostEvent.OnCreatePostClicked -> navigateToCreatePost()
                 is PostEvent.OnSearchClicked -> navigateToSearch()
+                is PostEvent.OnPostShareClicked -> {
+                    onSharePost(action.post.id)
+                }
+
                 is PostEvent.OnTagClicked -> navigateToSearchResult(action.tag)
                 else -> Unit
             }
@@ -88,16 +95,27 @@ fun FeedContent(
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val snackbarHostState = remember { SnackbarHostState() }
     var menuVisibility by remember { mutableStateOf(false) }
-    LaunchedEffect(key1 = state.actionResult) {
+    LaunchedEffect(key1 = state.actionResult , key2 = state.loginStatus) {
         println("FeedContent: ${state.actionResult.userMessage()}")
         if (state.actionResult.isNotIdle()) {
             if (state.actionResult == AuthResults.LOGOUT_SUCCESS) {
                 navigateToLogin()
+            } else {
+                snackbarHostState.showSnackbar(
+                    state.actionResult.userMessage(),
+                    withDismissAction = true
+                )
             }
+        } else if (state.loginStatus == AuthResults.LOGIN_FAILED) {
             snackbarHostState.showSnackbar(
-                state.actionResult.userMessage(),
-                withDismissAction = true
-            )
+                message = AuthResults.LOGIN_FIRST_TO_ACCESS_ALL_FEATURES.userMessage(),
+                actionLabel = "Back to Login",
+            ).run {
+                when (this) {
+                    SnackbarResult.Dismissed -> {}
+                    SnackbarResult.ActionPerformed -> navigateToLogin()
+                }
+            }
         }
     }
     Scaffold(
@@ -147,11 +165,13 @@ fun FeedContent(
             SnackbarHost(hostState = snackbarHostState)
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { action(PostEvent.OnCreatePostClicked) })
-            {
-                Icon(
-                    imageVector = Icons.Filled.Add, contentDescription = null
-                )
+            if(state.loginStatus != AuthResults.LOGIN_FAILED) {
+                FloatingActionButton(onClick = { action(PostEvent.OnCreatePostClicked) })
+                {
+                    Icon(
+                        imageVector = Icons.Filled.Add, contentDescription = null
+                    )
+                }
             }
 
         },
@@ -185,7 +205,7 @@ fun FeedPosts(
             items(posts) { post ->
                 if (!post.moderationStatus.isUnsafe()) {
                     FeedPostItem(
-                        post = post, onPostEvent = onPostEvent , currentUserId = currentUserId
+                        post = post, onPostEvent = onPostEvent, currentUserId = currentUserId
                     )
                     Spacer(modifier = Modifier.size(2.dp))
                 }

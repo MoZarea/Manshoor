@@ -7,6 +7,7 @@ import com.example.gemipost.data.auth.repository.AuthenticationRepository
 import com.example.gemipost.data.auth.source.remote.model.User
 import com.example.gemipost.data.post.repository.PostRepository
 import com.example.gemipost.data.post.source.remote.model.Post
+import com.example.gemipost.utils.AuthResults
 import com.example.gemipost.utils.Error
 import com.example.gemipost.utils.PostResults
 import com.example.gemipost.utils.urlToBitmap
@@ -32,13 +33,20 @@ class FeedScreenModel(
     private fun getSignedInUser() {
         viewModelScope.launch(Dispatchers.IO) {
             authRepo.getSignedInUser().let { result ->
+                println("getSignedInUser: $result")
                 result.onSuccessWithData { data ->
                     updateCurrentUser(data)
+                    updateLoginResults(AuthResults.LOGIN_SUCCESS)
                 }.onFailure {
-                    updateUserMessage(it)
+                    updateLoginResults(it)
                 }
             }
         }
+    }
+
+    private fun updateLoginResults(result: Error) {
+        println("updateLoginResults: $result")
+        _state.update { it.copy(loginStatus = result) }
     }
 
     private fun fetchPosts() {
@@ -74,7 +82,6 @@ class FeedScreenModel(
             is PostEvent.OnPostDownVoted -> downVotePost(postEvent.post)
             is PostEvent.OnPostReported -> reportPost(postEvent.post, postEvent.context)
             is PostEvent.OnPostUpVoted -> upvotedPost(postEvent.post)
-            is PostEvent.OnPostShareClicked -> updateUserMessage(PostResults.SHARE_POST_IS_NOT_AVAILABLE)
             is PostEvent.OnPostClicked -> resetState()
             is PostEvent.OnCreatePostClicked -> resetState()
             is PostEvent.OnSearchClicked -> resetState()
@@ -99,6 +106,7 @@ class FeedScreenModel(
     }
 
     private fun reportPost(post: Post, context: Context) {
+        if (state.value.loginStatus != AuthResults.LOGIN_SUCCESS) return
         viewModelScope.launch(Dispatchers.IO) {
             val images =
                 urlToBitmap(
@@ -115,6 +123,7 @@ class FeedScreenModel(
     }
 
     private fun upvotedPost(post: Post) {
+        if (state.value.loginStatus != AuthResults.LOGIN_SUCCESS) return
         viewModelScope.launch(Dispatchers.IO) {
             postRepo.upvotePost(post, state.value.user.id).onFailure {
                 updateUserMessage(it)
@@ -123,6 +132,7 @@ class FeedScreenModel(
     }
 
     private fun downVotePost(post: Post) {
+        if(state.value.loginStatus != AuthResults.LOGIN_SUCCESS) return
         viewModelScope.launch(Dispatchers.IO) {
             postRepo.downvotePost(post, state.value.user.id).onFailure {
                 updateUserMessage(it)
