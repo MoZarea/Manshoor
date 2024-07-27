@@ -14,6 +14,7 @@ import com.example.gemipost.data.post.source.remote.model.Reply
 import com.example.gemipost.data.post.util.ToNestedReplies.toNestedReplies
 import com.example.gemipost.ui.post.feed.PostEvent
 import com.example.gemipost.ui.post.feed.ReplyEvent
+import com.example.gemipost.utils.AuthResults
 import com.example.gemipost.utils.Error
 import com.example.gemipost.utils.PostResults
 import com.example.gemipost.utils.urlToBitmap
@@ -34,14 +35,21 @@ class PostDetailsViewModel(
     fun initScreenModel(postId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             authRepo.getSignedInUser().let { result ->
+                println("zezo:getSignedInUser: $result")
                 result.onSuccessWithData { data ->
                     updateCurrentUser(data)
-                    getPost(postId)
+                    updateLoginResults(AuthResults.LOGIN_SUCCESS)
                 }.onFailure {
-                    updateUserMessage(it)
+                    updateLoginResults(it)
                 }
             }
+            getPost(postId)
         }
+    }
+
+    private fun updateLoginResults(results: Error) {
+        println("zezo:updateLoginResults: $results")
+        _uiState.update { it.copy(loginStatus = results) }
     }
 
     private fun updateUserMessage(message: Error) {
@@ -111,6 +119,7 @@ class PostDetailsViewModel(
     }
 
     private fun createReply(reply: Reply) {
+        if (uiState.value.loginStatus != AuthResults.LOGIN_SUCCESS) return
         viewModelScope.launch(Dispatchers.IO) {
             replyRepo.createReply(
                 reply.copy(
@@ -131,6 +140,7 @@ class PostDetailsViewModel(
     }
 
     private fun reportReply(reply: Reply) {
+        if (uiState.value.loginStatus != AuthResults.LOGIN_SUCCESS) return
         viewModelScope.launch(Dispatchers.IO) {
             replyRepo.reportReply(reply.id, reply.content).onSuccess {
                 Log.d("seerde", "Reply reported")
@@ -142,6 +152,7 @@ class PostDetailsViewModel(
 
 
     private fun upvotePost(post: Post) {
+        if (uiState.value.loginStatus != AuthResults.LOGIN_SUCCESS) return
         viewModelScope.launch(Dispatchers.IO) {
             val result = postRepo.upvotePost(post, _uiState.value.currentUser.id)
             when (result) {
@@ -161,6 +172,7 @@ class PostDetailsViewModel(
     }
 
     private fun downvotePost(post: Post) {
+        if (uiState.value.loginStatus != AuthResults.LOGIN_SUCCESS) return
         viewModelScope.launch(Dispatchers.IO) {
             val result = postRepo.downvotePost(post, _uiState.value.currentUser.id)
             when (result) {
@@ -197,6 +209,7 @@ class PostDetailsViewModel(
 
 
     private fun upvoteReply(reply: Reply) {
+        if (uiState.value.loginStatus != AuthResults.LOGIN_SUCCESS) return
         viewModelScope.launch(Dispatchers.IO) {
             replyRepo.upvoteReply(reply.id, currentUserId = _uiState.value.currentUser.id)
                 .let { result ->
@@ -213,6 +226,7 @@ class PostDetailsViewModel(
     }
 
     private fun downvoteReply(reply: Reply) {
+        if (uiState.value.loginStatus != AuthResults.LOGIN_SUCCESS) return
         viewModelScope.launch(Dispatchers.IO) {
             replyRepo.downvoteReply(reply.id, _uiState.value.currentUser.id).let { result ->
                 result.onSuccessWithData {
@@ -227,12 +241,13 @@ class PostDetailsViewModel(
 
     private fun deleteReply(reply: Reply) {
         viewModelScope.launch(Dispatchers.IO) {
-            replyRepo.deleteReply(reply.id,reply.postId).let { result ->
+            replyRepo.deleteReply(reply.id, reply.postId).let { result ->
                 result.onSuccessWithData {
                     updateLoading(false)
                     getRepliesById(reply.postId)
                     getPost(reply.postId)
-                }.onFailure { updateUserMessage(it)
+                }.onFailure {
+                    updateUserMessage(it)
                 }.onLoading { updateLoading(true) }
             }
         }
@@ -244,8 +259,9 @@ class PostDetailsViewModel(
                 result.onSuccessWithData {
                     updateLoading(false)
                     getRepliesById(reply.postId)
-                }.onFailure { updateUserMessage(it)
-                }.onLoading { updateLoading(true)}
+                }.onFailure {
+                    updateUserMessage(it)
+                }.onLoading { updateLoading(true) }
             }
         }
     }
@@ -272,6 +288,7 @@ class PostDetailsViewModel(
     }
 
     private fun reportPost(post: Post, context: Context) {
+        if (uiState.value.loginStatus != AuthResults.LOGIN_SUCCESS) return
         viewModelScope.launch(Dispatchers.IO) {
             val images =
                 urlToBitmap(

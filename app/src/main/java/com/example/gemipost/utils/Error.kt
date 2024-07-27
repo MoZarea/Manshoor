@@ -81,6 +81,7 @@ enum class AuthResults(val userMessage: String) : Error {
     INVALID_PASSWORD("Invalid Password"),
     RESET_EMAIL_SENT("Reset Email Sent"),
     LOGIN_SUCCESS("Login Successful"),
+    LOGIN_FIRST_TO_ACCESS_ALL_FEATURES("Login first to access all features"),
     LOGIN_FAILED("Login Failed"),
     SIGNUP_SUCCESS("Signup Successful"),
     SIGNUP_FAILED("Signup Failed"),

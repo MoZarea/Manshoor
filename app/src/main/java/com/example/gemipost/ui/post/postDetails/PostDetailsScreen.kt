@@ -17,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -175,7 +176,7 @@ private fun PostDetailsContent(
     navigateToLogin: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-    LaunchedEffect(key1 = state.actionResult) {
+    LaunchedEffect(key1 = state.actionResult, key2 = state.loginStatus) {
         if (state.actionResult.isNotIdle()) {
             if(state.actionResult == PostResults.POST_DELETED){
                 onBackPressed()
@@ -183,6 +184,16 @@ private fun PostDetailsContent(
             SnackbarHostState().showSnackbar(
                 message = state.actionResult.userMessage(),
             )
+        }else if (state.loginStatus == AuthResults.LOGIN_FAILED) {
+            snackbarHostState.showSnackbar(
+                message = AuthResults.LOGIN_FIRST_TO_ACCESS_ALL_FEATURES.userMessage(),
+                actionLabel = "Back to Login",
+            ).run {
+                when (this) {
+                    SnackbarResult.Dismissed -> {}
+                    SnackbarResult.ActionPerformed -> navigateToLogin()
+                }
+            }
         }
     }
     Scaffold(snackbarHost = { SnackbarHost(hostState = snackbarHostState) }, topBar = {

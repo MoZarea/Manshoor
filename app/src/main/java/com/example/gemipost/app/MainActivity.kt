@@ -107,24 +107,25 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 },
-                navigateToSearchResult = {
-                    navController.navigate(SearchResult(label = it.label, isTag = true, tagIntColor = it.intColor))
-                }
-            )
-        }
-        composable<CreatePost> {
-            Log.d("seerde", "create post screen")
-            CreatePostScreen(
-                onNavigateBack = {
-                }, onSharePost = { postId ->
-                    val sendIntent: Intent = Intent().apply {
-                        action = Intent.ACTION_SEND
-                        putExtra(Intent.EXTRA_TEXT, "$APP_URI/p/$postId")
-                        type = "text/plain"
+                    navigateToSearchResult = { tag ->
+                        navController.navigate(
+                            SearchResult(
+                                label = tag.label,
+                                isTag = true,
+                                tagIntColor = tag.intColor
+                            )
+                        )
+                    },
+                    onSharePost = { postId ->
+                        val sendIntent: Intent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, "$APP_URI/p/$postId")
+                            type = "text/plain"
+                        }
+                        val shareIntent = Intent.createChooser(sendIntent, null)
+                        startActivity(shareIntent)
                     }
-                    val shareIntent = Intent.createChooser(sendIntent, null)
-                    startActivity(shareIntent)
-                })
+                )
             }
             composable<CreatePost> {
                 Log.d("seerde", "create post screen")
