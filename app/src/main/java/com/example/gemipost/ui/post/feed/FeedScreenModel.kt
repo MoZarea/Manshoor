@@ -1,8 +1,11 @@
 package com.example.gemipost.ui.post.feed
 
 import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.gemipost.R
 import com.example.gemipost.data.auth.repository.AuthenticationRepository
 import com.example.gemipost.data.auth.source.remote.model.User
 import com.example.gemipost.data.post.repository.PostRepository
@@ -10,6 +13,9 @@ import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.utils.Error
 import com.example.gemipost.utils.PostResults
 import com.example.gemipost.utils.urlToBitmap
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
+import com.gp.socialapp.util.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,6 +42,19 @@ class FeedScreenModel(
                     updateCurrentUser(data)
                 }.onFailure {
                     updateUserMessage(it)
+                }
+            }
+            authRepo.getUserToken().let { result ->
+                if (result is Result.Success) {
+                    authRepo.registerUserToken(result.data).collect{
+                        if (it is Result.Success) {
+                            Log.d("seerde", "User token registered")
+                        } else {
+                            Log.d("seerde", "Error registering user token 2")
+                        }
+                    }
+                } else {
+                    Log.d("seerde", "Error getting user token")
                 }
             }
         }

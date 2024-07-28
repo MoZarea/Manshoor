@@ -3,9 +3,11 @@ package com.example.gemipost.data.auth.repository
 import android.net.Uri
 import com.example.gemipost.data.auth.source.remote.AuthenticationRemoteDataSource
 import com.example.gemipost.data.auth.source.remote.model.User
+import com.example.gemipost.data.auth.source.remote.model.UserToken
 import com.example.gemipost.utils.AuthResults
 import com.gp.socialapp.util.Result
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class AuthenticationRepositoryImpl(
     private val remoteDataSource: AuthenticationRemoteDataSource,
@@ -30,6 +32,14 @@ class AuthenticationRepositoryImpl(
                 logout()
             }
         }
+    }
+
+    override suspend fun registerUserToken(token: String): Flow<Result<Unit, AuthResults>> {
+        return remoteDataSource.registerUserToken(UserToken(token = token))
+    }
+
+    override suspend fun getUserToken(): Result<String, AuthResults> {
+        return remoteDataSource.getUserToken()
     }
 
 
