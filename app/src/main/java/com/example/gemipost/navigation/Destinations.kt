@@ -15,9 +15,6 @@ import kotlinx.serialization.json.Json
 object Login
 
 @Serializable
-object Splash
-
-@Serializable
 object SignUp
 
 @Serializable

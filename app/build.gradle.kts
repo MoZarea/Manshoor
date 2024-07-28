@@ -3,8 +3,8 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("org.jetbrains.kotlin.plugin.serialization")
     id("com.google.gms.google-services")
-
     id("kotlin-parcelize") // needed only for non-primitive classes
+       id ("io.realm.kotlin")
 
 }
 android {
@@ -104,6 +104,12 @@ dependencies {
     implementation(libs.generativeai)
     implementation(libs.ktor.core)
     implementation(libs.google.auth.library.oauth2.http)
+    implementation ("io.realm.kotlin:library-base:1.16.0")
+   // If using Device Sync
+   implementation ("io.realm.kotlin:library-sync:1.16.0")
+   // If using coroutines with the SDK
+   implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0")
+    implementation(libs.androidx.core.splashscreen)
 }
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {

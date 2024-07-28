@@ -18,6 +18,7 @@ class SignUpViewModel(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SignUpUiState())
     val uiState = _uiState.asStateFlow()
+
     fun onSignUp() {
         with(_uiState.value) {
             if (!Validator.EmailValidator.validateAll(email)) {

@@ -1,5 +1,8 @@
 package com.example.gemipost.ui.post.feed.components
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,7 +24,12 @@ fun ExpandableText(
     Text(
         text = text,
         maxLines = if (expanded) Int.MAX_VALUE else maxLinesCollapsed,
-        modifier = modifier.clickable { expanded = !expanded },
+        modifier = modifier.animateContentSize(
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioLowBouncy,
+                stiffness = Spring.StiffnessLow
+            )
+        ).clickable { expanded = !expanded },
         overflow = if (expanded) TextOverflow.Clip else TextOverflow.Ellipsis,
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.outline

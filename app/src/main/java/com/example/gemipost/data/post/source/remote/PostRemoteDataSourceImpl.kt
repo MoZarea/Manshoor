@@ -117,32 +117,8 @@ class PostRemoteDataSourceImpl(
     }
 
 
-    override fun searchByTitle(title: String): Flow<Result<List<Post>, PostResults>> =
-        callbackFlow {
-            trySend(Result.Loading)
-            try {
-                Result.Loading
-                //TODO: Implement search by title :Next Feature
-            } catch (e: Exception) {
-                trySend(Result.Error(PostResults.SERVER_ERROR))
-                e.printStackTrace()
-            }
-            awaitClose()
 
 
-        }
-
-    override fun searchByTag(tag: String): Flow<Result<List<Post>, PostResults>> = callbackFlow {
-        trySend(Result.Loading)
-        try {
-            Result.Loading
-            //TODO: Implement search by tag :Next Feature
-        } catch (e: Exception) {
-            trySend(Result.Error(PostResults.SERVER_ERROR))
-            e.printStackTrace()
-        }
-        awaitClose()
-    }
 
     override suspend fun updatePost(request: PostRequest.UpdateRequest): Result<PostResults, PostResults> =
         try {

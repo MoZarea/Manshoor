@@ -26,10 +26,9 @@ fun AuthEmailField(
     onEmailChange: (String) -> Unit,
     error: Error,
 ) {
-    var email1 = email
-    OutlinedTextField(value = email1,
+    OutlinedTextField(
+        value = email,
         onValueChange = {
-            email1 = it
             onEmailChange(it)
         },
         modifier = Modifier
