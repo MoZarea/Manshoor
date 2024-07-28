@@ -51,6 +51,9 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    packagingOptions {
+        exclude("META-INF/DEPENDENCIES")
+    }
 }
 
 dependencies {
@@ -93,11 +96,14 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
+    implementation(libs.firebase.messaging)
     implementation(libs.korge.foundation)
     implementation(libs.koin.androidx.compose)
     implementation(libs.play.services.auth)
     implementation(libs.coil.compose)
     implementation(libs.generativeai)
+    implementation(libs.ktor.core)
+    implementation(libs.google.auth.library.oauth2.http)
     implementation ("io.realm.kotlin:library-base:1.16.0")
    // If using Device Sync
    implementation ("io.realm.kotlin:library-sync:1.16.0")

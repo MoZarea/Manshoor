@@ -125,7 +125,8 @@ class PostDetailsViewModel(
                 reply.copy(
                     authorName = _uiState.value.currentUser.name,
                     authorImageLink = _uiState.value.currentUser.profilePictureURL
-                )
+                ),
+                _uiState.value.currentUser.id
             ).let { result ->
                 when (result) {
                     is Result.Success -> {

@@ -6,7 +6,7 @@ import com.gp.socialapp.util.Result
 import kotlinx.coroutines.flow.Flow
 
 interface ReplyRemoteDataSource {
-    suspend fun createReply(reply: Reply): Result<ReplyResults, ReplyResults>
+    suspend fun createReply(reply: Reply, currentUserId: String): Result<ReplyResults, ReplyResults>
     fun fetchReplies(postId: String): Flow<Result<List<Reply>, ReplyResults>>
     suspend fun updateReply(replyId: String, replyContent: String): Result<ReplyResults, ReplyResults>
     suspend fun deleteReply(replyId: String,postId: String): Result<ReplyResults, ReplyResults>

@@ -17,6 +17,7 @@ import com.example.gemipost.utils.AppConstants
 import com.example.gemipost.utils.PostResults
 import com.google.ai.client.generativeai.type.PromptBlockedException
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.gp.socialapp.util.Result
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +31,8 @@ import kotlinx.coroutines.withContext
 class PostRemoteDataSourceImpl(
     private val db: FirebaseFirestore,
     private val storage: FirebaseStorage,
-    private val moderationSource: ModerationRemoteDataSource
+    private val moderationSource: ModerationRemoteDataSource,
+    private val notificationSource: NotificationRemoteDataSource,
 ) : PostRemoteDataSource {
     private val colRef = db.collection(AppConstants.DB_Constants.POSTS.name)
     override fun createPost(request: PostRequest.CreateRequest): Flow<Result<PostResults, PostResults>> =
@@ -59,6 +61,7 @@ class PostRemoteDataSourceImpl(
                         error.printStackTrace()
                         trySend(Result.Error(PostResults.POST_NOT_CREATED))
                     } else {
+                        notificationSource.subscribeToTopic(docRef.id, "-1")
                         trySend(Result.Success(PostResults.POST_CREATED))
                     }
                 }

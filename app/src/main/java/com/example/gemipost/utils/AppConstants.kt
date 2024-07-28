@@ -14,7 +14,7 @@ object AppConstants {
     enum class DB_Constants {
         GEMIPOST,
         POSTS,
-        USERS,
+        USER_TOKENS,
         REPLIES,
     }
     val APP_URI = "https://www.gemipost.com"

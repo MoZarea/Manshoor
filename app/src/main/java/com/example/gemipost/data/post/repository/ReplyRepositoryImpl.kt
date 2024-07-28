@@ -37,8 +37,8 @@ class ReplyRepositoryImpl(
         return remoteSource.downvoteReply(replyId, currentUserId)
     }
 
-    override suspend fun createReply(reply: Reply): Result<ReplyResults, ReplyResults> {
-        return remoteSource.createReply(reply)
+    override suspend fun createReply(reply: Reply, currentUserId: String): Result<ReplyResults, ReplyResults> {
+        return remoteSource.createReply(reply, currentUserId)
     }
 
     override suspend fun reportReply(

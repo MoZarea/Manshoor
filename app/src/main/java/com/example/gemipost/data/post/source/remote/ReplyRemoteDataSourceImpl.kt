@@ -7,6 +7,9 @@ import com.example.gemipost.utils.AppConstants
 import com.example.gemipost.utils.ReplyResults
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.RemoteMessage
+import com.google.firebase.messaging.RemoteMessageCreator
 import com.gp.socialapp.util.Result
 import com.gp.socialapp.util.Result.Companion.failure
 import com.gp.socialapp.util.Result.Companion.success
@@ -17,22 +20,39 @@ import kotlinx.coroutines.tasks.await
 
 class ReplyRemoteDataSourceImpl(
     private val db: FirebaseFirestore,
-    private val moderationSource: ModerationRemoteDataSource
+    private val moderationSource: ModerationRemoteDataSource,
+    private val notificationSource: NotificationRemoteDataSource
 ) : ReplyRemoteDataSource {
     private val repColRef = db.collection(AppConstants.DB_Constants.REPLIES.name)
     private val postColRef = db.collection(AppConstants.DB_Constants.POSTS.name)
 
-    override suspend fun createReply(reply: Reply): Result<ReplyResults, ReplyResults> =
-        try {
+    override suspend fun createReply(reply: Reply, currentUserId: String): Result<ReplyResults, ReplyResults> {
+        return try {
             val docRef = repColRef.document()
-            val reply = reply.copy(id = docRef.id)
-            docRef.set(reply)
-            postColRef.document(reply.postId).update("replyCount", FieldValue.increment(1))
+            val newReply = reply.copy(id = docRef.id)
+            docRef.set(newReply)
+            postColRef.document(newReply.postId).update("replyCount", FieldValue.increment(1))
+            val authorId = if (newReply.parentReplyId == "-1") {
+                getPostAuthorId(newReply.postId)
+            } else {
+                getReplyAuthorId(newReply.parentReplyId)
+            } ?: return Result.Error(ReplyResults.NETWORK_ERROR)
+            notificationSource.subscribeToTopic(newReply.postId, newReply.id)
+            if(authorId != currentUserId){
+                notificationSource.sendNotificationToAuthor(
+                    newReply.id,
+                    newReply.content,
+                    newReply.authorName,
+                    newReply.parentReplyId,
+                    newReply.postId
+                )
+            }
             success(ReplyResults.REPLY_CREATED)
         } catch (e: Exception) {
             e.printStackTrace()
             failure(ReplyResults.NETWORK_ERROR)
         }
+    }
 
 
     override fun fetchReplies(postId: String): Flow<Result<List<Reply>, ReplyResults>> =
@@ -133,8 +153,13 @@ class ReplyRemoteDataSourceImpl(
             Result.Error(ReplyResults.NETWORK_ERROR)
         }
     }
-
     private suspend fun removeReply(replyId: String) {
         repColRef.document(replyId).delete().await()
+    }
+    private  fun getPostAuthorId(postId: String): String? {
+        return postColRef.document(postId).get().result?.getString("authorID")
+    }
+    private fun getReplyAuthorId(replyId: String): String? {
+        return repColRef.document(replyId).get().result?.getString("authorID")
     }
 }

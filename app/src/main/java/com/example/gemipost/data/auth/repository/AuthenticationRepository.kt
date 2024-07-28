@@ -13,6 +13,7 @@ interface AuthenticationRepository {
     suspend fun getSignedInUser(): Result<User, AuthResults>
     suspend fun logout(): Result<AuthResults, AuthResults>
     suspend fun deleteAccount(userId: String): Result<Unit, AuthResults>
-
+    suspend fun registerUserToken(token: String): Flow<Result<Unit, AuthResults>>
+    suspend fun getUserToken(): Result<String, AuthResults>
 
 }
