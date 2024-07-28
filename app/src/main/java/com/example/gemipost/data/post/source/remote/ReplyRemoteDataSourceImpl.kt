@@ -26,19 +26,33 @@ class ReplyRemoteDataSourceImpl(
     private val repColRef = db.collection(AppConstants.DB_Constants.REPLIES.name)
     private val postColRef = db.collection(AppConstants.DB_Constants.POSTS.name)
 
-    override suspend fun createReply(reply: Reply): Result<ReplyResults, ReplyResults> =
-        try {
+    override suspend fun createReply(reply: Reply, currentUserId: String): Result<ReplyResults, ReplyResults> {
+        return try {
             val docRef = repColRef.document()
-            val reply = reply.copy(id = docRef.id)
-            docRef.set(reply)
-            postColRef.document(reply.postId).update("replyCount", FieldValue.increment(1))
-            notificationSource.subscribeToTopic(reply.postId, reply.id)
-            notificationSource.sendNotificationToAuthor(reply.id, reply.content, reply.authorName, reply.parentReplyId, reply.postId)
+            val newReply = reply.copy(id = docRef.id)
+            docRef.set(newReply)
+            postColRef.document(newReply.postId).update("replyCount", FieldValue.increment(1))
+            val authorId = if (newReply.parentReplyId == "-1") {
+                getPostAuthorId(newReply.postId)
+            } else {
+                getReplyAuthorId(newReply.parentReplyId)
+            } ?: return Result.Error(ReplyResults.NETWORK_ERROR)
+            notificationSource.subscribeToTopic(newReply.postId, newReply.id)
+            if(authorId != currentUserId){
+                notificationSource.sendNotificationToAuthor(
+                    newReply.id,
+                    newReply.content,
+                    newReply.authorName,
+                    newReply.parentReplyId,
+                    newReply.postId
+                )
+            }
             success(ReplyResults.REPLY_CREATED)
         } catch (e: Exception) {
             e.printStackTrace()
             failure(ReplyResults.NETWORK_ERROR)
         }
+    }
 
 
     override fun fetchReplies(postId: String): Flow<Result<List<Reply>, ReplyResults>> =
@@ -141,5 +155,11 @@ class ReplyRemoteDataSourceImpl(
     }
     private suspend fun removeReply(replyId: String) {
         repColRef.document(replyId).delete().await()
+    }
+    private  fun getPostAuthorId(postId: String): String? {
+        return postColRef.document(postId).get().result?.getString("authorID")
+    }
+    private fun getReplyAuthorId(replyId: String): String? {
+        return repColRef.document(replyId).get().result?.getString("authorID")
     }
 }

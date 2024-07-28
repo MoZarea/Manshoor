@@ -5,6 +5,7 @@ import com.example.gemipost.data.auth.source.remote.AuthenticationRemoteDataSour
 import com.example.gemipost.data.post.source.remote.ModerationRemoteDataSource
 import com.example.gemipost.data.post.source.remote.ModerationRemoteDataSourceImpl
 import com.example.gemipost.data.post.source.remote.NotificationRemoteDataSource
+import com.example.gemipost.data.post.source.remote.NotificationRemoteDataSourceImpl
 import com.example.gemipost.data.post.source.remote.PostRemoteDataSource
 import com.example.gemipost.data.post.source.remote.PostRemoteDataSourceImpl
 import com.example.gemipost.data.post.source.remote.ReplyRemoteDataSource
@@ -22,6 +23,10 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.http.ContentType.Application.Json
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 
 
@@ -30,7 +35,7 @@ val remoteDataSourceModuleK = module {
     single<ModerationRemoteDataSource>{ ModerationRemoteDataSourceImpl(get()) }
     single<ReplyRemoteDataSource> { ReplyRemoteDataSourceImpl(get(), get(), get()) }
     single <AuthenticationRemoteDataSource>{AuthenticationRemoteDataSourceImpl(get(), get())  }
-    single<NotificationRemoteDataSource>{  }
+    single<NotificationRemoteDataSource>{ NotificationRemoteDataSourceImpl(get(), get())}
     single<FirebaseFirestore> {
         Firebase.firestore
     }
@@ -55,7 +60,16 @@ val remoteDataSourceModuleK = module {
         )
     }
     single<HttpClient>{
-        HttpClient()
+        HttpClient {
+            install(ContentNegotiation) {
+                json(Json {
+                    ignoreUnknownKeys = true
+                    useAlternativeNames = false
+                    isLenient = true
+                    encodeDefaults = true
+                })
+            }
+        }
     }
 
 }

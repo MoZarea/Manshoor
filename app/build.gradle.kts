@@ -51,6 +51,9 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    packagingOptions {
+        exclude("META-INF/DEPENDENCIES")
+    }
 }
 
 dependencies {
@@ -100,7 +103,6 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.generativeai)
     implementation(libs.ktor.core)
-    implementation(libs.ktor.client.okhttp)
     implementation(libs.google.auth.library.oauth2.http)
 }
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
