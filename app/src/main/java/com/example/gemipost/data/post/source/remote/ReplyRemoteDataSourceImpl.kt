@@ -7,6 +7,9 @@ import com.example.gemipost.utils.AppConstants
 import com.example.gemipost.utils.ReplyResults
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.RemoteMessage
+import com.google.firebase.messaging.RemoteMessageCreator
 import com.gp.socialapp.util.Result
 import com.gp.socialapp.util.Result.Companion.failure
 import com.gp.socialapp.util.Result.Companion.success
@@ -17,7 +20,8 @@ import kotlinx.coroutines.tasks.await
 
 class ReplyRemoteDataSourceImpl(
     private val db: FirebaseFirestore,
-    private val moderationSource: ModerationRemoteDataSource
+    private val moderationSource: ModerationRemoteDataSource,
+    private val notificationSource: NotificationRemoteDataSource
 ) : ReplyRemoteDataSource {
     private val repColRef = db.collection(AppConstants.DB_Constants.REPLIES.name)
     private val postColRef = db.collection(AppConstants.DB_Constants.POSTS.name)
@@ -28,6 +32,8 @@ class ReplyRemoteDataSourceImpl(
             val reply = reply.copy(id = docRef.id)
             docRef.set(reply)
             postColRef.document(reply.postId).update("replyCount", FieldValue.increment(1))
+            notificationSource.subscribeToTopic(reply.postId, reply.id)
+            notificationSource.sendNotificationToAuthor(reply.id, reply.content, reply.authorName, reply.parentReplyId, reply.postId)
             success(ReplyResults.REPLY_CREATED)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -133,7 +139,6 @@ class ReplyRemoteDataSourceImpl(
             Result.Error(ReplyResults.NETWORK_ERROR)
         }
     }
-
     private suspend fun removeReply(replyId: String) {
         repColRef.document(replyId).delete().await()
     }
