@@ -99,6 +99,9 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation(libs.coil.compose)
     implementation(libs.generativeai)
+    implementation(libs.ktor.core)
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.google.auth.library.oauth2.http)
 }
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
