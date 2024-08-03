@@ -13,8 +13,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
@@ -48,6 +50,7 @@ import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.Tag
 import com.example.gemipost.ui.post.feed.components.FeedPostItem
 import com.example.gemipost.ui.post.feed.components.isUnsafe
+import com.example.gemipost.ui.post.postDetails.components.CircularAvatar
 import com.example.gemipost.utils.AuthResults
 import com.example.gemipost.utils.isNotIdle
 import com.example.gemipost.utils.userMessage
@@ -136,10 +139,35 @@ fun FeedContent(
                     )
                 },
                 navigationIcon = {
+                    CircularAvatar(
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        imageURL = state.user.profilePictureURL,
+                        size = 35.dp,
+                        placeHolderImageVector = Icons.Default.AccountCircle
+                    )
+//                    if (state.loginStatus != AuthResults.LOGIN_FAILED)
+//                        AsyncImage(
+//                            model = state.user.profilePictureURL,
+//                            modifier = Modifier
+//                                .clip(
+//                                    CircleShape
+//                                )
+//                                .size(35.dp),
+//                            contentDescription = "userImage"
+//
+//                        )
 
+                },
+                actions = {
+                    IconButton(onClick = { action(PostEvent.OnSearchClicked) }) {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = "Localized description"
+                        )
+                    }
                     IconButton(onClick = { menuVisibility = !menuVisibility }) {
                         Icon(
-                            imageVector = Icons.Filled.Menu,
+                            imageVector = Icons.Filled.MoreVert,
                             contentDescription = "Localized description"
                         )
                     }
@@ -152,25 +180,6 @@ fun FeedContent(
                             onClick = { action(PostEvent.OnLogoutClicked) }
                         )
                     }
-                },
-                actions = {
-                    IconButton(onClick = { action(PostEvent.OnSearchClicked) }) {
-                        Icon(
-                            imageVector = Icons.Filled.Search,
-                            contentDescription = "Localized description"
-                        )
-                    }
-                    if (state.loginStatus != AuthResults.LOGIN_FAILED)
-                        AsyncImage(
-                            model = state.user.profilePictureURL,
-                            modifier = Modifier
-                                .clip(
-                                    CircleShape
-                                )
-                                .size(35.dp),
-                            contentDescription = "userImage"
-
-                        )
 
                 },
                 scrollBehavior = scrollBehavior
