@@ -25,25 +25,25 @@ fun SearchResultItem(
     onPostClicked: (String) -> Unit,
     onPostAuthorClicked: (String) -> Unit
 ) {
-    Card(
-        onClick = { onPostClicked(item.id) },
-        shape = RectangleShape,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer /*MaterialTheme.colorScheme.surfaceVariant*/
-        ),
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
 //    Card(
 //        onClick = { onPostClicked(item.id) },
-//        shape = MaterialTheme.shapes.medium,
+//        shape = RectangleShape,
 //        colors = CardDefaults.cardColors(
 //            containerColor = MaterialTheme.colorScheme.secondaryContainer /*MaterialTheme.colorScheme.surfaceVariant*/
 //        ),
 //        modifier = modifier
 //            .fillMaxWidth()
-//            .padding(horizontal = 16.dp)
 //    ) {
+    Card(
+        onClick = { onPostClicked(item.id) },
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer /*MaterialTheme.colorScheme.surfaceVariant*/
+        ),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()

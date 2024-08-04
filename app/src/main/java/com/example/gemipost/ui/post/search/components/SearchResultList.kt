@@ -22,8 +22,8 @@ fun SearchResultList(
     val state = rememberLazyListState()
     LazyColumn(
         state = state,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-//        verticalArrangement = Arrangement.spacedBy(8.dp),
+//        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(vertical = 8.dp),
         modifier = modifier.fillMaxSize()
     ) {
