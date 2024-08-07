@@ -9,7 +9,9 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,15 +42,16 @@ fun SignUpRePasswordField(
         value = rePassword,
         onValueChange = { onRePasswordChange(it) },
         label = { Text(text = stringResource(R.string.retype_password)) },
-        modifier = Modifier
+ modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 16.dp),
+            .padding(horizontal = 16.dp, vertical = 4.dp),
         leadingIcon = {
             Icon(
                 imageVector = Icons.Filled.Lock,
                 contentDescription = null,
             )
         },
+
         isError = error == AuthResults.PASSWORD_DOES_NOT_MATCH,
         supportingText = {
             if (error == AuthResults.PASSWORD_DOES_NOT_MATCH) {
@@ -70,6 +73,10 @@ fun SignUpRePasswordField(
                 },
                 contentDescription = "Toggle password visibility",
                 modifier = Modifier.clickable { showPassword = !showPassword })
-        }
+        },
+        colors = OutlinedTextFieldDefaults.colors(
+            unfocusedContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+            unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
+        )
     )
 }

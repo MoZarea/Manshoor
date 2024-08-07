@@ -1,10 +1,12 @@
 package com.example.gemipost.ui.auth.signup
 
+import android.content.res.Configuration
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,9 +15,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -25,21 +29,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gemipost.R
 import com.example.gemipost.ui.auth.login.components.AuthEmailField
 import com.example.gemipost.ui.auth.login.components.AuthPasswordField
 import com.example.gemipost.ui.auth.signup.components.SignUpAvatarSection
-import com.example.gemipost.ui.auth.signup.components.SignUpHeader
 import com.example.gemipost.ui.auth.signup.components.SignUpNameSection
 import com.example.gemipost.ui.auth.signup.components.SignUpRePasswordField
+import com.example.gemipost.ui.theme.GemiPostTheme
 import com.example.gemipost.utils.AuthResults
 import com.example.gemipost.utils.Error
 import com.example.gemipost.utils.isNotIdle
@@ -81,7 +88,7 @@ fun SignUpScreen(
         onNavigateToLoginScreen = {
             onBackPressed()
             viewModel.resetState()
-                                  },
+        },
         onCreateAccount = { viewModel.onSignUp() },
         state = state,
         onNavigateToFeed = {
@@ -128,17 +135,41 @@ private fun SignUpContent(
         Column(
             modifier = Modifier
                 .padding(it)
-                .fillMaxSize()
-                .widthIn(max = 600.dp)
-                .padding(16.dp),
+                .fillMaxSize(),
             verticalArrangement = Arrangement.Center,
         ) {
-            AnimatedVisibility (state.isLoading) {
+            AnimatedVisibility(state.isLoading) {
                 LinearProgressIndicator()
             }
-            SignUpHeader()
-            Spacer(modifier = Modifier.height(16.dp))
-            SignUpAvatarSection(avatarByteArray, onChangeAvatarClicked)
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .weight(5f)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                Color(0xf21e2e3c),
+                                Color(0xff162534),
+                                Color(0xff0c1c2c),
+                            ),
+                            center = Offset(0f, 0f),
+                            radius = 1000f
+                        )
+                    ),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                SignUpAvatarSection(avatarByteArray, onChangeAvatarClicked)
+                Spacer(modifier = Modifier.padding(16.dp))
+                Text(
+                    text = stringResource(id = R.string.wecome_sign_up),
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
+
+            }
+            Spacer(modifier = Modifier.weight(0.25f))
             SignUpNameSection(state.name, onNameChanged, error)
             AuthEmailField(email = state.email, onEmailChange = onEmailChanged, error = error)
             AuthPasswordField(
@@ -151,14 +182,21 @@ private fun SignUpContent(
                 onClick = onCreateAccount,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 32.dp)
-                    .height(52.dp),
-            ) {
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xffc0e863),
+                    contentColor = Color.Black
+                ),
+                shape = RoundedCornerShape(8.dp),
+
+                ) {
                 Text(
                     text = stringResource(R.string.create_account),
                     fontSize = 18.sp
                 )
             }
+            Spacer(modifier = Modifier.weight(1f))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -178,12 +216,37 @@ private fun SignUpContent(
                     Text(
                         text = stringResource(R.string.login_str),
                         fontSize = 18.sp,
+                        color = Color(0xffc0e863)
                     )
                 }
 
             }
 
         }
+    }
+}
+
+@Composable
+@Preview(
+    showSystemUi = false, showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL
+)
+@Preview(showSystemUi = false, showBackground = true)
+fun SignUpContentPreview() {
+    GemiPostTheme {
+        SignUpContent(
+            error = AuthResults.IDLE,
+            avatarByteArray = Uri.EMPTY,
+            onChangeAvatarClicked = {},
+            onNameChanged = {},
+            onEmailChanged = {},
+            onPasswordChanged = {},
+            onRePasswordChanged = {},
+            onNavigateToLoginScreen = {},
+            onCreateAccount = {},
+            state = SignUpUiState(),
+            onNavigateToFeed = {}
+        )
     }
 }
 
