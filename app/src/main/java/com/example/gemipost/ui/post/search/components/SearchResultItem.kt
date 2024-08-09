@@ -2,6 +2,7 @@ package com.example.gemipost.ui.post.search.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -11,7 +12,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gemipost.data.post.source.remote.model.Post
@@ -25,15 +25,6 @@ fun SearchResultItem(
     onPostClicked: (String) -> Unit,
     onPostAuthorClicked: (String) -> Unit
 ) {
-//    Card(
-//        onClick = { onPostClicked(item.id) },
-//        shape = RectangleShape,
-//        colors = CardDefaults.cardColors(
-//            containerColor = MaterialTheme.colorScheme.secondaryContainer /*MaterialTheme.colorScheme.surfaceVariant*/
-//        ),
-//        modifier = modifier
-//            .fillMaxWidth()
-//    ) {
     Card(
         onClick = { onPostClicked(item.id) },
         shape = MaterialTheme.shapes.medium,
@@ -58,18 +49,32 @@ fun SearchResultItem(
                 onEditPostClicked = {},
                 onDeletePostClicked = {},
                 onReportPostClicked = {},
-                onUserClick = { onPostAuthorClicked(item.authorID)
+                onUserClick = {
+                    onPostAuthorClicked(item.authorID)
                 }
             )
-            ResultItemContent(
-                title = item.title,
-                body = item.body,
-                images = item.attachments
-            )
-            ResultItemBottomRow(
-                voteCount = item.votes,
-                replyCount = item.replyCount,
-            )
+            Row {
+                Column (modifier = Modifier.weight(0.65f)){
+                    ResultItemContent(
+                        title = item.title,
+                        body = item.body,
+                        images = item.attachments
+                    )
+
+                    ResultItemBottomRow(
+                        voteCount = item.votes,
+                        replyCount = item.replyCount,
+                    )
+                }
+//                if (item.attachments.isNotEmpty()) {
+//                    SearchResultItemImages(
+//                        modifier = Modifier.weight(0.35f),
+//                        imageUrl = item.attachments[0],
+//                        onImageClick = { }
+//                    )
+//                }
+            }
+
         }
     }
 }
@@ -92,7 +97,7 @@ private fun SearchResultItemPreview() {
                     createdAt = 1722046770866,
                     votes = 5,
                     replyCount = 1,
-                    attachments = listOf("https://www.example.com/image.jpg")
+                    attachments = listOf("https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-980x653.jpg")
                 ),
                 onPostClicked = {},
                 onPostAuthorClicked = {}

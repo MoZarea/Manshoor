@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material3.CircularProgressIndicator
@@ -52,13 +54,6 @@ fun ResultItemContent(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        Spacer(modifier = Modifier.weight(1f))
-        if(images.isNotEmpty()){
-            SearchResultItemImages(
-                imageUrl = images[0],
-                onImageClick = { onImageClicked(images[0]) }
-            )
-        }
     }
 }
 
@@ -69,7 +64,8 @@ fun SearchResultItemImages(
     onImageClick: () -> Unit
 ) {
     val avatarModifier = modifier
-        .size(72.dp)
+        .heightIn(max=100.dp)
+        .widthIn(max = 144.dp)
         .clip(MaterialTheme.shapes.small)
         .clickable { onImageClick() }
     GlideImage(

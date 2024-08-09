@@ -32,13 +32,9 @@ fun OptionButton(
     Box {
         IconButton(
             onClick = { expanded = !expanded },
-            modifier = Modifier
-                .padding(
-                    horizontal = 8.dp,
-                )
         ) {
             Icon(
-                imageVector = Icons.Default.MoreVert,
+                imageVector = Icons.Default.MoreHoriz,
                 contentDescription = "More Options",
             )
         }
