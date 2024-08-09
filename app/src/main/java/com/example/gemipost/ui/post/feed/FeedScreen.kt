@@ -42,10 +42,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.example.gemipost.R
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.Tag
 import com.example.gemipost.ui.post.feed.components.FeedPostItem
@@ -134,7 +136,7 @@ fun FeedContent(
                 ),
                 title = {
                     Text(
-                        "GemiPost",
+                        stringResource(id = R.string.app_name),
                         overflow = TextOverflow.Ellipsis
                     )
                 },
@@ -228,6 +230,8 @@ fun FeedPosts(
             contentPadding = PaddingValues(vertical = 8.dp),
         ) {
             items(posts) { post ->
+                println("0000FeedPosts: ${post.upvoted}")
+                println("0000FeedPosts: ${post.downvoted}")
                 if (!post.moderationStatus.isUnsafe()) {
                     FeedPostItem(
                         post = post, onPostEvent = onPostEvent, currentUserId = currentUserId

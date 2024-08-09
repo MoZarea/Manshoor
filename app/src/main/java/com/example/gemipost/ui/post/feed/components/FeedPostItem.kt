@@ -1,5 +1,6 @@
 package com.example.gemipost.ui.post.feed.components
 
+import BottomRow
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -28,6 +29,7 @@ import com.gp.socialapp.util.ModerationSafety
 fun FeedPostItem(
     post: Post, onPostEvent: (PostEvent) -> Unit , currentUserId: String
 ) {
+    println("FeedPostItem0000: ${post.upvoted +"$"+ post.downvoted}")
     val context = LocalContext.current
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -69,7 +71,8 @@ fun FeedPostItem(
                         onPostEvent = onPostEvent
                     )
 
-                    BottomRow(upVotes = post.upvoted,
+                    BottomRow(
+                        upVotes = post.upvoted,
                         downVotes = post.downvoted,
                         commentCount = post.replyCount,
                         votes = post.votes,

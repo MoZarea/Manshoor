@@ -1,7 +1,9 @@
 package com.example.gemipost.ui.post.postDetails
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -30,8 +32,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.gemipost.R
@@ -42,6 +47,7 @@ import com.example.gemipost.ui.post.feed.ReplyEvent
 import com.example.gemipost.ui.post.feed.components.FeedPostItem
 import com.example.gemipost.ui.post.postDetails.components.AddReplySheet
 import com.example.gemipost.ui.post.postDetails.components.RepliesList
+import com.example.gemipost.ui.theme.GemiPostTheme
 import com.example.gemipost.utils.AuthResults
 import com.example.gemipost.utils.PostResults
 import com.example.gemipost.utils.isNotIdle
@@ -199,32 +205,34 @@ private fun PostDetailsContent(
             }
         }
     }
-    Scaffold(snackbarHost = { SnackbarHost(hostState = snackbarHostState) }, topBar = {
-        TopAppBar(title = { Text("Post Details") }, navigationIcon = {
-            IconButton(onClick = {
-                onBackPressed()
-            }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-            }
-        })
-    }, modifier = modifier
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        topBar = {
+            TopAppBar(title = { Text("Post Details") }, navigationIcon = {
+                IconButton(onClick = {
+                    onBackPressed()
+                }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                }
+            })
+        }, modifier = modifier
     ) {
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it),
         ) {
             LazyColumn(
                 modifier = Modifier
-                    .systemBarsPadding()
                     .fillMaxSize()
             ) {
-                item {
-                    AnimatedVisibility(state.isLoading) {
-                        LinearProgressIndicator()
+                    item {
+                        AnimatedVisibility(state.isLoading) {
+                            LinearProgressIndicator()
 
+                        }
                     }
-                }
+
                 item {
                     FeedPostItem(
                         post = state.post,
@@ -280,5 +288,26 @@ private fun PostDetailsContent(
                 )
             }
         }
+    }
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+@Preview
+fun PreviewPostDetailsScreen() {
+    GemiPostTheme {
+        PostDetailsContent(
+            state = PostDetailsUiState(),
+            onPostEvent = {},
+            onReplyEvent = {},
+            clickedReply = null,
+            isEditingReply = false,
+            bottomSheetState = rememberModalBottomSheetState(),
+            onDismissAddReplyBottomSheet = {},
+            onBackPressed = {},
+            navigateToLogin = {},
+            isReportDialogVisible = false,
+            onDismissReportDialog = {},
+            onConfirmReport = {}
+        )
     }
 }
