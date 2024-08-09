@@ -1,5 +1,6 @@
 package com.example.gemipost.ui.post.feed.components
 
+import BottomRow
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
