@@ -1,6 +1,7 @@
 package com.example.gemipost.ui.post.postDetails.components
 
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -10,7 +11,7 @@ import com.example.gemipost.data.post.source.remote.model.Reply
 import com.example.gemipost.ui.post.feed.ReplyEvent
 
 
-fun LazyListScope.NestedReplyItem(nestedReply: NestedReply, level: Int, onReplyEvent: (ReplyEvent)->Unit, currentUserId: String) {
+fun LazyListScope.NestedReplyItem(nestedReply: NestedReply, level: Int = 0, onReplyEvent: (ReplyEvent)->Unit, currentUserId: String) {
     item {
         val ltrLayoutDirection = remember { LayoutDirection.Ltr }
         CompositionLocalProvider(LocalLayoutDirection provides ltrLayoutDirection) {

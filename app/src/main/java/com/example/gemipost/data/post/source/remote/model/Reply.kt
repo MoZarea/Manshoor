@@ -1,6 +1,5 @@
 package com.example.gemipost.data.post.source.remote.model
 
-import com.example.gemipost.data.post.repository.model.CollapsableReply
 import com.example.gemipost.utils.LocalDateTimeUtil.now
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone

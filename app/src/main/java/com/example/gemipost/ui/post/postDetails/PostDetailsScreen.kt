@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
@@ -44,6 +47,7 @@ import com.example.gemipost.ui.post.feed.ReplyEvent
 import com.example.gemipost.ui.post.feed.components.FeedPostItem
 import com.example.gemipost.ui.post.postDetails.components.AddReplySheet
 import com.example.gemipost.ui.post.postDetails.components.RepliesList
+import com.example.gemipost.ui.post.postDetails.components.parallaxLayoutModifier
 import com.example.gemipost.utils.AuthResults
 import com.example.gemipost.utils.PostResults
 import com.example.gemipost.utils.isNotIdle
@@ -201,6 +205,7 @@ private fun PostDetailsContent(
             }
         }
     }
+    val lazyListState = rememberLazyListState()
     Scaffold(snackbarHost = { SnackbarHost(hostState = snackbarHostState) }, topBar = {
             TopAppBar(title = { Text("Post Details") }, navigationIcon = {
                 IconButton(onClick = {
@@ -218,7 +223,9 @@ private fun PostDetailsContent(
         ) {
             LazyColumn(
                 modifier = Modifier
+                    .fillMaxSize()
                     .fillMaxSize(),
+                state = lazyListState,
                 verticalArrangement = Arrangement.spacedBy(0.dp)
             ) {
                 item {
@@ -236,9 +243,9 @@ private fun PostDetailsContent(
                     Spacer(modifier = Modifier.padding(4.dp))
                 }
                 RepliesList(
-                    replies = state.currentReplies,
-                    onReplyEvent = onReplyEvent,
-                    currentUserId = state.currentUser.id
+                        replies = state.currentReplies,
+                        onReplyEvent = onReplyEvent,
+                        currentUserId = state.currentUser.id
                 )
             }
             if (isReportDialogVisible) {
