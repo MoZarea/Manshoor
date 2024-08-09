@@ -79,16 +79,6 @@ class FeedScreenModel(
                 }.onSuccessWithData { data ->
                     updatePosts(data
                         .sortedByDescending { it.createdAt }
-                        .map { post ->
-                            post.copy(
-                                upvoted = if (state.value.user.id in post.upvoted) listOf(
-                                    ""
-                                ) else emptyList(),
-                                downvoted = if (state.value.user.id in post.downvoted) listOf(
-                                    ""
-                                ) else emptyList()
-                            )
-                        }
                     )
                 }
             }

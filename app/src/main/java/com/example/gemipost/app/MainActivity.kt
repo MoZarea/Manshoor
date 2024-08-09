@@ -9,7 +9,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -23,7 +25,6 @@ import com.example.gemipost.navigation.ForgotPassword
 import com.example.gemipost.navigation.Login
 import com.example.gemipost.navigation.PostDetails
 import com.example.gemipost.navigation.Search
-import com.example.gemipost.navigation.SearchResult
 import com.example.gemipost.navigation.SignUp
 import com.example.gemipost.ui.auth.forgotpassword.ForgotPasswordScreen
 import com.example.gemipost.ui.auth.login.LoginScreen
@@ -32,7 +33,6 @@ import com.example.gemipost.ui.post.create.CreatePostScreen
 import com.example.gemipost.ui.post.feed.FeedScreen
 import com.example.gemipost.ui.post.postDetails.PostDetailsScreen
 import com.example.gemipost.ui.post.search.SearchScreen
-import com.example.gemipost.ui.post.searchResult.SearchResultScreen
 import com.example.gemipost.ui.theme.GemiPostTheme
 import com.example.gemipost.utils.AppConstants.APP_URI
 
@@ -45,7 +45,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             GemiPostTheme {
-                MyApp()
+                Surface (tonalElevation = 5.dp) {
+                    MyApp()
+                }
             }
         }
     }
@@ -99,7 +101,7 @@ class MainActivity : ComponentActivity() {
                 }, navigateToPostDetails = {
                     navController.navigate(PostDetails(it))
                 }, navigateToSearch = {
-                    navController.navigate(Search)
+                    navController.navigate(Search())
                 }, navigateToLogin = {
                     navController.navigate(Login) {
                         popUpTo(Feed) {
@@ -109,7 +111,7 @@ class MainActivity : ComponentActivity() {
                 },
                     navigateToSearchResult = { tag ->
                         navController.navigate(
-                            SearchResult(
+                            Search(
                                 label = tag.label,
                                 isTag = true,
                                 tagIntColor = tag.intColor
@@ -147,7 +149,7 @@ class MainActivity : ComponentActivity() {
                     navController.navigateUp()
                 }, onTagClicked = { tag ->
                     navController.navigate(
-                        SearchResult(
+                        Search(
                             label = tag.label, isTag = true, tagIntColor = tag.intColor
                         )
                     )
@@ -169,18 +171,10 @@ class MainActivity : ComponentActivity() {
                     }
                 })
             }
-            composable<Search> {
-                Log.d("seerde", "search screen")
-                SearchScreen(onNavigateToSearchResult = {
-                    navController.navigate(SearchResult(label = it, isTag = false))
-                }, onBackPressed = {
-                    navController.popBackStack()
-                })
-            }
-            composable<SearchResult> { backStackEntry ->
+            composable<Search> { backStackEntry ->
                 Log.d("seerde", "Search Result screen")
-                val searchResult = backStackEntry.toRoute<SearchResult>()
-                SearchResultScreen(searchLabel = searchResult.label,
+                val searchResult = backStackEntry.toRoute<Search>()
+                SearchScreen(searchLabel = searchResult.label,
                     searchTagIntColor = searchResult.tagIntColor,
                     isTag = searchResult.isTag,
                     onPostClicked = {

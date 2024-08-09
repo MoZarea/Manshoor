@@ -12,18 +12,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -35,21 +33,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gemipost.R
+import com.example.gemipost.ui.auth.login.components.AuthEmailField
 import com.example.gemipost.utils.AuthResults
 import com.example.gemipost.utils.isNotIdle
 import com.example.gemipost.utils.userMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ForgotPasswordScreen(
-    viewModel: ForgotPasswordViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    viewModel: ForgotPasswordViewModel = koinViewModel(),
     onNavigateToLogin: () -> Unit,
     onBackPressed: () -> Unit,
 ) {
@@ -113,12 +113,10 @@ private fun ForgetPasswordContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .widthIn(max = 600.dp)
-                .padding(paddingValues)
-                .padding(16.dp),
+                .padding(paddingValues),
             verticalArrangement = Arrangement.Center,
         ) {
-            AnimatedVisibility (state.isLoading) {
+            AnimatedVisibility(state.isLoading) {
                 LinearProgressIndicator()
             }
             Text(
@@ -131,33 +129,23 @@ private fun ForgetPasswordContent(
                 style = MaterialTheme.typography.headlineMedium,
                 maxLines = 1,
             )
-            OutlinedTextField(
-                value = state.email,
-                onValueChange = { onEmailChange(it) },
-                label = {
-                    Text(
-                        text = stringResource(R.string.email),
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-                singleLine = true,
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.Email,
-                        contentDescription = null,
-                    )
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            AuthEmailField(
+                email = state.email,
+                onEmailChange = onEmailChange,
+                error = state.actionResult
             )
+
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 32.dp)
-                    .height(50.dp),
-                shape = RoundedCornerShape(5.dp),
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                    .height(56.dp),
+                shape = RoundedCornerShape(8.dp),
                 onClick = onSendResetEmail,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xffc0e863),
+                    contentColor = Color.Black
+                ),
             ) {
                 Icon(imageVector = Icons.AutoMirrored.Filled.Send, contentDescription = null)
                 Spacer(modifier = Modifier.width(16.dp))
@@ -166,6 +154,7 @@ private fun ForgetPasswordContent(
                     fontSize = 16.sp
                 )
             }
+
         }
     }
 

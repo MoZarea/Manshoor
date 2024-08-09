@@ -13,8 +13,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
@@ -40,14 +42,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.example.gemipost.R
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.data.post.source.remote.model.Tag
 import com.example.gemipost.ui.post.feed.components.FeedPostItem
 import com.example.gemipost.ui.post.feed.components.isUnsafe
+import com.example.gemipost.ui.post.postDetails.components.CircularAvatar
 import com.example.gemipost.utils.AuthResults
 import com.example.gemipost.utils.isNotIdle
 import com.example.gemipost.utils.userMessage
@@ -131,15 +136,40 @@ fun FeedContent(
                 ),
                 title = {
                     Text(
-                        "GemiPost",
+                        stringResource(id = R.string.app_name),
                         overflow = TextOverflow.Ellipsis
                     )
                 },
                 navigationIcon = {
+                    CircularAvatar(
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        imageURL = state.user.profilePictureURL,
+                        size = 35.dp,
+                        placeHolderImageVector = Icons.Default.AccountCircle
+                    )
+//                    if (state.loginStatus != AuthResults.LOGIN_FAILED)
+//                        AsyncImage(
+//                            model = state.user.profilePictureURL,
+//                            modifier = Modifier
+//                                .clip(
+//                                    CircleShape
+//                                )
+//                                .size(35.dp),
+//                            contentDescription = "userImage"
+//
+//                        )
 
+                },
+                actions = {
+                    IconButton(onClick = { action(PostEvent.OnSearchClicked) }) {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = "Localized description"
+                        )
+                    }
                     IconButton(onClick = { menuVisibility = !menuVisibility }) {
                         Icon(
-                            imageVector = Icons.Filled.Menu,
+                            imageVector = Icons.Filled.MoreVert,
                             contentDescription = "Localized description"
                         )
                     }
@@ -152,25 +182,6 @@ fun FeedContent(
                             onClick = { action(PostEvent.OnLogoutClicked) }
                         )
                     }
-                },
-                actions = {
-                    IconButton(onClick = { action(PostEvent.OnSearchClicked) }) {
-                        Icon(
-                            imageVector = Icons.Filled.Search,
-                            contentDescription = "Localized description"
-                        )
-                    }
-                    if (state.loginStatus != AuthResults.LOGIN_FAILED)
-                        AsyncImage(
-                            model = state.user.profilePictureURL,
-                            modifier = Modifier
-                                .clip(
-                                    CircleShape
-                                )
-                                .size(35.dp),
-                            contentDescription = "userImage"
-
-                        )
 
                 },
                 scrollBehavior = scrollBehavior
@@ -219,6 +230,8 @@ fun FeedPosts(
             contentPadding = PaddingValues(vertical = 8.dp),
         ) {
             items(posts) { post ->
+                println("0000FeedPosts: ${post.upvoted}")
+                println("0000FeedPosts: ${post.downvoted}")
                 if (!post.moderationStatus.isUnsafe()) {
                     FeedPostItem(
                         post = post, onPostEvent = onPostEvent, currentUserId = currentUserId

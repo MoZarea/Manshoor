@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -31,14 +32,19 @@ fun SignUpNameSection(
                 Text(
                     text = error.userMessage(),
                     color = MaterialTheme.colorScheme.error,
-                    fontSize = 12.sp
+                    fontSize = 12.sp,
+                    modifier = Modifier.padding(start = 16.dp),
                 )
             }
 
         },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 4.dp)
+        colors = OutlinedTextFieldDefaults.colors(
+            unfocusedContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+            unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
+        ),
+                modifier = Modifier
+                . fillMaxWidth ()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
     )
 }
 

@@ -33,7 +33,7 @@ fun RecentSearchItem(
             text = item,
             style = MaterialTheme.typography.bodyMedium,
             maxLines = 1,
-            modifier = Modifier.padding(horizontal = 8.dp).weight(1f).focusable(false)
+            modifier = Modifier.weight(1f).focusable(false)
         )
         IconButton(
             onClick = { onDeleteItem(item) }
