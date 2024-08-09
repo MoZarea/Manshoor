@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -31,10 +32,6 @@ fun OptionButton(
     Box {
         IconButton(
             onClick = { expanded = !expanded },
-            modifier = Modifier
-                .padding(
-                    horizontal = 8.dp,
-                )
         ) {
             Icon(
                 imageVector = Icons.Default.MoreHoriz,

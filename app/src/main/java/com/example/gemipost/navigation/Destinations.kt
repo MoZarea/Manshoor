@@ -25,9 +25,7 @@ object Feed
 @Serializable
 data class PostDetails(val postId: String)
 @Serializable
-object Search
-@Serializable
-data class SearchResult(val label: String, val isTag: Boolean, @ColorInt val tagIntColor: Int = Color.Transparent.toArgb())
+data class Search(val label: String = "", val isTag: Boolean = false, @ColorInt val tagIntColor: Int = Color.Transparent.toArgb())
 
 
 @Serializable
