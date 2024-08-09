@@ -2,6 +2,7 @@ package com.example.gemipost.ui.post.postDetails.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -21,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -39,13 +41,15 @@ fun AddReplySheet(
         sheetState = bottomSheetState,
         onDismissRequest = { onDismiss()},
         shape = RoundedCornerShape(16.dp),
-        tonalElevation = 8.dp
+        tonalElevation = 8.dp,
+        dragHandle = {}
     ) {
         var value by remember { mutableStateOf(initialValue) }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             OutlinedTextField(
                 value = value,

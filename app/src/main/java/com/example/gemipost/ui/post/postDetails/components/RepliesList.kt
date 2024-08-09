@@ -7,7 +7,7 @@ import com.example.gemipost.ui.post.feed.ReplyEvent
 
 
 fun LazyListScope.RepliesList(replies: List<NestedReply>, level: Int = 0, onReplyEvent: (ReplyEvent)->Unit, currentUserId: String) {
-    replies.forEach { reply ->
-        NestedReplyItem(reply, level ,onReplyEvent, currentUserId)
+    replies.forEachIndexed { index, nestedReply ->
+        NestedReplyItem(nestedReply, index == replies.size - 1, level ,onReplyEvent, currentUserId)
     }
 }
