@@ -1,6 +1,7 @@
 package com.example.gemipost.ui.post.postDetails
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +20,7 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -200,13 +202,13 @@ private fun PostDetailsContent(
         }
     }
     Scaffold(snackbarHost = { SnackbarHost(hostState = snackbarHostState) }, topBar = {
-        TopAppBar(title = { Text("Post Details") }, navigationIcon = {
-            IconButton(onClick = {
-                onBackPressed()
-            }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-            }
-        })
+            TopAppBar(title = { Text("Post Details") }, navigationIcon = {
+                IconButton(onClick = {
+                    onBackPressed()
+                }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                }
+            })
     }, modifier = modifier
     ) {
         Box(
@@ -216,8 +218,8 @@ private fun PostDetailsContent(
         ) {
             LazyColumn(
                 modifier = Modifier
-                    .systemBarsPadding()
-                    .fillMaxSize()
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(0.dp)
             ) {
                 item {
                     AnimatedVisibility(state.isLoading) {

@@ -10,16 +10,19 @@ import com.example.gemipost.ui.post.feed.ReplyEvent
 
 @Composable
 fun ReplyTopRow(
-    nestedReply: NestedReply,
+    authorImageLink: String,
+    authorId: String,
+    authorName: String,
+    createdAt: Long,
     replyEvent: (ReplyEvent) -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        ReplyIcon(nestedReply, replyEvent)
-        ReplyAuthorName(nestedReply)
-        ReplyDate(nestedReply)
+        ReplyIcon(authorImageLink, authorId, replyEvent)
+        ReplyAuthorName(authorName)
+        ReplyDate(createdAt)
 
     }
 }

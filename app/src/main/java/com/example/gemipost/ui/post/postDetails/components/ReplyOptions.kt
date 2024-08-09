@@ -30,21 +30,20 @@ import androidx.compose.ui.unit.dp
 import com.example.gemipost.R
 import com.example.gemipost.data.post.source.remote.model.NestedReply
 import com.example.gemipost.data.post.source.remote.model.Reply
+import com.example.gemipost.data.post.source.remote.model.isDownvoted
+import com.example.gemipost.data.post.source.remote.model.isUpvoted
 import com.example.gemipost.ui.post.feed.ReplyEvent
 import com.gp.socialapp.util.ModerationSafety
 
 @Composable
 fun ReplyOptions(
-    nestedReply: NestedReply,
+    reply: Reply,
     currentUserId: String,
     replyEvent: (ReplyEvent) -> Unit
 ) {
-    val isUpvoted = nestedReply.reply?.upvoted?.contains(currentUserId) == true
-    val isDownvoted = nestedReply.reply?.downvoted?.contains(currentUserId) == true
     val upvoteColor = MaterialTheme.colorScheme.onPrimaryContainer
     val downvoteColor = MaterialTheme.colorScheme.error
-    if (nestedReply.reply?.moderationStatus != ModerationSafety.UNSAFE_REPLY.name)
-
+    if (reply.moderationStatus != ModerationSafety.UNSAFE_REPLY.name)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -68,29 +67,29 @@ fun ReplyOptions(
 
                         )
                 }
-                val dropDownItems = if (nestedReply.reply?.authorID == currentUserId) {
+                val dropDownItems = if (reply.authorID == currentUserId) {
                     listOf(ReplyDropDownItem(stringResource(R.string.edit)) {
                         replyEvent(
                             ReplyEvent.OnEditReply(
-                                reply = nestedReply.reply ?: Reply()
+                                reply = reply
                             )
                         )
                     }, ReplyDropDownItem(stringResource(R.string.delete)) {
                         replyEvent(
                             ReplyEvent.OnReplyDeleted(
-                                reply = nestedReply.reply ?: Reply()
+                                reply = reply
                             )
                         )
                     }, ReplyDropDownItem(stringResource(R.string.share)) {
                         replyEvent(
                             ReplyEvent.OnShareReply(
-                                reply = nestedReply.reply ?: Reply()
+                                reply = reply
                             )
                         )
                     }, ReplyDropDownItem(stringResource(R.string.report)) {
                         replyEvent(
                             ReplyEvent.OnReportReply(
-                                reply = nestedReply.reply ?: Reply()
+                                reply = reply
                             )
                         )
                     })
@@ -98,13 +97,13 @@ fun ReplyOptions(
                     listOf(ReplyDropDownItem(stringResource(R.string.share)) {
                         replyEvent(
                             ReplyEvent.OnShareReply(
-                                reply = nestedReply.reply ?: Reply()
+                                reply = reply
                             )
                         )
                     }, ReplyDropDownItem(stringResource(R.string.report)) {
                         replyEvent(
                             ReplyEvent.OnReportReply(
-                                reply = nestedReply.reply ?: Reply()
+                                reply = reply
                             )
                         )
                     })
@@ -122,7 +121,7 @@ fun ReplyOptions(
                 }
             }
             IconButton(onClick = {
-                replyEvent(ReplyEvent.OnAddReply(reply = nestedReply.reply ?: Reply()))
+                replyEvent(ReplyEvent.OnAddReply(reply = reply))
             }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.Comment,
@@ -136,26 +135,26 @@ fun ReplyOptions(
             IconButton(onClick = {
                 replyEvent(
                     ReplyEvent.OnReplyUpVoted(
-                        reply = nestedReply.reply ?: Reply()
+                        reply = reply
                     )
                 )
             }) {
                 Icon(
                     imageVector = Icons.Filled.ThumbUpAlt, contentDescription = "Like",
-                    tint = if (isUpvoted) upvoteColor  else MaterialTheme.colorScheme.onPrimaryContainer,
+                    tint = if (reply.isUpvoted(currentUserId)) upvoteColor  else MaterialTheme.colorScheme.onPrimaryContainer,
                     )
             }
-            Text(text = (nestedReply.reply?.votes ?: 0).toString())
+            Text(text = (reply.votes).toString())
             IconButton(onClick = {
                 replyEvent(
                     ReplyEvent.OnReplyDownVoted(
-                        reply = nestedReply.reply ?: Reply()
+                        reply = reply
                     )
                 )
             }) {
                 Icon(
                     imageVector = Icons.Filled.ThumbDownAlt, contentDescription = "Share",
-                    tint = if (isDownvoted) downvoteColor else MaterialTheme.colorScheme.onPrimaryContainer,
+                    tint = if (reply.isDownvoted(currentUserId)) downvoteColor else MaterialTheme.colorScheme.onPrimaryContainer,
 
                     )
             }

@@ -1,6 +1,7 @@
 package com.example.gemipost.ui.post.postDetails.components
 
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.runtime.Composable
 import com.example.gemipost.data.post.source.remote.model.NestedReply
 import com.example.gemipost.ui.post.feed.ReplyEvent
 

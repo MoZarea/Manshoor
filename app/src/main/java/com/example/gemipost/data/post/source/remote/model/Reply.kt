@@ -1,5 +1,6 @@
 package com.example.gemipost.data.post.source.remote.model
 
+import com.example.gemipost.data.post.repository.model.CollapsableReply
 import com.example.gemipost.utils.LocalDateTimeUtil.now
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -21,7 +22,6 @@ data class Reply(
     val downvoted: List<String> = emptyList(),
     val authorName: String = "",
     val authorImageLink: String = "",
-    val collapsed: Boolean = false,
     val editStatus: Boolean = false,
     val moderationStatus: String = "SAFE"
 )

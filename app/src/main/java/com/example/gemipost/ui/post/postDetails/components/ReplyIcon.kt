@@ -11,18 +11,19 @@ import com.example.gemipost.ui.post.feed.ReplyEvent
 
 @Composable
  fun ReplyIcon(
-    nestedReply: NestedReply,
+    authorImageLink: String,
+    authorId: String,
     replyEvent: (ReplyEvent) -> Unit
 ) {
     CircularAvatar(
         modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-        imageURL = nestedReply.reply?.authorImageLink ?: "",
+        imageURL = authorImageLink,
         size = 26.dp,
         placeHolderImageVector = Icons.Default.AccountCircle,
         onClick = {
             replyEvent(
                 ReplyEvent.OnReplyAuthorClicked(
-                    nestedReply.reply?.authorID ?: ""
+                    authorId
                 )
             )
         }
