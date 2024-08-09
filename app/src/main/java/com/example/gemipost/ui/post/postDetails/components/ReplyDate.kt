@@ -11,9 +11,10 @@ import com.example.gemipost.data.post.source.remote.model.NestedReply
 import com.example.gemipost.utils.LocalDateTimeUtil.getPostDate
 
 @Composable
- fun ReplyDate(nestedReply: NestedReply) {
+ fun ReplyDate(createdAt: Long) {
     Text(
-        text = nestedReply.reply?.createdAt?.getPostDate().toString(), modifier = Modifier.padding(
+        text = createdAt.getPostDate(),
+        modifier = Modifier.padding(
             start = 4.dp, end = 8.dp
         ), color = Color.Gray,
         fontSize = 12.sp

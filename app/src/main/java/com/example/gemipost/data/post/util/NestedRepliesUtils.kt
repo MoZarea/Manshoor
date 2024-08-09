@@ -15,6 +15,7 @@ object ToNestedReplies {
     ): List<NestedReply> {
         return replies
             .filter { it.parentReplyId == parentReplyId }
+            .sortedBy { it.createdAt }
             .map { reply ->
                 val nestedReplies = buildNestedReplies(replies, reply.id)
                 NestedReply(

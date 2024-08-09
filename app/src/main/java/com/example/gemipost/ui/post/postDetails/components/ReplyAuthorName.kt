@@ -11,8 +11,8 @@ import androidx.compose.ui.unit.sp
 import com.example.gemipost.data.post.source.remote.model.NestedReply
 
 @Composable
- fun ReplyAuthorName(nestedReply: NestedReply) {
-    Text(text = nestedReply.reply?.authorName?.run {
+ fun ReplyAuthorName(authorName: String) {
+    Text(text = authorName.run {
         if (this.length > 10) this.substring(
             0, 10
         ) else this
@@ -20,9 +20,7 @@ import com.example.gemipost.data.post.source.remote.model.NestedReply
         modifier = Modifier.padding(
             start = 8.dp, end = 4.dp
         ),
-        overflow = if ((nestedReply.reply?.authorName?.length
-                ?: 0) > 10
-        ) TextOverflow.Ellipsis else TextOverflow.Clip,
+        overflow = if (authorName.length > 10) TextOverflow.Ellipsis else TextOverflow.Clip,
         fontSize = 12.sp,
         color = MaterialTheme.colorScheme.onPrimaryContainer)
 }

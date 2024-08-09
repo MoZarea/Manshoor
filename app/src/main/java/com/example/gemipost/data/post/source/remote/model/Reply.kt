@@ -21,7 +21,6 @@ data class Reply(
     val downvoted: List<String> = emptyList(),
     val authorName: String = "",
     val authorImageLink: String = "",
-    val collapsed: Boolean = false,
     val editStatus: Boolean = false,
     val moderationStatus: String = "SAFE"
 )

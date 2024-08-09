@@ -10,13 +10,16 @@ import com.example.gemipost.data.post.source.remote.model.NestedReply
 import com.gp.socialapp.util.ModerationSafety
 
 @Composable
-fun ReplyBody(nestedReply: NestedReply) {
-    var body = nestedReply.reply?.content ?: ""
-    if(nestedReply.reply?.moderationStatus == ModerationSafety.UNSAFE_REPLY.name){
-        body = "This content has been removed due to violation of community guidelines"
+fun ReplyBody(
+    body: String,
+    moderationStatus: String
+) {
+    var text = body
+    if(moderationStatus == ModerationSafety.UNSAFE_REPLY.name){
+        text = "This content has been removed due to violation of community guidelines"
     }
     Text(
-        text = body,
+        text = text,
         modifier = Modifier.padding(
             start = 8.dp, end = 4.dp, top = 4.dp
         ),
