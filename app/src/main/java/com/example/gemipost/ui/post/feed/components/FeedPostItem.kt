@@ -29,7 +29,7 @@ import com.gp.socialapp.util.ModerationSafety
 fun FeedPostItem(
     post: Post, onPostEvent: (PostEvent) -> Unit , currentUserId: String
 ) {
-    println("FeedPostItem0000: ${post.upvoted +"$"+ post.downvoted}")
+    println("FeedPostItem100001inFeedPostItem: upvoted${post.upvoted} downvoted ${post.downvoted}")
     val context = LocalContext.current
     Column(
         modifier = Modifier.fillMaxWidth()

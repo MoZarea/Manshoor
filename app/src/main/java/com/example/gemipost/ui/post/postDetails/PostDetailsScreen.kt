@@ -291,3 +291,24 @@ private fun PostDetailsContent(
         }
     }
 }
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+@Preview
+fun PreviewPostDetailsScreen() {
+    GemiPostTheme {
+        PostDetailsContent(
+            state = PostDetailsUiState(),
+            onPostEvent = {},
+            onReplyEvent = {},
+            clickedReply = null,
+            isEditingReply = false,
+            bottomSheetState = rememberModalBottomSheetState(),
+            onDismissAddReplyBottomSheet = {},
+            onBackPressed = {},
+            navigateToLogin = {},
+            isReportDialogVisible = false,
+            onDismissReportDialog = {},
+            onConfirmReport = {}
+        )
+    }
+}
