@@ -17,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -132,10 +133,11 @@ private fun LoginContent(
                     .background(
                         brush = Brush.radialGradient(
                             colors = listOf(
-                                Color(0xf21e2e3c),
-                                Color(0xff162534),
-                                Color(0xff0c1c2c),
-                            ),
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.9f),
+                                MaterialTheme.colorScheme.primary,
+
+                                ),
                             center = Offset(0f, 0f),
                             radius = 1000f
                         )
@@ -146,13 +148,14 @@ private fun LoginContent(
                     text = stringResource(id = R.string.Sign_in_to_your_Account),
                     style = MaterialTheme.typography.headlineLarge,
                     modifier = Modifier.padding(start = 16.dp),
-                    color = Color.White,
+                    color = contentColorFor(backgroundColor = MaterialTheme.colorScheme.primary),
                     fontWeight = FontWeight.Bold
                 )
-                Text(text ="Sign in to your account.",
+                Text(
+                    text = "Sign in to your account.",
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(top = 8.dp, start = 16.dp),
-                    color = Color.White
+                    color = contentColorFor(backgroundColor = MaterialTheme.colorScheme.primary),
                 )
             }
             Spacer(modifier = Modifier.weight(0.25f))
@@ -179,7 +182,7 @@ private fun LoginContent(
                     modifier = Modifier
                         .align(Alignment.Center)
                         .background(
-                            color = MaterialTheme.colorScheme.background,
+                            color = MaterialTheme.colorScheme.surface,
                             shape = MaterialTheme.shapes.small,
                         )
                         .padding(horizontal = 8.dp),

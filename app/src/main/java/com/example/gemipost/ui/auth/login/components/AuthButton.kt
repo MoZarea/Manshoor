@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,11 +33,9 @@ fun AuthButton(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp)
             .height(56.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xffc0e863),
-            contentColor = Color.Black
-        ),
+
         shape = RoundedCornerShape(8.dp),
+
     ) {
         if (startIcon != null) {
             Icon(startIcon, contentDescription = null, tint = Color.Unspecified)
@@ -75,7 +74,6 @@ fun OutLinedAuthButton(
         Text(
             text = stringResource(labelId),
             fontSize = 18.sp,
-            color = Color(0xff62635e),
         )
     }
 }
