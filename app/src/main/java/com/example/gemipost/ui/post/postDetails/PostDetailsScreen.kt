@@ -27,7 +27,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -185,6 +188,8 @@ private fun PostDetailsContent(
     navigateToLogin: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val scrollBehavior =
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     LaunchedEffect(key1 = state.actionResult, key2 = state.loginStatus) {
         if (state.actionResult.isNotIdle()) {
             if (state.actionResult == PostResults.POST_DELETED) {
@@ -207,14 +212,16 @@ private fun PostDetailsContent(
     }
     val lazyListState = rememberLazyListState()
     Scaffold(snackbarHost = { SnackbarHost(hostState = snackbarHostState) }, topBar = {
-            TopAppBar(title = { Text("Post Details") }, navigationIcon = {
+            TopAppBar(title = { Text("Post Details") },
+                scrollBehavior = scrollBehavior,
+                navigationIcon = {
                 IconButton(onClick = {
                     onBackPressed()
                 }) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                 }
             })
-    }, modifier = modifier
+    }, modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) {
         Box(
             modifier = Modifier

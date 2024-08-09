@@ -15,6 +15,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -26,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import com.example.gemipost.data.post.source.remote.model.Post
 import com.example.gemipost.ui.post.search.components.SearchResultHeader
@@ -88,11 +91,14 @@ fun SearchResultContent(
     var searchQuery by remember {
         mutableStateOf("")
     }
-    Scaffold(modifier = modifier.fillMaxSize(), topBar = {
+    val scrollBehavior =
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    Scaffold(modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection).fillMaxSize(), topBar = {
         Surface(
             shadowElevation = 8.dp
         ) {
-            TopAppBar(title = {
+            TopAppBar(
+                scrollBehavior = scrollBehavior, title = {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
