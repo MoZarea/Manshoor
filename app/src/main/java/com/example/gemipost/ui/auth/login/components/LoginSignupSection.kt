@@ -34,7 +34,6 @@ fun LoginSignUpSection(navigateToSignUp: () -> Unit) {
                 text = stringResource(R.string.sign_up),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xffc0e863),
 //                style = TextStyle(textDecoration = TextDecoration.Underline),
             )
         }

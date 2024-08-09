@@ -34,7 +34,6 @@ fun SignUpAvatarSection(avatarByteArray: Uri, onChangeAvatarClicked: () -> Unit)
                 imageVector = Icons.Filled.AccountCircle,
                 contentDescription = null,
                 modifier = imageModifier,
-                tint = MaterialTheme.colorScheme.outline
             )
         } else {
             //TODO

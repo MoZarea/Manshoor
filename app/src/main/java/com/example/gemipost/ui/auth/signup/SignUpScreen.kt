@@ -25,6 +25,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -148,10 +149,10 @@ private fun SignUpContent(
                     .background(
                         brush = Brush.radialGradient(
                             colors = listOf(
-                                Color(0xf21e2e3c),
-                                Color(0xff162534),
-                                Color(0xff0c1c2c),
-                            ),
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.9f),
+                                MaterialTheme.colorScheme.primary,
+                                ),
                             center = Offset(0f, 0f),
                             radius = 1000f
                         )
@@ -164,7 +165,7 @@ private fun SignUpContent(
                 Text(
                     text = stringResource(id = R.string.wecome_sign_up),
                     style = MaterialTheme.typography.headlineLarge,
-                    color = Color.White,
+                    color = contentColorFor(backgroundColor = MaterialTheme.colorScheme.primary),
                     fontWeight = FontWeight.Bold
                 )
 
@@ -184,10 +185,7 @@ private fun SignUpContent(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 4.dp)
                     .height(56.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xffc0e863),
-                    contentColor = Color.Black
-                ),
+
                 shape = RoundedCornerShape(8.dp),
 
                 ) {
@@ -216,7 +214,6 @@ private fun SignUpContent(
                     Text(
                         text = stringResource(R.string.login_str),
                         fontSize = 18.sp,
-                        color = Color(0xffc0e863)
                     )
                 }
 

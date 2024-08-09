@@ -37,7 +37,6 @@ fun AuthTextButton(
         ) {
             Text(
                 text = stringResource(textId),
-                color = Color(0xffc0e863),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 style = TextStyle(textDecoration = TextDecoration.Underline),

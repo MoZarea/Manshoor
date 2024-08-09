@@ -142,10 +142,7 @@ private fun ForgetPasswordContent(
                     .height(56.dp),
                 shape = RoundedCornerShape(8.dp),
                 onClick = onSendResetEmail,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xffc0e863),
-                    contentColor = Color.Black
-                ),
+
             ) {
                 Icon(imageVector = Icons.AutoMirrored.Filled.Send, contentDescription = null)
                 Spacer(modifier = Modifier.width(16.dp))
