@@ -25,10 +25,8 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -59,10 +57,11 @@ fun BottomRow(
     currentUserID: String,
     onShareClicked: () -> Unit,
 ) {
+    println("FeedPostItem100001inbottombar: upvoted${upVotes} downvoted ${downVotes}")
+
     val scope = rememberCoroutineScope()
-    var animatedVotes by remember { mutableStateOf(votes) }
-    var isUpvoted by remember { mutableStateOf(upVotes.contains(currentUserID)) }
-    var isDownvoted by remember { mutableStateOf(downVotes.contains(currentUserID)) }
+    var isUpvoted =upVotes.contains(currentUserID)
+    var isDownvoted = downVotes.contains(currentUserID)
 
 
     val rotation by animateFloatAsState(if (isUpvoted || isDownvoted) 360f else 0f, label = "")
@@ -76,7 +75,7 @@ fun BottomRow(
     )
     val bounceAnim = remember { Animatable(1f) }
 
-    LaunchedEffect(animatedVotes) {
+    LaunchedEffect(votes) {
         bounceAnim.animateTo(
             targetValue = 1.2f,
             animationSpec = spring(dampingRatio = Spring.DampingRatioHighBouncy)
@@ -97,9 +96,6 @@ fun BottomRow(
         FilledTonalButton(
             onClick = {
                 scope.launch {
-                    isUpvoted = !isUpvoted
-                    if (isUpvoted) isDownvoted = false
-                    animatedVotes += if (isUpvoted) 1 else -1
                     onUpVoteClicked()
                 }
             },
@@ -117,7 +113,7 @@ fun BottomRow(
             )
             Spacer(modifier = Modifier.width(6.dp))
             Text(
-                text = animatedVotes.toString(),
+                text = votes.toString(),
                 style = TextStyle(
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
@@ -136,9 +132,6 @@ fun BottomRow(
                 modifier = Modifier
                     .clickable {
                         scope.launch {
-                            isDownvoted = !isDownvoted
-                            if (isDownvoted) isUpvoted = false
-                            animatedVotes += if (isDownvoted) -1 else 1
                             onDownVoteClicked()
                         }
                     }

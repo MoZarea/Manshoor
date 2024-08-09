@@ -1,13 +1,10 @@
 package com.example.gemipost.ui.post.postDetails
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -32,9 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -184,6 +179,8 @@ private fun PostDetailsContent(
     onBackPressed: () -> Unit,
     navigateToLogin: () -> Unit
 ) {
+    println("FeedPostItem100001: upvoted${state.post.upvoted} downvoted ${state.post.downvoted}")
+
     val snackbarHostState = remember { SnackbarHostState() }
     LaunchedEffect(key1 = state.actionResult, key2 = state.loginStatus) {
         if (state.actionResult.isNotIdle()) {
@@ -226,12 +223,12 @@ private fun PostDetailsContent(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                    item {
-                        AnimatedVisibility(state.isLoading) {
-                            LinearProgressIndicator()
+                item {
+                    AnimatedVisibility(state.isLoading) {
+                        LinearProgressIndicator()
 
-                        }
                     }
+                }
 
                 item {
                     FeedPostItem(
@@ -290,6 +287,7 @@ private fun PostDetailsContent(
         }
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview

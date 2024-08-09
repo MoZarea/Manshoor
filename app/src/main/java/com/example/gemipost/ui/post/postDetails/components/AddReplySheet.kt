@@ -39,7 +39,8 @@ fun AddReplySheet(
         sheetState = bottomSheetState,
         onDismissRequest = { onDismiss()},
         shape = RoundedCornerShape(16.dp),
-        tonalElevation = 8.dp
+        tonalElevation = 8.dp,
+        dragHandle = {}
     ) {
         var value by remember { mutableStateOf(initialValue) }
         Row(

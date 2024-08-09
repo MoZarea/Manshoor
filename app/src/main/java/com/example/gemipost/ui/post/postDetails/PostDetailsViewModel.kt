@@ -68,13 +68,7 @@ class PostDetailsViewModel(
                 }.onFailure {
                     updateUserMessage(it)
                 }.onSuccessWithData { post ->
-                    updatePost(
-                        post.copy(
-                            upvoted = if (uiState.value.currentUser.id in post.upvoted) listOf("") else emptyList(),
-                            downvoted = if (uiState.value.currentUser.id in post.downvoted) listOf("") else emptyList()
-                        )
-                    )
-
+                    updatePost(post)
                     getRepliesById(postId)
                 }
             }
