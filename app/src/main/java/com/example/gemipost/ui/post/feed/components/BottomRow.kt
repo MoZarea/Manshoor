@@ -1,22 +1,44 @@
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.alpha
 import com.gp.socialapp.presentation.post.feed.components.icons.FeedIcons
 import com.gp.socialapp.presentation.post.feed.components.icons.feedicons.Comment
 import com.gp.socialapp.presentation.post.feed.components.icons.feedicons.Dislikefilled
@@ -48,7 +70,7 @@ fun BottomRow(
         targetValue = when {
             isUpvoted -> MaterialTheme.colorScheme.primary
             isDownvoted -> MaterialTheme.colorScheme.error
-            else -> MaterialTheme.colorScheme.onPrimaryContainer
+            else -> MaterialTheme.colorScheme.secondaryContainer
         },
         animationSpec = tween(durationMillis = 500), label = ""
     )
@@ -91,6 +113,7 @@ fun BottomRow(
             Icon(
                 imageVector = if (isUpvoted) FeedIcons.Likefilled else FeedIcons.Likeoutlined,
                 contentDescription = "UpVote",
+                tint = contentColorFor(backgroundColor = colorTransition),
             )
             Spacer(modifier = Modifier.width(6.dp))
             Text(
@@ -99,6 +122,7 @@ fun BottomRow(
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 ),
+                color = contentColorFor(backgroundColor = colorTransition),
                 modifier = Modifier
                     .sizeIn(minWidth = 20.dp)
                     .scale(bounceAnim.value),
@@ -108,6 +132,7 @@ fun BottomRow(
             Icon(
                 imageVector = if (isDownvoted) FeedIcons.Dislikefilled else FeedIcons.Dislikeoutlined,
                 contentDescription = "DownVote",
+                tint = contentColorFor(backgroundColor = colorTransition),
                 modifier = Modifier
                     .clickable {
                         scope.launch {
