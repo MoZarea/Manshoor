@@ -37,7 +37,8 @@ class NotificationService: FirebaseMessagingService() {
         Log.d("notificationService", "Message: ${message.data}")
         val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent,
+            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE)
         val channelId = "Default"
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.mipmap.sym_def_app_icon)
